@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8081";
+const SERVER_URL = "https://bennieslab-backend.onrender.com";
 
 function formatDateTimeArray(dateTimeArray) {
     if (!dateTimeArray || dateTimeArray.length < 6) {
@@ -85,7 +85,7 @@ async function displaySkill() {
         lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(skill.lastUpdated);
         
         if (skill.thumbnailUrl) {
-            skillDetailThumbnail.src = SERVER_URL + skill.thumbnailUrl;
+            skillDetailThumbnail.src = skill.thumbnailUrl;
             skillDetailThumbnail.style.display = 'block';
         } else {
             skillDetailThumbnail.style.display = 'none';

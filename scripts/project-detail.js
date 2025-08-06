@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8081";
+const SERVER_URL = "https://bennieslab-backend.onrender.com";
 
 function formatDateTimeArray(dateTimeArray) {
     if (!dateTimeArray || dateTimeArray.length < 6) {
@@ -90,7 +90,7 @@ async function displayProject() {
         // Display thumbnail if available
         if (project.thumbnailUrl) {
             // FIX: Prepend the SERVER_URL to the relative thumbnail path
-            projectDetailThumbnail.src = SERVER_URL + project.thumbnailUrl;
+            projectDetailThumbnail.src = project.thumbnailUrl;
             projectDetailThumbnail.style.display = 'block'; // Make it visible
         } else {
             projectDetailThumbnail.style.display = 'none'; // Hide if no thumbnail

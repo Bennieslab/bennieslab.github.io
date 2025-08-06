@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8081";
+const SERVER_URL = "https://bennieslab-backend.onrender.com";
 
 async function fetchPosts() {
     try {
@@ -96,7 +96,7 @@ async function displayPosts() {
                 
                 if (post.thumbnailUrl) {
                     let img = document.createElement("img");
-                    img.src = SERVER_URL + post.thumbnailUrl;
+                    img.src = post.thumbnailUrl;
                     img.alt = post.title + " thumbnail";
                     img.classList.add("post-thumbnail-img");
                     postThumbnail.appendChild(img);

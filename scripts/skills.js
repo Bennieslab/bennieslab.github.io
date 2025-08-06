@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8081";
+const SERVER_URL = "https://bennieslab-backend.onrender.com";
 
 async function fetchAllSkills() {
     try {
@@ -34,7 +34,7 @@ function renderSkills(skills) {
 
         if (skill.thumbnailUrl) {
             let img = document.createElement("img");
-            img.src = SERVER_URL + skill.thumbnailUrl;
+            img.src = skill.thumbnailUrl;
             img.alt = skill.name + " thumbnail";
             skillThumbnail.appendChild(img);
         }

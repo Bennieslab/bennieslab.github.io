@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8081";
+const SERVER_URL = "https://bennieslab-backend.onrender.com";
 
 async function fetchProjects() {
     try {
@@ -95,7 +95,7 @@ async function displayProjects() {
                 projectThumbnail.classList.add("thumbnail-container");
                 if (project.thumbnailUrl) {
                     let img = document.createElement("img");
-                    img.src = SERVER_URL + project.thumbnailUrl;
+                    img.src = project.thumbnailUrl;
                     img.alt = project.name + " thumbnail";
                     img.classList.add("project-thumbnail-img");
                     projectThumbnail.appendChild(img);

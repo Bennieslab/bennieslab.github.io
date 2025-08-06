@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8081";
+const SERVER_URL = "https://bennieslab-backend.onrender.com";
 
 function formatDateTimeArray(dateTimeArray) {
     if (!dateTimeArray || dateTimeArray.length < 6) {
@@ -85,7 +85,7 @@ async function displayBlogPost() {
         lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(post.lastUpdated);
 
         if (post.thumbnailUrl) {
-            postDetailThumbnail.src = SERVER_URL + post.thumbnailUrl;
+            postDetailThumbnail.src = post.thumbnailUrl;
             postDetailThumbnail.style.display = 'block';
         } else {
             postDetailThumbnail.style.display = 'none';

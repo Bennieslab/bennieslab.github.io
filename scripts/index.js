@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8081";
+const SERVER_URL = "https://bennieslab-backend.onrender.com";
 
 function formatDateTimeArray(dateTimeArray) {
     if (!dateTimeArray || dateTimeArray.length < 6) {
@@ -79,7 +79,7 @@ async function displayHighlights(containerSelector, apiPath, linkPrefix, cardCla
                 thumbContainer.classList.add("thumbnail-container");
                 if (data.thumbnailUrl) {
                     const img = document.createElement("img");
-                    img.src = SERVER_URL + data.thumbnailUrl;
+                    img.src = data.thumbnailUrl;
                     img.alt = data[nameKey] + " thumbnail";
                     img.classList.add("highlight-thumbnail-img");
                     thumbContainer.appendChild(img);

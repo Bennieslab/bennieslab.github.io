@@ -1,4 +1,4 @@
-const SERVER_URL = "http://localhost:8081";
+const SERVER_URL = "https://bennieslab-backend.onrender.com";
 const MAX_LIST_ITEMS = 5;
 
 async function getUserData() {
