@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // NEW EVENT LISTENER FOR MANAGE BUTTONS
     document.querySelectorAll('.manage-option').forEach(option => {
         option.addEventListener('click', () => {
             const type = option.dataset.type;
@@ -412,6 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
             institution: document.getElementById('education-institution').value,
             dateStarted: startDate,
             dateEnded: isCurrentlyHere ? null : endDate,
+            currentlyHere: isCurrentlyHere 
         };
 
         try {
