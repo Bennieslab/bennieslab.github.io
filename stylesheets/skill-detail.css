@@ -1,5 +1,5 @@
 * {
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 body {
@@ -31,7 +31,7 @@ main.skill-detail-main {
     margin: 0 0 20px 0;
     padding: 0;
     width: 100%;
-    height: auto; 
+    height: auto;
     max-width: 500px;
     border-radius: 7px;
     overflow: hidden;
@@ -147,6 +147,89 @@ main.skill-detail-main {
     color: inherit;
 }
 
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.navbar a.active-link {
+    position: relative;
+}
+
+.navbar a.active-link::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background-color: #d20a2e;
+    border-radius: 5px;
+}
+
+.sitename {
+    margin: 0;
+    padding: 12px 0;
+    display: inline-block;
+    color: #3d3d3d;
+    font-size: 19px;
+    font-weight: 800;
+    font-family: sans-serif;
+    text-decoration: none;
+}
+
+.red-text {
+    color: #d20a2e;
+}
+
+nav {
+    padding: 4px;
+    display: flex;
+    justify-content: space-around;
+    width: 400px;
+    background: #e8e8e8;
+    border-radius: 10px;
+}
+
+nav a {
+    padding: 6px;
+    display: inline-block;
+}
+
+nav img:hover {
+    transform: scale(1.1);
+}
+
+.perspective-links {
+    padding: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    height: fit-content;
+    width: fit-content;
+    background: #3d3d3d;
+    border-radius: 7px;
+    line-height: 0;
+}
+
+.perspective-links img {
+    margin: 0;
+    padding: 10px;
+    border-radius: 7px;
+}
+
+.perspective-links a {
+    margin: 0;
+    height: fit-content;
+}
+
+#sci-link {
+    background: #d20a2e;
+    border-radius: 7px;
+}
+
 @media (max-width: 900px) {
 
     main.skill-detail-main {
@@ -187,7 +270,7 @@ main.skill-detail-main {
 
     .navbar {
         flex-direction: row;
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
     }
@@ -205,7 +288,7 @@ main.skill-detail-main {
     nav {
         order: 3;
         width: 100%;
-        margin-top: 10px; 
+        margin-top: 10px;
     }
 
     .skill-detail-title {

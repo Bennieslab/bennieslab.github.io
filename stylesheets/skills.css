@@ -1,19 +1,19 @@
 * {
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 body {
     padding: 20px;
     font-family: 'Inter';
     color: #3d3d3d;
-    overflow-x: hidden; 
+    overflow-x: hidden;
 }
 
 main {
     margin: 0 auto;
     padding: 0;
-    max-width: 720px; 
-    width: 100%; 
+    max-width: 720px;
+    width: 100%;
     border-radius: 7px;
 }
 
@@ -59,7 +59,7 @@ nav {
     padding: 4px;
     display: flex;
     justify-content: space-around;
-    min-width: 400px;
+    width: 400px;
     background: #e8e8e8;
     border-radius: 10px;
 }
@@ -121,7 +121,7 @@ nav img:hover {
     gap: 10px;
     display: flex;
     flex-direction: column;
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 .skill:hover {
@@ -149,11 +149,11 @@ nav img:hover {
 .skill h3 {
     margin: 5px 0 0 0;
     font-size: 1em;
-    overflow-wrap: break-word; 
+    overflow-wrap: break-word;
 }
 
-footer { 
-    display: none; 
+footer {
+    display: none;
 }
 
 @media (max-width: 900px) {
@@ -221,7 +221,6 @@ footer {
     }
 
     .skill h3 {
-
         white-space: normal;
         overflow-wrap: break-word;
     }

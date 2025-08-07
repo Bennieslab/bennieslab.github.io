@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     padding: 20px;
     height: 100%;
@@ -47,7 +51,7 @@ nav {
     padding: 4px;
     display: flex;
     justify-content: space-around;
-    min-width: 400px;
+    width: 400px;
     background: #e8e8e8;
     border-radius: 10px;
 }
@@ -68,14 +72,13 @@ nav img:hover {
     height: fit-content;
     width: fit-content;
     background: #3d3d3d;
-    box-sizing: border-box;
     border-radius: 7px;
-    line-height: 0; 
+    line-height: 0;
 }
 
 .perspective-links img {
     margin: 0;
-    padding: 10px; 
+    padding: 10px;
     border-radius: 7px;
 }
 
@@ -176,7 +179,8 @@ footer { display: none; }
     main {
         width: 100%;
         padding: 0 10px;
-        aspect-ratio: unset; 
+        aspect-ratio: unset;
+        box-sizing: border-box;
     }
 
     .navbar {
@@ -203,7 +207,7 @@ footer { display: none; }
     .resume {
         display: flex;
         flex-direction: column;
-        gap: 20px; 
+        gap: 20px;
     }
 }
 
@@ -215,7 +219,7 @@ footer { display: none; }
 
     .navbar {
         flex-direction: row;
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
     }
@@ -233,7 +237,7 @@ footer { display: none; }
     nav {
         order: 3;
         width: 100%;
-        margin-top: 10px; 
+        margin-top: 10px;
     }
 
     .personal_info {

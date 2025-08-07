@@ -1,5 +1,5 @@
 * {
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 body {
@@ -31,7 +31,7 @@ main.project-detail-main {
     margin: 0 0 20px 0;
     padding: 0;
     width: 100%;
-    height: auto; 
+    height: auto;
     max-width: 500px;
     border-radius: 7px;
     overflow: hidden;
@@ -136,7 +136,7 @@ main.project-detail-main {
     border-radius: 8px;
     overflow-x: auto;
     margin-bottom: 1em;
-    max-width: 100%; 
+    max-width: 100%;
 }
 
 .project-content-rendered pre code {
@@ -187,7 +187,7 @@ main.project-detail-main {
 
     .navbar {
         flex-direction: row;
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
     }
@@ -205,14 +205,14 @@ main.project-detail-main {
     nav {
         order: 3;
         width: 100%;
-        margin-top: 10px; 
+        margin-top: 10px;
     }
 
     .project-detail-title {
-        font-size: 1.8em; 
+        font-size: 1.8em;
     }
 
     .project-content-rendered {
-        font-size: 1em; 
+        font-size: 1em;
     }
 }
