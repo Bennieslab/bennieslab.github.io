@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     padding: 20px;
     height: 100%;
@@ -31,7 +35,6 @@ nav {
     padding: 4px;
     display: flex;
     justify-content: space-around;
-    min-width: 400px;
     background: #e8e8e8;
     border-radius: 10px;
 }
@@ -52,7 +55,6 @@ nav img:hover {
     height: fit-content;
     width: fit-content;
     background: #3d3d3d;
-    box-sizing: border-box;
     border-radius: 7px;
     line-height: 0;
 }
@@ -336,7 +338,7 @@ footer > div {
     }
 
     .sitename {
-        flex-grow: 1; 
+        flex-grow: 1;
         order: 1;
     }
 
@@ -353,7 +355,7 @@ footer > div {
 
     main {
         width: 100%;
-        padding: 0 10px; 
+        padding: 0 10px;
         box-sizing: border-box;
     }
 
@@ -362,7 +364,6 @@ footer > div {
         padding: 0 10px;
         box-sizing: border-box;
     }
-
 }
 
 @media (max-width: 600px) {
