@@ -309,6 +309,38 @@ main.admin-main {
     opacity: 1;
 }
 
+.manage {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.manage-option {
+    flex-grow: 1;
+    min-width: 150px;
+    padding: 15px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    color: #3d3d3d;
+    transition: all 0.2s ease-in-out;
+}
+
+.manage-option:hover {
+    background: #d20a2e;
+    color: #fff;
+    border-color: #d20a2e;
+    transform: translateY(-2px);
+}
+
 .editor-toolbar button {
     color: #3d3d3d !important;
     border: none !important;

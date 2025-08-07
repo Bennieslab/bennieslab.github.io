@@ -30,11 +30,6 @@
             <div class="admin-tab active-tab" data-tab="creation-center">
                 <img src="src/creation-center.png" alt="Creation Center" class="admin-icon">
                 <span class="admin-tab-text">Creation Center</span>
-                <div>
-                    <button data-type="blog" class="manage-option">Manage Blogs</button>
-                    <button data-type="project" class="manage-option">Manage Projects</button>
-                    <button data-type="skill" class="manage-option">Manage Skills</button>
-                </div>
             </div>
             <div class="admin-tab" data-tab="profile-editor">
                 <img src="src/profile-editor.png" alt="Profile Editor" class="admin-icon">
@@ -74,6 +69,12 @@
                         <span class="create-text">Create Skill</span>
                     </div>
                 </div>
+                <h1 class="tab-header" style="margin-top: 40px;">Management Center</h1>
+                <div class="manage">
+                    <button data-type="blog" class="manage-option">Manage Blogs</button>
+                    <button data-type="project" class="manage-option">Manage Projects</button>
+                    <button data-type="skill" class="manage-option">Manage Skills</button>
+                </div>
             </div>
             <div id="profile-editor-content" style="display: none;">
                 <h1 class="tab-header">Profile Editor</h1>
@@ -92,7 +93,7 @@
                     </div>
                 </div>
             </div>
-            </main>
+        </main>
     </div>
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src="scripts/admin.js"></script>

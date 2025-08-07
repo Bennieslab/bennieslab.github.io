@@ -37,6 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // NEW EVENT LISTENER FOR MANAGE BUTTONS
+    document.querySelectorAll('.manage-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const type = option.dataset.type;
+            loadManageContent(type);
+        });
+    });
+
     document.getElementById('logout-button').addEventListener('click', () => {
         localStorage.removeItem('jwt_token');
         window.location.href = 'login.html';
