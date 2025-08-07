@@ -51,6 +51,22 @@ nav img:hover {
     transform: scale(1.1);
 }
 
+.navbar a.active-link {
+    position: relative;
+}
+
+.navbar a.active-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background-color: #d20a2e;
+    border-radius: 5px;
+}
+
 .perspective-links {
     padding: 0;
     display: flex;
