@@ -134,52 +134,63 @@ async function displayEducation() {
 
         limitedEducation.forEach(education => {
             let educationEntry = document.createElement("div");
-            educationEntry.classList.add("education-entry");
+            educationEntry.classList.add(".education-entry");
 
-            let educationTitleAndInstitution = document.createElement("p");
-            educationTitleAndInstitution.classList.add("education-title-institution");
-            educationTitleAndInstitution.textContent = `${education.title} - ${education.institution}`;
-            
-            let levelAndDate = document.createElement("p");
-            levelAndDate.classList.add("education-level-date");
-            
+            let educationTitleElement = document.createElement('span');
+            let institutionElement = document.createElement("span");
+            let levelElement = document.createElement("span");
+            let dateElement = document.createElement("span");
+
+            educationTitleElement.classList.add("education-title");
+            institutionElement.classList.add("institution-element");
+            levelElement.classList.add("level-element");
+            dateElement.classList.add("date");
+
+            educationTitleElement.textContent = education.title + " - ";
+            institutionElement.textContent = education.institution;
+            levelElement.textContent = education.level + " ";
+
             let formattedDateStarted = "";
             let formattedDateEnded = "";
 
             if (education.dateStarted) {
                 let fDStart = new Date(education.dateStarted[0], education.dateStarted[1] - 1, education.dateStarted[2]);
+                let dayS = String(fDStart.getDate()).padStart(2, '0');
                 let monthS = String(fDStart.getMonth() + 1).padStart(2, '0');
-                let yearS = String(fDStart.getFullYear());
-                formattedDateStarted = `${monthS}/${yearS}`;
+                let yearS = String(fDStart.getFullYear()).slice(-2);
+                formattedDateStarted = `${dayS} - ${monthS} - ${yearS}`;
             }
 
             if (education.dateEnded) {
                 let fDEnd = new Date(education.dateEnded[0], education.dateEnded[1] - 1, education.dateEnded[2]);
+                let dayE = String(fDEnd.getDate()).padStart(2, '0');
                 let monthE = String(fDEnd.getMonth() + 1).padStart(2, '0');
-                let yearE = String(fDEnd.getFullYear());
-                formattedDateEnded = `${monthE}/${yearE}`;
-            } else if (education.currentlyHere) {
-                formattedDateEnded = "Present";
+                let yearE = String(fDEnd.getFullYear()).slice(-2);
+                formattedDateEnded = `${dayE} - ${monthE} - ${yearE}`;
             }
-            
-            let dateRange = "";
+
             if (formattedDateStarted && formattedDateEnded) {
-                dateRange = `${formattedDateStarted} - ${formattedDateEnded}`;
+                dateElement.textContent = `${formattedDateStarted} to ${formattedDateEnded}`;
             } else if (formattedDateStarted) {
-                dateRange = formattedDateStarted;
+                dateElement.textContent = formattedDateStarted;
             } else if (formattedDateEnded) {
-                dateRange = formattedDateEnded;
+                dateElement.textContent = formattedDateEnded;
+            } else {
+                dateElement.textContent = "";
             }
 
-            levelAndDate.textContent = `${education.level} | ${dateRange}`;
-
-            educationEntry.appendChild(educationTitleAndInstitution);
-            educationEntry.appendChild(levelAndDate);
-            
+            const lineBreak = document.createElement("br");
+            educationEntry.appendChild(educationTitleElement);
+            educationEntry.appendChild(institutionElement);
+            educationEntry.appendChild(document.createElement("br"));
+            educationEntry.appendChild(levelElement);
+            educationEntry.appendChild(lineBreak);
+            educationEntry.appendChild(dateElement);
             educationDiv.appendChild(educationEntry);
         });
-    } catch(error) {
-        console.error("error displaying education details. error:", error);
+    }
+    catch(error) {
+        console.error("error displaying education details. error:", error)
     }
 }
 
