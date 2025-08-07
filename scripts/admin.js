@@ -513,6 +513,69 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const handleEditClick = async (event) => {
+            const button = event.target;
+            const id = button.dataset.id;
+            const type = button.dataset.type;
+
+            if (!token) {
+                alert("You are not logged in.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}/${id}`;
+                const response = await fetch(`${SERVER_URL}${endpoint}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch item for editing');
+
+                const item = await response.json();
+                
+                loadMarkdownForm(type, item, id);
+            } catch (error) {
+                console.error('Error fetching item for edit:', error);
+                alert('Could not load item details for editing.');
+            }
+        };
+
+        const handleDeleteClick = async (event) => {
+            const button = event.target;
+            const id = button.dataset.id;
+            const type = button.dataset.type;
+
+            if (!confirm('Are you sure you want to delete this item?')) {
+                return;
+            }
+
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                alert("You are not logged in.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}/${id}`;
+                const response = await fetch(`${SERVER_URL}${endpoint}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    alert('Item deleted successfully!');
+                    loadManageContent(type);
+                } else {
+                    throw new Error(`Failed to delete item: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error deleting item:', error);
+                alert('Could not delete the item.');
+            }
+        };
+
         try {
             const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}`;
             const response = await fetch(`${SERVER_URL}${endpoint}`, {
