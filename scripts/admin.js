@@ -57,8 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTab.classList.add('active-tab');
     }
 
-    function loadMarkdownForm(type) {
-        const headerText = `Create ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+    function loadMarkdownForm(type, itemData = null, itemId = null) {
+        const isEditMode = itemData !== null;
+        const headerText = isEditMode
+            ? `Edit ${type.charAt(0).toUpperCase() + type.slice(1)}`
+            : `Create ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
         let titlePlaceholder = "";
         let contentPlaceholder = "";
 
@@ -81,35 +85,36 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="creation-center-container">
                 <h1 class="tab-header">${headerText}</h1>
                 <form id="creation-form">
-                    <input type="text" id="content-title" class="obsidian-style-input" placeholder="${titlePlaceholder}" required>
-                    <textarea id="content-body" placeholder="${contentPlaceholder}" required></textarea>
+                    <input type="text" id="content-title" class="obsidian-style-input" placeholder="${titlePlaceholder}" required value="${isEditMode ? (itemData.title || itemData.name) : ''}">
+                    <textarea id="content-body" placeholder="${contentPlaceholder}" required>${isEditMode ? (itemData.content || itemData.description) : ''}</textarea>
                     <div class="form-actions">
-                        <button type="button" id="save-content-button" class="submit-button">Save</button>
+                        <button type="button" id="save-content-button" class="submit-button">${isEditMode ? 'Update' : 'Save'}</button>
                         <button type="button" class="cancel-button">Cancel</button>
                     </div>
                 </form>
             </div>
             <dialog id="save-modal" class="modal">
                 <div class="modal-content">
-                    <h2>Add Details</h2>
+                    <h2>${isEditMode ? 'Update Details' : 'Add Details'}</h2>
                     <label for="thumbnail-upload" class="file-label">
                         <img src="src/image-icon.png" alt="Upload Icon" class="upload-icon">
-                        <span id="file-name-display">Choose Thumbnail Image</span>
+                        <span id="file-name-display">${isEditMode ? (itemData.thumbnailUrl ? 'Thumbnail already exists' : 'Choose New Thumbnail') : 'Choose Thumbnail Image'}</span>
                         <input type="file" id="thumbnail-upload" accept="image/*" style="display:none;">
                     </label>
-                    <input type="text" id="category-input" placeholder="Category" class="modal-input" required>
+                    <input type="text" id="category-input" placeholder="Category" class="modal-input" required value="${isEditMode ? itemData.category : ''}">
                     <div class="modal-actions">
-                        <button id="confirm-save" class="modal-button primary">Confirm</button>
+                        <button id="confirm-save" class="modal-button primary">${isEditMode ? 'Confirm Update' : 'Confirm'}</button>
                         <button id="cancel-modal" class="modal-button secondary">Cancel</button>
                     </div>
                 </div>
             </dialog>
-            `;
+        `;
         mainContentArea.innerHTML = formHtml;
-        initMarkdownEditorAndModal(type);
+
+        initMarkdownEditorAndModal(type, itemId);
     }
 
-    function initMarkdownEditorAndModal(type) {
+    function initMarkdownEditorAndModal(type, itemId) {
         if (easyMDE) easyMDE.toTextArea();
         easyMDE = new EasyMDE({
             element: document.getElementById('content-body'),
@@ -124,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cancelModalButton = document.getElementById('cancel-modal');
         const thumbnailUploadInput = document.getElementById('thumbnail-upload');
         const fileNameDisplay = document.getElementById('file-name-display');
+
 
         thumbnailUploadInput.addEventListener('change', (e) => {
             fileNameDisplay.textContent = e.target.files[0] ? e.target.files[0].name : "Choose Thumbnail Image";
@@ -142,10 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelButton.addEventListener('click', () => location.reload());
         cancelModalButton.addEventListener('click', () => saveModal.close());
 
-        confirmSaveButton.addEventListener('click', () => handleMarkdownSave(type, easyMDE));
+        confirmSaveButton.addEventListener('click', () => handleMarkdownSave(type, itemId, easyMDE));
     }
 
-    async function handleMarkdownSave(type, mde) {
+    async function handleMarkdownSave(type, itemId, mde) {
         const titleInput = document.getElementById('content-title').value;
         const contentBody = mde.value();
         const categoryInput = document.getElementById('category-input').value;
@@ -193,25 +199,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const payload = {
-            category: categoryInput
-        };
+        category: categoryInput
+    };
 
-        if (thumbnailUrl) {
-            payload.thumbnailUrl = thumbnailUrl;
-        }
+    if (thumbnailUrl) {
+        payload.thumbnailUrl = thumbnailUrl;
+    }
 
-        if (type === 'project' || type === 'skill') {
-            payload.name = titleInput;
-            payload.description = contentBody;
-        } else if (type === 'blog') {
-            payload.title = titleInput;
-            payload.content = contentBody;
-        }
+    if (type === 'project' || type === 'skill') {
+        payload.name = titleInput;
+        payload.description = contentBody;
+    } else if (type === 'blog') {
+        payload.title = titleInput;
+        payload.content = contentBody;
+    }
 
-        const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}`;
-        try {
-            const response = await fetch(`${SERVER_URL}${endpoint}`, {
-                method: 'POST',
+    const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}`;
+    const method = itemId ? 'PUT' : 'POST';
+    const finalEndpoint = itemId ? `${SERVER_URL}${endpoint}/${itemId}` : `${SERVER_URL}${endpoint}`;
+
+    try {
+            const response = await fetch(finalEndpoint, {
+                method: method,
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload),
             });
@@ -224,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (response.ok) {
-                alert('Content saved successfully!');
+                alert(`Content ${itemId ? 'updated' : 'saved'} successfully!`);
                 location.reload();
             } else {
                 const error = await response.text();
@@ -492,4 +501,92 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error(`Save failed: ${response.status} - ${error}`);
         }
     }
+
+    async function loadManageContent(type) {
+        const headerText = `Manage ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+        const mainContentArea = document.querySelector('.admin-main');
+        const token = localStorage.getItem('jwt_token');
+
+        if (!token) {
+            alert("You are not logged in. Redirecting to login page.");
+            window.location.href = 'login.html';
+            return;
+        }
+
+        try {
+            const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}`;
+            const response = await fetch(`${SERVER_URL}${endpoint}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch content');
+            const items = await response.json();
+
+            let listHtml = items.map(item => `
+                <li class="content-item">
+                    <span>${item.title || item.name}</span>
+                    <div>
+                        <button class="edit-button" data-id="${item.id}" data-type="${type}">Edit</button>
+                        <button class="delete-button" data-id="${item.id}" data-type="${type}">Delete</button>
+                    </div>
+                </li>
+            `).join('');
+
+            const manageContentHtml = `
+                <div class="creation-center-container">
+                    <h1 class="tab-header">${headerText}</h1>
+                    <ul class="manage-list">
+                        ${listHtml.length > 0 ? listHtml : '<li>No items found.</li>'}
+                    </ul>
+                </div>
+            `;
+            mainContentArea.innerHTML = manageContentHtml;
+
+            document.querySelectorAll('.edit-button').forEach(button => {
+                button.addEventListener('click', handleEditClick);
+            });
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', handleDeleteClick);
+            });
+        } catch (error) {
+            console.error('Error fetching items:', error);
+            alert('Error loading content for management.');
+        }
+    }
+
+    async function handleEditClick(event) {
+        const button = event.target;
+        const id = button.dataset.id;
+        const type = button.dataset.type;
+
+        const token = localStorage.getItem('jwt_token');
+        if (!token) {
+            alert("You are not logged in.");
+            window.location.href = 'login.html';
+            return;
+        }
+
+        try {
+            const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}/${id}`;
+            const response = await fetch(`${SERVER_URL}${endpoint}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch item for editing');
+
+            const item = await response.json();
+            
+            loadMarkdownForm(type, item, id);
+        } catch (error) {
+            console.error('Error fetching item for edit:', error);
+            alert('Could not load item details for editing.');
+        }
+    }
+
+    document.querySelectorAll('.manage-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const type = option.dataset.type;
+            loadManageContent(type);
+        });
+    });
 });
