@@ -167,6 +167,8 @@ async function displayEducation() {
                 let monthE = String(fDEnd.getMonth() + 1).padStart(2, '0');
                 let yearE = String(fDEnd.getFullYear()).slice(-2);
                 formattedDateEnded = `${dayE} - ${monthE} - ${yearE}`;
+            } else if (education.currentlyHere) {
+                formattedDateEnded = "Present";
             }
 
             if (formattedDateStarted && formattedDateEnded) {
