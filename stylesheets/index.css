@@ -136,11 +136,37 @@ main {
     width: 100%;
     margin-top: 25px;
     justify-content: space-between;
+    align-items: center;
+    gap: 14px;
 }
 
-.social_icons img:hover {
-    border-radius: 10px;
+.social_icons a {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: #3d3d3d;
+    opacity: 0.78;
+    transition: background 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.social_icons a:hover {
     background: #e8e8e8;
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+.social_icons img,
+.social_icons svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+}
+
+.social_icons svg {
+    fill: currentColor;
 }
 
 .tagline {

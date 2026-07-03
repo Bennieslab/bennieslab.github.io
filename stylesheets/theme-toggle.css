@@ -3,10 +3,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    width: 76px;
-    height: 40px;
+    width: 68px;
+    height: 36px;
     padding: 4px;
-    border: 0;
+    border: 1px solid transparent;
     border-radius: 999px;
     background: #3d3d3d;
     cursor: pointer;
@@ -26,14 +26,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     color: #ffffff;
 }
 
 .theme-toggle__icon svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     stroke: currentColor;
 }
 
@@ -42,27 +42,30 @@
     position: absolute;
     top: 4px;
     left: 4px;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 999px;
     background: #d20a2e;
     transition: transform 0.2s ease;
 }
 
 html[data-theme="dark"] .theme-toggle::before {
-    transform: translateX(36px);
+    transform: translateX(32px);
 }
 
 html[data-theme="dark"] body {
     background: #121418;
-    color: #e8e8e8;
+    color: #aeb6c0;
 }
 
 html[data-theme="dark"] .sitename,
 html[data-theme="dark"] h1,
-html[data-theme="dark"] h2,
+html[data-theme="dark"] h2 {
+    color: #d4d8dd;
+}
+
 html[data-theme="dark"] p {
-    color: #e8e8e8;
+    color: #aeb6c0;
 }
 
 html[data-theme="dark"] nav,
@@ -77,6 +80,26 @@ html[data-theme="dark"] main.admin-main {
 html[data-theme="dark"] .contact,
 html[data-theme="dark"] side {
     background: #1b1f26;
+}
+
+html[data-theme="dark"] .theme-toggle {
+    background: #1b1f26;
+    border-color: #343a44;
+}
+
+html[data-theme="dark"] .social_icons a {
+    color: #aeb6c0;
+    opacity: 0.72;
+}
+
+html[data-theme="dark"] .social_icons a:hover {
+    background: #23272f;
+    color: #d4d8dd;
+    opacity: 1;
+}
+
+html[data-theme="dark"] .social_icons img {
+    filter: invert(77%) sepia(7%) saturate(441%) hue-rotate(174deg) brightness(92%) contrast(87%);
 }
 
 @media (max-width: 900px) {
