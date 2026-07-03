@@ -1,4 +1,8 @@
 
+html.admin-auth-pending body {
+    visibility: hidden;
+}
+
 body {
     padding: 20px;
     margin: 0;

@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const token = localStorage.getItem('jwt_token');
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.replace('login.html');
+        return;
     }
 
     const mainContentArea = document.querySelector('.admin-main');
