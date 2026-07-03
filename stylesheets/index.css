@@ -264,6 +264,10 @@ main {
     text-decoration: none;
 }
 
+.carousel-dots {
+    display: none;
+}
+
 .timeline {
     display: none;
     margin-bottom: 60px;
@@ -446,24 +450,51 @@ main {
     .highlights > div {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 16px;
     }
 
     .highlights > div > div:nth-child(2) {
         display: grid;
         grid-auto-flow: column;
-        grid-auto-columns: minmax(220px, 78%);
+        grid-auto-columns: 100%;
         grid-template-columns: none;
-        gap: 20px;
+        gap: 16px;
         overflow-x: auto;
-        padding-bottom: 12px;
-        scroll-snap-type: x proximity;
-        scrollbar-width: thin;
+        padding-bottom: 2px;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+    }
+
+    .highlights > div > div:nth-child(2)::-webkit-scrollbar {
+        display: none;
     }
 
     .highlights > div > div:nth-child(2) > div {
         padding-bottom: 20px;
         scroll-snap-align: start;
+        scroll-snap-stop: always;
+    }
+
+    .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: -2px;
+    }
+
+    .carousel-dot {
+        width: 7px;
+        height: 7px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: #c9c9c9;
+        cursor: pointer;
+    }
+
+    .carousel-dot.active {
+        width: 18px;
+        background: #d20a2e;
     }
 
     .highlights > div > div:nth-child(1) {

@@ -99,11 +99,49 @@ async function displayHighlights(containerSelector, apiPath, linkPrefix, cardCla
             container.appendChild(cardDiv);
         }
 
+        initCarouselDots(container);
     } catch (error) {
         console.error(`Error displaying highlights from ${apiPath}: `, error);
         let container = document.querySelector(containerSelector);
         container.innerHTML = `<p>Error loading content.</p>`;
     }
+}
+
+function initCarouselDots(container) {
+    const section = container.closest('.highlights > div');
+    if (!section) return;
+
+    const dotsContainer = section.querySelector('.carousel-dots');
+    if (!dotsContainer) return;
+
+    const cards = Array.from(container.children);
+    dotsContainer.innerHTML = '';
+
+    cards.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'carousel-dot';
+        dot.setAttribute('aria-label', `Show item ${index + 1}`);
+        dot.addEventListener('click', () => {
+            cards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        });
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = Array.from(dotsContainer.children);
+    const setActiveDot = () => {
+        const cardWidth = cards[0]?.getBoundingClientRect().width || 1;
+        const gap = parseFloat(getComputedStyle(container).columnGap) || 0;
+        const index = Math.round(container.scrollLeft / (cardWidth + gap));
+
+        dots.forEach((dot, dotIndex) => {
+            dot.classList.toggle('active', dotIndex === index);
+        });
+    };
+
+    container.addEventListener('scroll', setActiveDot, { passive: true });
+    window.addEventListener('resize', setActiveDot);
+    setActiveDot();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

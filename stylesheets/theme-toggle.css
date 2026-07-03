@@ -125,6 +125,14 @@ html[data-theme="dark"] .socials {
     color: #aeb6c0;
 }
 
+html[data-theme="dark"] .carousel-dot {
+    background: #3a414c;
+}
+
+html[data-theme="dark"] .carousel-dot.active {
+    background: #d20a2e;
+}
+
 @media (max-width: 900px) {
     .theme-toggle-wrapper {
         order: 2;
