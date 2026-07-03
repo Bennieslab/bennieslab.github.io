@@ -61,7 +61,13 @@ nav a {
     display: inline-block;
 }
 
+nav img {
+    opacity: 0.78;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
 nav img:hover {
+    opacity: 1;
     transform: scale(1.1);
 }
 
@@ -113,7 +119,8 @@ main {
 .hero > div {
     height: 100%;
     border-radius: 7px;
-    padding: 20px;
+    padding: 0;
+    padding-right: 30px;
     box-sizing: border-box;
 }
 
@@ -128,7 +135,8 @@ main {
 }
 
 .hero-right {
-    padding: 50px;
+    padding-top: 42px;
+    padding-left: 50px;
 }
 
 .social_icons {
@@ -137,16 +145,16 @@ main {
     margin-top: 25px;
     justify-content: space-between;
     align-items: center;
-    gap: 14px;
 }
 
 .social_icons a {
-    width: 42px;
-    height: 42px;
+    width: auto;
+    height: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    padding: 6px;
+    border-radius: 10px;
     color: #3d3d3d;
     opacity: 0.78;
     transition: background 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
@@ -160,8 +168,8 @@ main {
 
 .social_icons img,
 .social_icons svg {
-    width: 28px;
-    height: 28px;
+    width: 60px;
+    height: 60px;
     display: block;
 }
 
@@ -210,7 +218,7 @@ main {
 }
 
 .highlights > div > div:nth-child(2) > div:hover {
-    background: #f4f4f4;
+    background: #eeeeee;
 }
 
 .thumbnail-container {
@@ -230,10 +238,11 @@ main {
 }
 
 .more {
-    width: 150px;
+    width: 96px;
+    padding: 8px;
     justify-self: end;
     background: #d20a2e;
-    aspect-ratio: 2 / 1;
+    aspect-ratio: 4 / 3;
 }
 
 .more:hover {
@@ -245,6 +254,7 @@ main {
     height: 100%;
     margin: 0;
     color: #fff;
+    font-size: 18px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -327,24 +337,28 @@ main {
 .contact {
     margin-top: 20px;
     margin-bottom: 40px;
-    padding: 20px;
-    height: 200px;
+    padding: 24px;
     box-sizing: border-box;
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    gap: 48px;
     border-radius: 7px;
-    color: #fff;
+    color: #f4f4f4;
     background-color: #3d3d3d;
 }
 
 .contact > div > div {
     display: flex;
+    align-items: center;
+    min-height: 30px;
 }
 
 .contact img {
     margin: 0;
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
 
 .contact span {
@@ -352,23 +366,18 @@ main {
     align-self: center;
 }
 
-footer {
-    margin: 0 auto;
-    padding: 20px;
-    display: none;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    height: 200px;
-    width: 720px;
-    box-sizing: border-box;
-    background: #3d3d3d;
-    border-radius: 7px;
+.contact-details,
+.socials {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #c8c8c8;
+    font-size: 14px;
 }
 
-footer > div {
-    background: #808080;
-    border-radius: 7px;
+.socials {
+    justify-self: end;
+    min-width: 190px;
 }
 
 @media (max-width: 900px) {
@@ -385,11 +394,6 @@ footer > div {
         order: 1;
     }
 
-    .perspective-links {
-        order: 2;
-        margin-top: 0;
-    }
-
     nav {
         order: 3;
         width: 100%;
@@ -402,11 +406,6 @@ footer > div {
         box-sizing: border-box;
     }
 
-    footer {
-        width: 100%;
-        padding: 0 10px;
-        box-sizing: border-box;
-    }
 }
 
 @media (max-width: 600px) {
@@ -427,11 +426,6 @@ footer > div {
         order: 1;
     }
 
-    .perspective-links {
-        order: 2;
-        margin-top: 0;
-    }
-
     nav {
         order: 3;
         width: 100%;
@@ -442,10 +436,11 @@ footer > div {
         display: flex;
         flex-direction: column;
         margin-bottom: 20px; 
+        padding-top: 36px;
     }
 
     .hero-right {
-        padding: 20px;
+        padding: 0;
     }
 
     .highlights > div {
@@ -455,13 +450,20 @@ footer > div {
     }
 
     .highlights > div > div:nth-child(2) {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(220px, 78%);
+        grid-template-columns: none;
         gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
     }
 
     .highlights > div > div:nth-child(2) > div {
         padding-bottom: 20px;
+        scroll-snap-align: start;
     }
 
     .highlights > div > div:nth-child(1) {
@@ -469,14 +471,19 @@ footer > div {
     }
 
     .more {
-        align-self: flex-end; 
+        align-self: flex-end;
+        width: 78px;
+        padding: 7px;
+    }
+
+    .more-btn {
+        font-size: 15px;
     }
 
     .contact {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        height: auto;
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 20px;
     }
 
     .contact > div {
@@ -488,13 +495,13 @@ footer > div {
         flex-direction: column;
     }
 
-    .socials {
-        display: flex;
-        flex-direction: column;
-    }
-
     .contact-info, .social {
         margin: 0;
+    }
+
+    .socials {
+        justify-self: stretch;
+        min-width: 0;
     }
 
     .timeline-cards > div {

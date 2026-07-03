@@ -77,6 +77,15 @@ html[data-theme="dark"] main.admin-main {
     background: #23272f;
 }
 
+html[data-theme="dark"] nav img {
+    filter: invert(77%) sepia(7%) saturate(441%) hue-rotate(174deg) brightness(92%) contrast(87%);
+    opacity: 0.88;
+}
+
+html[data-theme="dark"] nav img:hover {
+    opacity: 1;
+}
+
 html[data-theme="dark"] .contact,
 html[data-theme="dark"] side {
     background: #1b1f26;
@@ -93,13 +102,27 @@ html[data-theme="dark"] .social_icons a {
 }
 
 html[data-theme="dark"] .social_icons a:hover {
-    background: #23272f;
+    background: #1b1f26;
     color: #d4d8dd;
     opacity: 1;
 }
 
 html[data-theme="dark"] .social_icons img {
     filter: invert(77%) sepia(7%) saturate(441%) hue-rotate(174deg) brightness(92%) contrast(87%);
+}
+
+html[data-theme="dark"] .highlights > div > div:nth-child(2) > div:hover {
+    background: #1b1f26;
+}
+
+html[data-theme="dark"] .contact {
+    background: #1b1f26;
+    color: #d4d8dd;
+}
+
+html[data-theme="dark"] .contact-details,
+html[data-theme="dark"] .socials {
+    color: #aeb6c0;
 }
 
 @media (max-width: 900px) {
