@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="admin-auth-pending">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +21,7 @@
     <script src="scripts/theme-toggle.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheets/theme-toggle.css">
 </head>
+
 <body>
     <div class="navbar">
         <a href="#" class="sitename"><span class="red-text">Bennies</span>lab</a>
@@ -30,38 +32,52 @@
             <a href="profile.html"><img src="src/cv.png" alt="Profile"></a>
         </nav>
         <div class="theme-toggle-wrapper">
-    <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
-        <span class="theme-toggle__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
-        </span>
-        <span class="theme-toggle__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3Z"></path></svg>
-        </span>
-    </button>
-</div>
+            <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+                <span class="theme-toggle__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2"></path>
+                        <path d="M12 20v2"></path>
+                        <path d="m4.93 4.93 1.41 1.41"></path>
+                        <path d="m17.66 17.66 1.41 1.41"></path>
+                        <path d="M2 12h2"></path>
+                        <path d="M20 12h2"></path>
+                        <path d="m6.34 17.66-1.41 1.41"></path>
+                        <path d="m19.07 4.93-1.41 1.41"></path>
+                    </svg>
+                </span>
+                <span class="theme-toggle__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3Z"></path>
+                    </svg>
+                </span>
+            </button>
+        </div>
     </div>
     <div class="content-wrapper">
         <side>
-            <div class="admin-tab active-tab" data-tab="creation-center">
-                <img src="src/creation-center.png" alt="Creation Center" class="admin-icon">
+            <button type="button" class="admin-tab active-tab" data-tab="creation-center">
+                <img src="src/creation-center.png" alt="" class="admin-icon">
                 <span class="admin-tab-text">Creation Center</span>
-            </div>
-            <div class="admin-tab" data-tab="profile-editor">
-                <img src="src/profile-editor.png" alt="Profile Editor" class="admin-icon">
+            </button>
+            <button type="button" class="admin-tab" data-tab="profile-editor">
+                <img src="src/profile-editor.png" alt="" class="admin-icon">
                 <span class="admin-tab-text">Profile Editor</span>
-            </div>
-            <div class="admin-tab" data-tab="media-library">
-                <img src="src/media-library.png" alt="Media Library" class="admin-icon">
+            </button>
+            <button type="button" class="admin-tab" data-tab="media-library">
+                <img src="src/media-library.png" alt="" class="admin-icon">
                 <span class="admin-tab-text">Media Library</span>
-            </div>
-            <div class="admin-tab" data-tab="drafts">
-                <img src="src/Drafts.png" alt="Drafts" class="admin-icon">
+            </button>
+            <button type="button" class="admin-tab" data-tab="drafts">
+                <img src="src/drafts.png" alt="" class="admin-icon">
                 <span class="admin-tab-text">Drafts</span>
-            </div>
-            <div class="admin-tab" data-tab="analytics">
-                <img src="src/analytics.png" alt="Analytics" class="admin-icon">
+            </button>
+            <button type="button" class="admin-tab" data-tab="analytics">
+                <img src="src/analytics.png" alt="" class="admin-icon">
                 <span class="admin-tab-text">Analytics</span>
-            </div>
+            </button>
             <div class="logout">
                 <button id="logout-button">logout</button>
             </div>
@@ -71,18 +87,18 @@
             <div id="creation-center-content">
                 <h1 class="tab-header">Creation Center</h1>
                 <div class="create">
-                    <div class="create-option" data-type="project">
-                        <img src="src/create.png" alt="Create Project" class="create-icon">
+                    <button type="button" class="create-option" data-type="project">
+                        <img src="src/create.png" alt="" class="create-icon">
                         <span class="create-text">Create Project</span>
-                    </div>
-                    <div class="create-option" data-type="blog">
-                        <img src="src/create.png" alt="Create Blog Post" class="create-icon">
+                    </button>
+                    <button type="button" class="create-option" data-type="blog">
+                        <img src="src/create.png" alt="" class="create-icon">
                         <span class="create-text">Create Blog Post</span>
-                    </div>
-                    <div class="create-option" data-type="skill">
-                        <img src="src/create.png" alt="Create Skill" class="create-icon">
+                    </button>
+                    <button type="button" class="create-option" data-type="skill">
+                        <img src="src/create.png" alt="" class="create-icon">
                         <span class="create-text">Create Skill</span>
-                    </div>
+                    </button>
                 </div>
                 <h1 class="tab-header" style="margin-top: 40px;">Management Center</h1>
                 <div class="manage">
@@ -94,18 +110,33 @@
             <div id="profile-editor-content" style="display: none;">
                 <h1 class="tab-header">Profile Editor</h1>
                 <div class="profile-editor-grid">
-                    <div class="add-option" data-type="education">
-                        <img src="src/add.png" alt="Add Education" class="add-icon">
+                    <button type="button" class="add-option" data-type="education">
+                        <img src="src/add.png" alt="" class="add-icon">
                         <span class="add-text">Add Education</span>
-                    </div>
-                    <div class="add-option" data-type="certificate">
-                        <img src="src/add.png" alt="Add Certificate" class="add-icon">
+                    </button>
+                    <button type="button" class="add-option" data-type="certificate">
+                        <img src="src/add.png" alt="" class="add-icon">
                         <span class="add-text">Add Certificate</span>
-                    </div>
-                    <div class="add-option" data-type="experience">
-                        <img src="src/add.png" alt="Add Experience" class="add-icon">
+                    </button>
+                    <button type="button" class="add-option" data-type="experience">
+                        <img src="src/add.png" alt="" class="add-icon">
                         <span class="add-text">Add Experience</span>
-                    </div>
+                    </button>
+                </div>
+                <div id="media-library-content" style="display: none;">
+                    <h1 class="tab-header">Media Library</h1>
+                    <p class="coming-soon">Media Library is coming soon — browse and manage every uploaded thumbnail
+                        from here.</p>
+                </div>
+                <div id="drafts-content" style="display: none;">
+                    <h1 class="tab-header">Drafts</h1>
+                    <p class="coming-soon">Drafts are coming soon — save posts and projects without publishing them yet.
+                    </p>
+                </div>
+                <div id="analytics-content" style="display: none;">
+                    <h1 class="tab-header">Analytics</h1>
+                    <p class="coming-soon">Analytics is coming soon — view counts and engagement for your projects and
+                        posts will show up here.</p>
                 </div>
             </div>
         </main>
@@ -113,4 +144,5 @@
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src="scripts/admin.js"></script>
 </body>
+
 </html>

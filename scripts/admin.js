@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const creationCenterContent = document.getElementById('creation-center-content');
     const profileEditorContent = document.getElementById('profile-editor-content');
     const adminTabs = document.querySelectorAll('.admin-tab');
+    const mediaLibraryContent = document.getElementById('media-library-content');
+    const draftsContent = document.getElementById('drafts-content');
+    const analyticsContent = document.getElementById('analytics-content');
 
     showTabContent('creation-center');
 
@@ -51,13 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function showTabContent(tabId) {
-        if (tabId === 'creation-center') {
-            creationCenterContent.style.display = 'block';
-            profileEditorContent.style.display = 'none';
-        } else if (tabId === 'profile-editor') {
-            creationCenterContent.style.display = 'none';
-            profileEditorContent.style.display = 'block';
-        }
+        const sections = {
+            'creation-center': creationCenterContent,
+            'profile-editor': profileEditorContent,
+            'media-library': mediaLibraryContent,
+            'drafts': draftsContent,
+            'analytics': analyticsContent
+        };
+
+        Object.entries(sections).forEach(([id, el]) => {
+            if (el) el.style.display = (id === tabId) ? 'block' : 'none';
+        });
     }
 
     function updateActiveTab(activeTab) {
@@ -110,6 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         <input type="file" id="thumbnail-upload" accept="image/*" style="display:none;">
                     </label>
                     <input type="text" id="category-input" placeholder="Category" class="modal-input" required value="${isEditMode ? itemData.category : ''}">
+                    ${type !== 'skill' ? `
+                    <div class="skills-picker-container">
+                        <label class="modal-label">Attach Skills</label>
+                        <div class="skills-checkbox-list" id="skills-checkbox-list">
+                            <p class="skills-loading">Loading skills...</p>
+                        </div>
+                    </div>
+                    ` : ''}
                     <div class="modal-actions">
                         <button id="confirm-save" class="modal-button primary">${isEditMode ? 'Confirm Update' : 'Confirm'}</button>
                         <button id="cancel-modal" class="modal-button secondary">Cancel</button>
@@ -120,6 +135,45 @@ document.addEventListener('DOMContentLoaded', () => {
         mainContentArea.innerHTML = formHtml;
 
         initMarkdownEditorAndModal(type, itemId);
+
+        if (type !== 'skill') {
+            populateSkillsPicker(itemData);
+        }
+    }
+
+    async function populateSkillsPicker(itemData) {
+        const listContainer = document.getElementById('skills-checkbox-list');
+        if (!listContainer) return;
+
+        const token = localStorage.getItem('jwt_token');
+        const existingSkillIds = new Set(
+            (itemData && itemData.skills ? itemData.skills : []).map(skill => skill.id)
+        );
+
+        try {
+            const response = await fetch(`${SERVER_URL}/skills`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error(`Failed to fetch skills: ${response.status}`);
+
+            const skills = await response.json();
+
+            if (skills.length === 0) {
+                listContainer.innerHTML = '<p class="skills-empty">No skills created yet.</p>';
+                return;
+            }
+
+            listContainer.innerHTML = skills.map(skill => `
+            <label class="skill-checkbox-label">
+                <input type="checkbox" name="skill-id" value="${skill.id}" ${existingSkillIds.has(skill.id) ? 'checked' : ''}>
+                ${skill.name}
+            </label>
+        `).join('');
+        } catch (error) {
+            console.error('Error loading skills picker:', error);
+            listContainer.innerHTML = '<p class="skills-error">Could not load skills.</p>';
+        }
     }
 
     function initMarkdownEditorAndModal(type, itemId) {
@@ -207,26 +261,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const payload = {
-        category: categoryInput
-    };
+            category: categoryInput
+        };
 
-    if (thumbnailUrl) {
-        payload.thumbnailUrl = thumbnailUrl;
-    }
+        if (thumbnailUrl) {
+            payload.thumbnailUrl = thumbnailUrl;
+        }
 
-    if (type === 'project' || type === 'skill') {
-        payload.name = titleInput;
-        payload.description = contentBody;
-    } else if (type === 'blog') {
-        payload.title = titleInput;
-        payload.content = contentBody;
-    }
+        if (type === 'project' || type === 'skill') {
+            payload.name = titleInput;
+            payload.description = contentBody;
+        } else if (type === 'blog') {
+            payload.title = titleInput;
+            payload.content = contentBody;
+        }
 
-    const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}`;
-    const method = itemId ? 'PUT' : 'POST';
-    const finalEndpoint = itemId ? `${SERVER_URL}${endpoint}/${itemId}` : `${SERVER_URL}${endpoint}`;
+        if (type !== 'skill') {
+            const checkedBoxes = document.querySelectorAll('input[name="skill-id"]:checked');
+            payload.skillIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value, 10));
+        }
 
-    try {
+        const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}`;
+        const method = itemId ? 'PUT' : 'POST';
+        const finalEndpoint = itemId ? `${SERVER_URL}${endpoint}/${itemId}` : `${SERVER_URL}${endpoint}`;
+
+        try {
             const response = await fetch(finalEndpoint, {
                 method: method,
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -367,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 educationEndDateInput.disabled = true;
             }
         }
-        
+
         const experienceCurrentlyHereCheckbox = document.getElementById('exp-currently-here');
         const experienceEndDateInput = document.getElementById('exp-date-ended');
 
@@ -412,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
             institution: document.getElementById('education-institution').value,
             dateStarted: startDate,
             dateEnded: isCurrentlyHere ? null : endDate,
-            currentlyHere: isCurrentlyHere 
+            currentlyHere: isCurrentlyHere
         };
 
         try {
@@ -461,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("The end date cannot be before the start date.");
             return;
         }
-        
+
         const payload = {
             position: document.getElementById('exp-position').value,
             organization: document.getElementById('exp-organization').value,
@@ -542,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) throw new Error('Failed to fetch item for editing');
 
                 const item = await response.json();
-                
+
                 loadMarkdownForm(type, item, id);
             } catch (error) {
                 console.error('Error fetching item for edit:', error);
@@ -600,7 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 throw new Error('Failed to fetch content');
             }
-            
+
             const items = await response.json();
 
             let listHtml = items.map(item => `
@@ -635,39 +694,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function handleEditClick(event) {
-        const button = event.target;
-        const id = button.dataset.id;
-        const type = button.dataset.type;
-
-        const token = localStorage.getItem('jwt_token');
-        if (!token) {
-            alert("You are not logged in.");
-            window.location.href = 'login.html';
-            return;
-        }
-
-        try {
-            const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}/${id}`;
-            const response = await fetch(`${SERVER_URL}${endpoint}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (!response.ok) throw new Error('Failed to fetch item for editing');
-
-            const item = await response.json();
-            
-            loadMarkdownForm(type, item, id);
-        } catch (error) {
-            console.error('Error fetching item for edit:', error);
-            alert('Could not load item details for editing.');
-        }
-    }
-
-    document.querySelectorAll('.manage-option').forEach(option => {
-        option.addEventListener('click', () => {
-            const type = option.dataset.type;
-            loadManageContent(type);
-        });
-    });
 });
