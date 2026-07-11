@@ -116,7 +116,7 @@ main {
     width: 100%;
 }
 
-.hero > div {
+.hero>div {
     height: 100%;
     border-radius: 7px;
     padding: 0;
@@ -124,7 +124,7 @@ main {
     box-sizing: border-box;
 }
 
-.hero-left > p {
+.hero-left>p {
     font-size: 18px;
 }
 
@@ -187,7 +187,7 @@ main {
     border-radius: 7px;
 }
 
-.highlights > div {
+.highlights>div {
     margin-bottom: 40px;
     padding: 0;
     display: grid;
@@ -196,28 +196,28 @@ main {
     box-sizing: border-box;
 }
 
-.highlights > div > div {
+.highlights>div>div {
     border-radius: 7px;
 }
 
-.highlights > div > div:nth-child(1) {
+.highlights>div>div:nth-child(1) {
     width: 150px;
 }
 
-.highlights > div > div:nth-child(2) {
+.highlights>div>div:nth-child(2) {
     margin-bottom: 10px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 60px;
 }
 
-.highlights > div > div:nth-child(2) > div {
+.highlights>div>div:nth-child(2)>div {
     padding: 5px;
     box-sizing: border-box;
     border-radius: 10px;
 }
 
-.highlights > div > div:nth-child(2) > div:hover {
+.highlights>div>div:nth-child(2)>div:hover {
     background: #eeeeee;
 }
 
@@ -229,12 +229,27 @@ main {
     border-radius: 7px;
 }
 
+.thumbnail-container:has(img) {
+    background: none;
+}
+
 .highlight-thumbnail-img {
     border-radius: 7px;
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+.skill-thumbnail-img {
+    object-fit: contain;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.highlights .cards>div>p {
+    font-weight: 700;
+    margin: 8px 0 0 0;
 }
 
 .more {
@@ -285,13 +300,13 @@ main {
     border-radius: 7px;
 }
 
-.timeline-cards > div {
+.timeline-cards>div {
     width: 45%;
     background: #e8e8e8;
     border-radius: 7px;
 }
 
-.timeline-cards > div:nth-child(even) {
+.timeline-cards>div:nth-child(even) {
     justify-self: end;
 }
 
@@ -352,7 +367,7 @@ main {
     background-color: #3d3d3d;
 }
 
-.contact > div > div {
+.contact>div>div {
     display: flex;
     align-items: center;
     min-height: 30px;
@@ -420,7 +435,7 @@ main {
     .navbar {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
     }
@@ -433,13 +448,13 @@ main {
     nav {
         order: 3;
         width: 100%;
-        margin-top: 10px; 
+        margin-top: 10px;
     }
 
     .hero {
         display: flex;
         flex-direction: column;
-        margin-bottom: 20px; 
+        margin-bottom: 20px;
         padding-top: 36px;
     }
 
@@ -447,13 +462,13 @@ main {
         padding: 0;
     }
 
-    .highlights > div {
+    .highlights>div {
         display: flex;
         flex-direction: column;
         gap: 16px;
     }
 
-    .highlights > div > div:nth-child(2) {
+    .highlights>div>div:nth-child(2) {
         display: grid;
         grid-auto-flow: column;
         grid-auto-columns: 100%;
@@ -465,11 +480,11 @@ main {
         scrollbar-width: none;
     }
 
-    .highlights > div > div:nth-child(2)::-webkit-scrollbar {
+    .highlights>div>div:nth-child(2)::-webkit-scrollbar {
         display: none;
     }
 
-    .highlights > div > div:nth-child(2) > div {
+    .highlights>div>div:nth-child(2)>div {
         padding-bottom: 20px;
         scroll-snap-align: start;
         scroll-snap-stop: always;
@@ -497,7 +512,7 @@ main {
         background: #d20a2e;
     }
 
-    .highlights > div > div:nth-child(1) {
+    .highlights>div>div:nth-child(1) {
         width: 100%;
     }
 
@@ -517,8 +532,8 @@ main {
         padding: 20px;
     }
 
-    .contact > div {
-        margin-bottom: 10px; 
+    .contact>div {
+        margin-bottom: 10px;
     }
 
     .contact-details {
@@ -526,7 +541,8 @@ main {
         flex-direction: column;
     }
 
-    .contact-info, .social {
+    .contact-info,
+    .social {
         margin: 0;
     }
 
@@ -535,11 +551,11 @@ main {
         min-width: 0;
     }
 
-    .timeline-cards > div {
+    .timeline-cards>div {
         width: 100%;
     }
 
-    .timeline-cards > div:nth-child(even) {
+    .timeline-cards>div:nth-child(even) {
         justify-self: start;
     }
 

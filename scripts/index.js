@@ -28,9 +28,9 @@ function formatDateTimeArray(dateTimeArray) {
 
     if (date >= startOfWeek && date <= now) {
         return date.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-               date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
-    
+
     if (date.getFullYear() === now.getFullYear()) {
         return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
     }
@@ -56,7 +56,7 @@ function getPlainTextSnippet(markdownContent, maxLength = 80) {
 
 async function displayHighlights(containerSelector, apiPath, linkPrefix, cardClass, nameKey, contentKey) {
     try {
-        const response = await fetch(`${SERVER_URL}/${apiPath}?limit=3`); 
+        const response = await fetch(`${SERVER_URL}/${apiPath}?limit=3`);
         if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
@@ -74,14 +74,14 @@ async function displayHighlights(containerSelector, apiPath, linkPrefix, cardCla
                 cardDiv.addEventListener('click', () => {
                     window.location.href = `${linkPrefix}?id=${data.id}`;
                 });
-                
+
                 const thumbContainer = document.createElement("div");
                 thumbContainer.classList.add("thumbnail-container");
                 if (data.thumbnailUrl) {
                     const img = document.createElement("img");
                     img.src = data.thumbnailUrl;
                     img.alt = data[nameKey] + " thumbnail";
-                    img.classList.add("highlight-thumbnail-img");
+                    img.classList.add("highlight-thumbnail-img", `${cardClass}-thumbnail-img`);
                     thumbContainer.appendChild(img);
                 }
 
@@ -91,7 +91,7 @@ async function displayHighlights(containerSelector, apiPath, linkPrefix, cardCla
 
                 cardDiv.appendChild(thumbContainer);
                 cardDiv.appendChild(cardName);
-                
+
             } else {
                 cardDiv.innerHTML = '<div class="thumbnail-container"></div><p>Coming Soon...</p>';
             }

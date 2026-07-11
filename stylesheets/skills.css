@@ -140,10 +140,9 @@ nav img:hover {
 }
 
 .skill-thumbnail img {
-    width: 100%;
-    height: 100%;
-    border-radius: 7px;
-    object-fit: cover;
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
     display: block;
 }
 
