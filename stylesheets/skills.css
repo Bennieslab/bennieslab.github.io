@@ -114,6 +114,7 @@ nav img:hover {
 }
 
 .skill {
+    position: relative;
     aspect-ratio: 1 / 1;
     border-radius: 10px;
     padding: 5px;
@@ -185,6 +186,45 @@ footer {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
     }
+}
+
+.admin-item-controls {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+}
+
+.admin-control-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #3d3d3d;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.admin-control-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.admin-edit-btn:hover {
+    background: #3d3d3d;
+    color: #fff;
+}
+
+.admin-delete-btn:hover {
+    background: #d20a2e;
+    color: #fff;
 }
 
 @media (max-width: 600px) {

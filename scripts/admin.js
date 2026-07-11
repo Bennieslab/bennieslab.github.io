@@ -17,7 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const draftsContent = document.getElementById('drafts-content');
     const analyticsContent = document.getElementById('analytics-content');
 
-    showTabContent('creation-center');
+    const urlParams = new URLSearchParams(window.location.search);
+    const deepLinkType = urlParams.get('edit');
+    const deepLinkId = urlParams.get('id');
+
+    if (deepLinkType && deepLinkId) {
+        loadItemForDeepEdit(deepLinkType, deepLinkId, token);
+    } else {
+        showTabContent('creation-center');
+    }
 
     adminTabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -70,6 +78,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateActiveTab(activeTab) {
         adminTabs.forEach(tab => tab.classList.remove('active-tab'));
         activeTab.classList.add('active-tab');
+    }
+
+    async function loadItemForDeepEdit(type, id, token) {
+        try {
+            const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}/${id}`;
+            const response = await fetch(`${SERVER_URL}${endpoint}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch item for editing');
+
+            const item = await response.json();
+            loadMarkdownForm(type, item, id);
+        } catch (error) {
+            console.error('Error loading item from deep link:', error);
+            alert('Could not load the requested item for editing.');
+        }
     }
 
     function loadMarkdownForm(type, itemData = null, itemId = null) {

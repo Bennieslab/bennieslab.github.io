@@ -1,4 +1,5 @@
 const SERVER_URL = "https://bennieslab-backend.onrender.com";
+const isAdmin = !!localStorage.getItem('jwt_token');
 
 function formatDateTimeArray(dateTimeArray) {
     if (!dateTimeArray || dateTimeArray.length < 6) {
@@ -13,7 +14,7 @@ function formatDateTimeArray(dateTimeArray) {
     const seconds = dateTimeArray[5];
 
     const skillDate = new Date(year, month, day, hours, minutes, seconds);
-    const now = new Date(); 
+    const now = new Date();
 
     const diffMs = now.getTime() - skillDate.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
@@ -28,9 +29,9 @@ function formatDateTimeArray(dateTimeArray) {
 
     if (skillDate >= startOfWeek && skillDate <= now) {
         return skillDate.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-               skillDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            skillDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
-    
+
     if (skillDate.getFullYear() === now.getFullYear()) {
         return skillDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
     }
@@ -78,12 +79,16 @@ async function displaySkill() {
     const skill = await fetchSkill(skillId);
 
     if (skill) {
+        if (isAdmin) {
+            document.body.appendChild(buildAdminFab('skill', skill.id));
+        }
+
         pageTitleElement.textContent = skill.name;
         skillTitleElement.textContent = skill.name;
         skillCategoryElement.textContent = skill.category;
         datePostedElement.textContent = "Posted: " + formatDateTimeArray(skill.datePosted);
         lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(skill.lastUpdated);
-        
+
         if (skill.thumbnailUrl) {
             skillDetailThumbnail.src = skill.thumbnailUrl;
             skillDetailThumbnail.style.display = 'block';
@@ -97,6 +102,54 @@ async function displaySkill() {
         skillContentElement.innerHTML = "<p>The requested skill could not be loaded.</p>";
         pageTitleElement.textContent = "Error";
     }
+}
+
+function buildAdminFab(type, id) {
+    const fab = document.createElement('div');
+    fab.classList.add('admin-fab-controls');
+
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.classList.add('admin-fab-btn', 'admin-fab-edit');
+    editBtn.setAttribute('aria-label', 'Edit');
+    editBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>`;
+    editBtn.addEventListener('click', () => {
+        window.location.href = `admin.html?edit=${type}&id=${id}`;
+    });
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.classList.add('admin-fab-btn', 'admin-fab-delete');
+    deleteBtn.setAttribute('aria-label', 'Delete');
+    deleteBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>`;
+    deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Delete this skill? This cannot be undone.')) return;
+
+        const token = localStorage.getItem('jwt_token');
+        try {
+            const response = await fetch(`${SERVER_URL}/skills/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.status === 401) {
+                alert('Your session has expired. Please log in again through the admin panel.');
+                return;
+            }
+
+            if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
+
+            alert('Skill deleted.');
+            window.location.href = 'skills.html';
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            alert('Could not delete this item.');
+        }
+    });
+
+    fab.appendChild(editBtn);
+    fab.appendChild(deleteBtn);
+    return fab;
 }
 
 document.addEventListener('DOMContentLoaded', displaySkill);
