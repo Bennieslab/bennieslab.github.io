@@ -520,3 +520,12 @@ main.admin-main {
 .skills-error {
     color: #d20a2e;
 }
+
+.thumbnail-divider {
+    text-align: center;
+    color: #999;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 2px 0;
+}

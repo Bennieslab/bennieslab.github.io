@@ -116,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span id="file-name-display">${isEditMode ? (itemData.thumbnailUrl ? 'Thumbnail already exists' : 'Choose New Thumbnail') : 'Choose Thumbnail Image'}</span>
                         <input type="file" id="thumbnail-upload" accept="image/*" style="display:none;">
                     </label>
+                    <div class="thumbnail-divider">or</div>
+                    <input type="url" id="thumbnail-url-input" placeholder="Paste an image URL instead" class="modal-input">
                     <input type="text" id="category-input" placeholder="Category" class="modal-input" required value="${isEditMode ? itemData.category : ''}">
                     ${type !== 'skill' ? `
                     <div class="skills-picker-container">
@@ -193,8 +195,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const fileNameDisplay = document.getElementById('file-name-display');
 
 
+        const thumbnailUrlInput = document.getElementById('thumbnail-url-input');
+
         thumbnailUploadInput.addEventListener('change', (e) => {
             fileNameDisplay.textContent = e.target.files[0] ? e.target.files[0].name : "Choose Thumbnail Image";
+            if (e.target.files[0]) {
+                thumbnailUrlInput.value = '';
+            }
+        });
+
+        thumbnailUrlInput.addEventListener('input', () => {
+            if (thumbnailUrlInput.value.trim()) {
+                thumbnailUploadInput.value = '';
+                fileNameDisplay.textContent = "Choose Thumbnail Image";
+            }
         });
 
         saveButton.addEventListener('click', () => {
@@ -232,8 +246,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const thumbnailUrlInput = document.getElementById('thumbnail-url-input');
+        const pastedUrl = thumbnailUrlInput ? thumbnailUrlInput.value.trim() : '';
+
         let thumbnailUrl = null;
-        if (file) {
+        if (pastedUrl) {
+            thumbnailUrl = pastedUrl;
+        } else if (file) {
             try {
                 const formData = new FormData();
                 formData.append('file', file);
