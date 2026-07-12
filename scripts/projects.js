@@ -179,7 +179,7 @@ function buildAdminControls(type, id) {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            if (response.status === 401) {
+            if (response.status === 401 || response.status === 403) {
                 alert('Your session has expired. Please log in again through the admin panel.');
                 return;
             }

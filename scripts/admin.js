@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="modal-content">
                     <h2>${isEditMode ? 'Update Details' : 'Add Details'}</h2>
                     <label for="thumbnail-upload" class="file-label">
-                        <img src="src/image-icon.png" alt="Upload Icon" class="upload-icon">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; margin-right: 8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                         <span id="file-name-display">${isEditMode ? (itemData.thumbnailUrl ? 'Thumbnail already exists' : 'Choose New Thumbnail') : 'Choose Thumbnail Image'}</span>
                         <input type="file" id="thumbnail-upload" accept="image/*" style="display:none;">
                     </label>
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: formData,
                 });
 
-                if (response.status === 401) {
+                if (response.status === 401 || response.status === 403) {
                     alert("Your session has expired. Please log in again.");
                     localStorage.removeItem('jwt_token');
                     window.location.href = 'login.html';
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(payload),
             });
 
-            if (response.status === 401) {
+            if (response.status === 401 || response.status === 403) {
                 alert("Your session has expired. Please log in again.");
                 localStorage.removeItem('jwt_token');
                 window.location.href = 'login.html';
@@ -598,7 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify(payload),
         });
 
-        if (response.status === 401) {
+        if (response.status === 401 || response.status === 403) {
             alert("Your session has expired. Please log in again.");
             localStorage.removeItem('jwt_token');
             window.location.href = 'login.html';
@@ -695,7 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                if (response.status === 401) {
+                if (response.status === 401 || response.status === 403) {
                     alert("Your session has expired. Please log in again.");
                     localStorage.removeItem('jwt_token');
                     window.location.href = 'login.html';
