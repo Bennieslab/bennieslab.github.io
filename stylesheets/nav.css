@@ -1,0 +1,79 @@
+.navbar nav {
+    align-items: center;
+}
+
+.navbar nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #3d3d3d;
+    line-height: 0;
+    text-decoration: none;
+}
+
+.navbar nav a svg {
+    width: 30px;
+    height: 30px;
+    stroke: currentColor;
+    transition: color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.navbar nav a:hover,
+.navbar nav a:focus-visible,
+.navbar nav a.active-link {
+    color: #d20a2e;
+}
+
+.navbar nav a:hover svg,
+.navbar nav a:focus-visible svg {
+    opacity: 1;
+    transform: translateY(-1px) scale(1.08);
+}
+
+.navbar nav a .nav-label {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    z-index: 5;
+    padding: 6px 9px;
+    border-radius: 6px;
+    background: #3d3d3d;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -4px) scale(0.96);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    white-space: nowrap;
+}
+
+.navbar nav a .nav-label::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    width: 8px;
+    height: 8px;
+    background: #3d3d3d;
+    transform: translate(-50%, 50%) rotate(45deg);
+}
+
+.navbar nav a:hover .nav-label,
+.navbar nav a:focus-visible .nav-label {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+}
+
+html[data-theme="dark"] .navbar nav a {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .navbar nav a:hover,
+html[data-theme="dark"] .navbar nav a:focus-visible,
+html[data-theme="dark"] .navbar nav a.active-link {
+    color: #d20a2e;
+}

@@ -10,15 +10,18 @@
         <link rel="stylesheet" type="text/css" href="stylesheets/index.css">
         <script src="scripts/theme-toggle.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheets/theme-toggle.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/nav.css">
+    <script src="scripts/nav.js" defer></script>
 </head>
     <body>
         <div class="navbar">
             <a href="index.html" class="sitename"><span class="red-text">Bennies</span>lab</a>
             <nav>
-                <a href="index.html" class="active-link"><img src="src/home.png" alt="Home icon"></a>
-                <a href="projects.html"><img src="src/folder.png" alt="Projects icon"></a>
-                <a href="blogs.html"><img src="src/pen.png" alt="Blogs icon"></a>
-                <a href="profile.html"><img src="src/cv.png" alt="Profile icon"></a>
+                <a href="index.html" class="active-link" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 9-8 9 8"></path><path d="M5 10v10h14V10"></path><path d="M9 20v-6h6v6"></path></svg><span class="nav-label">Home</span></a>
+                <a href="projects.html" aria-label="Projects"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span class="nav-label">Projects</span></a>
+                <a href="blogs.html" aria-label="Blogs"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg><span class="nav-label">Blogs</span></a>
+                <a href="skills.html" aria-label="Skills"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5a3 3 0 1 0-5.99.13A4 4 0 0 0 5 13a4 4 0 0 0 1 7.87A3 3 0 0 0 12 19Z"></path><path d="M12 5a3 3 0 1 1 5.99.13A4 4 0 0 1 19 13a4 4 0 0 1-1 7.87A3 3 0 0 1 12 19Z"></path><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"></path><path d="M17.5 10.5c.8.8 1.5 1.8 1.5 3.5"></path><path d="M6.5 10.5C5.7 11.3 5 12.3 5 14"></path></svg><span class="nav-label">Skills</span></a>
+                <a href="profile.html" aria-label="Profile"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"></path><path d="M9 6h6"></path><path d="M9 10h6"></path><path d="M9 14h3"></path></svg><span class="nav-label">Profile</span></a>
             </nav>
             <div class="theme-toggle-wrapper">
     <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
