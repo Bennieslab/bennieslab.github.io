@@ -4,6 +4,7 @@ const isAdmin = !!localStorage.getItem('jwt_token');
 const PAGE_SIZE = 6;
 let currentPage = 0;
 let totalPages = 1;
+let pageLoading = false;
 
 async function fetchPosts(page = 0, size = PAGE_SIZE) {
     try {
@@ -205,16 +206,27 @@ function renderPagination(currentPg, totalPgs) {
 }
 
 async function loadPage(page) {
+    if (pageLoading) return;
+    pageLoading = true;
+    const paginationContainer = document.getElementById("pagination-blog");
+    const loader = window.showActionLoader
+        ? showActionLoader(paginationContainer, { placement: 'inside', variant: 'inline', disable: false })
+        : null;
     currentPage = page;
-    const data = await fetchPosts(page, PAGE_SIZE);
-    if (!data) {
-        document.querySelector(".blog-posts").innerHTML = "<p>Error loading posts.</p>";
-        return;
+    try {
+        const data = await fetchPosts(page, PAGE_SIZE);
+        if (!data) {
+            document.querySelector(".blog-posts").innerHTML = "<p>Error loading posts.</p>";
+            return;
+        }
+        totalPages = data.totalPages;
+        renderPosts(data.content);
+        renderPagination(currentPage, totalPages);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+        if (loader) loader.hide();
+        pageLoading = false;
     }
-    totalPages = data.totalPages;
-    renderPosts(data.content);
-    renderPagination(currentPage, totalPages);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function buildAdminControls(type, id) {

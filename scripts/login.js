@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+        const loader = window.showActionLoader
+            ? showActionLoader(submitButton, { placement: 'inside', variant: 'button' })
+            : null;
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
@@ -38,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             loginError.style.display = 'block';
             console.error('An error occurred:', error);
+        } finally {
+            if (loader) loader.hide();
         }
     });
 });

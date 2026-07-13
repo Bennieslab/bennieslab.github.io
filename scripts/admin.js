@@ -281,6 +281,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const thumbnailUrlInput = document.getElementById('thumbnail-url-input');
         const pastedUrl = thumbnailUrlInput ? thumbnailUrlInput.value.trim() : '';
+        const confirmSaveButton = document.getElementById('confirm-save');
+        const saveLoader = window.showActionLoader
+            ? showActionLoader(confirmSaveButton, { placement: 'inside', variant: 'button' })
+            : null;
 
         let thumbnailUrl = null;
         if (pastedUrl) {
@@ -298,6 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.status === 401 || response.status === 403) {
                     alert("Your session has expired. Please log in again.");
                     localStorage.removeItem('jwt_token');
+                    if (saveLoader) saveLoader.hide();
                     window.location.href = 'login.html';
                     return;
                 }
@@ -308,6 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Upload Error:', error);
                 alert('Error uploading thumbnail. Please try again.');
+                if (saveLoader) saveLoader.hide();
                 return;
             }
         }
@@ -363,6 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Content Save Error:', error);
             alert('Error saving content. Please try again.');
+        } finally {
+            if (saveLoader) saveLoader.hide();
         }
     }
 
@@ -602,25 +610,34 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error('Invalid post data type');
         }
 
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify(payload),
-        });
+        const submitButton = mainContentArea.querySelector('form .submit-button');
+        const loader = window.showActionLoader
+            ? showActionLoader(submitButton, { placement: 'inside', variant: 'button' })
+            : null;
 
-        if (response.status === 401 || response.status === 403) {
-            alert("Your session has expired. Please log in again.");
-            localStorage.removeItem('jwt_token');
-            window.location.href = 'login.html';
-            return;
-        }
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload),
+            });
 
-        if (response.ok) {
-            alert(`${type.charAt(0).toUpperCase() + type.slice(1)} saved successfully!`);
-            location.reload();
-        } else {
-            const error = await response.text();
-            throw new Error(`Save failed: ${response.status} - ${error}`);
+            if (response.status === 401 || response.status === 403) {
+                alert("Your session has expired. Please log in again.");
+                localStorage.removeItem('jwt_token');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (response.ok) {
+                alert(`${type.charAt(0).toUpperCase() + type.slice(1)} saved successfully!`);
+                location.reload();
+            } else {
+                const error = await response.text();
+                throw new Error(`Save failed: ${response.status} - ${error}`);
+            }
+        } finally {
+            if (loader) loader.hide();
         }
     }
 
