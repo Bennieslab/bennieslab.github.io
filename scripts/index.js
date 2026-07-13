@@ -56,7 +56,7 @@ function getPlainTextSnippet(markdownContent, maxLength = 80) {
 
 async function displayHighlights(containerSelector, apiPath, linkPrefix, cardClass, nameKey, contentKey) {
     try {
-        const response = await fetch(`${SERVER_URL}/${apiPath}?limit=3`);
+        const response = await fetch(`${SERVER_URL}/${apiPath}?page=0&size=3`);
         if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }

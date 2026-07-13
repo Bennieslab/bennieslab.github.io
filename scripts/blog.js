@@ -1,19 +1,20 @@
 const SERVER_URL = "https://bennieslab-backend.onrender.com";
 const isAdmin = !!localStorage.getItem('jwt_token');
 
-async function fetchPosts() {
-    try {
-        let response = await fetch(`${SERVER_URL}/blog`);
-        let postsData = await response.json();
+const PAGE_SIZE = 6;
+let currentPage = 0;
+let totalPages = 1;
 
+async function fetchPosts(page = 0, size = PAGE_SIZE) {
+    try {
+        let response = await fetch(`${SERVER_URL}/blog?page=${page}&size=${size}`);
         if (!response.ok) {
             throw new Error(`HTTP error. status: ${response.status}`);
         }
-
-        return postsData;
+        return await response.json(); // Spring Page<PostDto>
     } catch (error) {
         console.error("Error fetching data:", error);
-        return [];
+        return null;
     }
 }
 
@@ -72,82 +73,148 @@ function getPlainTextSnippet(markdownContent, maxLength = 120) {
     return plainText;
 }
 
-async function displayPosts() {
+function renderPosts(posts) {
     let postsContainer = document.querySelector(".blog-posts");
-    if (postsContainer) {
-        postsContainer.innerHTML = "";
-
-        try {
-            let postsData = await fetchPosts();
-
-            if (!postsData || postsData.length === 0) {
-                postsContainer.innerHTML = "<p>No blog posts to display yet.</p>";
-                return;
-            }
-
-            postsData.forEach(post => {
-                let postDiv = document.createElement("div");
-                postDiv.classList.add("blog-post");
-                postDiv.addEventListener('click', () => {
-                    window.location.href = `blog-post-detail.html?id=${post.id}`;
-                });
-
-                let postThumbnail = document.createElement("div");
-                postThumbnail.classList.add("thumbnail-container");
-                
-                if (post.thumbnailUrl) {
-                    let img = document.createElement("img");
-                    img.src = post.thumbnailUrl;
-                    img.alt = post.title + " thumbnail";
-                    img.classList.add("post-thumbnail-img");
-                    postThumbnail.appendChild(img);
-                }
-
-                let postMetadata = document.createElement("div");
-                postMetadata.classList.add("metadata");
-
-                let postTitleElement = document.createElement("h2");
-                let postContentElement = document.createElement("p");
-                let postCategoryElement = document.createElement("span");
-                let datePostedElement = document.createElement("span");
-                let lastUpdateElement = document.createElement("span");
-
-                postTitleElement.classList.add("post-title");
-                postContentElement.classList.add("post-content");
-                postCategoryElement.classList.add("category");
-                datePostedElement.classList.add("date-posted");
-                lastUpdateElement.classList.add("last-updated");
-
-                postTitleElement.textContent = post.title;
-                postContentElement.textContent = getPlainTextSnippet(post.content, 120);
-                postCategoryElement.textContent = post.category;
-
-                datePostedElement.textContent = "Posted: " + formatDateTimeArray(post.datePosted);
-                lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(post.lastUpdated);
-
-                postMetadata.appendChild(postTitleElement);
-                postMetadata.appendChild(postContentElement);
-                postMetadata.appendChild(postCategoryElement);
-                postMetadata.appendChild(datePostedElement);
-                postMetadata.appendChild(document.createElement("br"));
-                postMetadata.appendChild(lastUpdateElement);
-
-                postDiv.appendChild(postThumbnail);
-                postDiv.appendChild(postMetadata);
-
-                if (isAdmin) {
-                    postDiv.appendChild(buildAdminControls('blog', post.id));
-                }
-
-                postsContainer.appendChild(postDiv);
-            });
-        } catch (error) {
-            console.error("Error displaying posts:", error);
-            postsContainer.innerHTML = "<p>Error loading posts.</p>";
-        }
-    } else {
+    if (!postsContainer) {
         console.error("No element with class 'blog-posts' found.");
+        return;
     }
+    postsContainer.innerHTML = "";
+
+    if (!posts || posts.length === 0) {
+        postsContainer.innerHTML = "<p>No blog posts to display yet.</p>";
+        return;
+    }
+
+    posts.forEach(post => {
+        let postDiv = document.createElement("div");
+        postDiv.classList.add("blog-post");
+        if (post.pinned) postDiv.classList.add("pinned-item");
+        postDiv.addEventListener('click', () => {
+            window.location.href = `blog-post-detail.html?id=${post.id}`;
+        });
+
+        let postThumbnail = document.createElement("div");
+        postThumbnail.classList.add("thumbnail-container");
+        
+        if (post.thumbnailUrl) {
+            let img = document.createElement("img");
+            img.src = post.thumbnailUrl;
+            img.alt = post.title + " thumbnail";
+            img.classList.add("post-thumbnail-img");
+            postThumbnail.appendChild(img);
+        }
+
+        let postMetadata = document.createElement("div");
+        postMetadata.classList.add("metadata");
+
+        let postTitleElement = document.createElement("h2");
+        let postContentElement = document.createElement("p");
+        let postCategoryElement = document.createElement("span");
+        let datePostedElement = document.createElement("span");
+        let lastUpdateElement = document.createElement("span");
+
+        postTitleElement.classList.add("post-title");
+        postContentElement.classList.add("post-content");
+        postCategoryElement.classList.add("category");
+        datePostedElement.classList.add("date-posted");
+        lastUpdateElement.classList.add("last-updated");
+
+        postTitleElement.textContent = post.title;
+        if (post.pinned) {
+            const pin = document.createElement("span");
+            pin.classList.add("pin-badge");
+            pin.textContent = "📌";
+            postTitleElement.prepend(pin);
+        }
+        postContentElement.textContent = getPlainTextSnippet(post.content, 120);
+        postCategoryElement.textContent = post.category;
+
+        datePostedElement.textContent = "Posted: " + formatDateTimeArray(post.datePosted);
+        lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(post.lastUpdated);
+
+        postMetadata.appendChild(postTitleElement);
+        postMetadata.appendChild(postContentElement);
+        postMetadata.appendChild(postCategoryElement);
+        postMetadata.appendChild(datePostedElement);
+        postMetadata.appendChild(document.createElement("br"));
+        postMetadata.appendChild(lastUpdateElement);
+
+        postDiv.appendChild(postThumbnail);
+        postDiv.appendChild(postMetadata);
+
+        if (isAdmin) {
+            postDiv.appendChild(buildAdminControls('blog', post.id));
+        }
+
+        postsContainer.appendChild(postDiv);
+    });
+}
+
+function renderPagination(currentPg, totalPgs) {
+    const container = document.getElementById("pagination-blog");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (totalPgs <= 1) return;
+
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "← Previous";
+    prevBtn.disabled = currentPg === 0;
+    prevBtn.id = "page-prev";
+    prevBtn.addEventListener("click", () => loadPage(currentPg - 1));
+    container.appendChild(prevBtn);
+
+    const maxButtons = 5;
+    let startPage = Math.max(0, currentPg - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPgs - 1, startPage + maxButtons - 1);
+    if (endPage - startPage < maxButtons - 1) {
+        startPage = Math.max(0, endPage - maxButtons + 1);
+    }
+
+    if (startPage > 0) {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "…";
+        ellipsis.classList.add("pagination-ellipsis");
+        container.appendChild(ellipsis);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i + 1;
+        pageBtn.id = `page-btn-${i}`;
+        if (i === currentPg) pageBtn.classList.add("active");
+        const pageIndex = i;
+        pageBtn.addEventListener("click", () => loadPage(pageIndex));
+        container.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPgs - 1) {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "…";
+        ellipsis.classList.add("pagination-ellipsis");
+        container.appendChild(ellipsis);
+    }
+
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next →";
+    nextBtn.disabled = currentPg >= totalPgs - 1;
+    nextBtn.id = "page-next";
+    nextBtn.addEventListener("click", () => loadPage(currentPg + 1));
+    container.appendChild(nextBtn);
+}
+
+async function loadPage(page) {
+    currentPage = page;
+    const data = await fetchPosts(page, PAGE_SIZE);
+    if (!data) {
+        document.querySelector(".blog-posts").innerHTML = "<p>Error loading posts.</p>";
+        return;
+    }
+    totalPages = data.totalPages;
+    renderPosts(data.content);
+    renderPagination(currentPage, totalPages);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function buildAdminControls(type, id) {
@@ -187,7 +254,7 @@ function buildAdminControls(type, id) {
 
             if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
 
-            location.reload();
+            loadPage(currentPage);
         } catch (error) {
             console.error('Error deleting item:', error);
             alert('Could not delete this item.');
@@ -199,4 +266,4 @@ function buildAdminControls(type, id) {
     return controls;
 }
 
-displayPosts();
+loadPage(0);

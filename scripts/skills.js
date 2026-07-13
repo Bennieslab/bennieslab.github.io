@@ -1,24 +1,32 @@
 const SERVER_URL = "https://bennieslab-backend.onrender.com";
 const isAdmin = !!localStorage.getItem('jwt_token');
 
-async function fetchAllSkills() {
+const PAGE_SIZE = 12;
+let currentPage = 0;
+let totalPages = 1;
+
+async function fetchSkills(page = 0, size = PAGE_SIZE) {
     try {
-        const response = await fetch(`${SERVER_URL}/skills`);
+        const response = await fetch(`${SERVER_URL}/skills?page=${page}&size=${size}`);
         if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
-        return await response.json();
+        return await response.json(); // Spring Page<SkillDto>
     } catch (error) {
         console.error("Error fetching skills: ", error);
-        return [];
+        return null;
     }
 }
 
 function renderSkills(skills) {
     const skillsContainer = document.querySelector(".skills");
+    if (!skillsContainer) {
+        console.error("No element with class 'skills' found.");
+        return;
+    }
     skillsContainer.innerHTML = '';
 
-    if (skills.length === 0) {
+    if (!skills || skills.length === 0) {
         skillsContainer.innerHTML = "<p>No skills found.</p>";
         return;
     }
@@ -26,6 +34,7 @@ function renderSkills(skills) {
     skills.forEach(skill => {
         let skillDiv = document.createElement("div");
         skillDiv.classList.add("skill");
+        if (skill.pinned) skillDiv.classList.add("pinned-item");
         skillDiv.addEventListener('click', () => {
             window.location.href = `skill-detail.html?id=${skill.id}`;
         });
@@ -42,6 +51,12 @@ function renderSkills(skills) {
 
         let skillName = document.createElement("h3");
         skillName.textContent = skill.name;
+        if (skill.pinned) {
+            const pin = document.createElement("span");
+            pin.classList.add("pin-badge");
+            pin.textContent = "📌";
+            skillName.prepend(pin);
+        }
 
         skillDiv.appendChild(skillThumbnail);
         skillDiv.appendChild(skillName);
@@ -54,9 +69,70 @@ function renderSkills(skills) {
     });
 }
 
-async function displayAllSkills() {
-    const allSkills = await fetchAllSkills();
-    renderSkills(allSkills);
+function renderPagination(currentPg, totalPgs) {
+    const container = document.getElementById("pagination-skills");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (totalPgs <= 1) return;
+
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "← Previous";
+    prevBtn.disabled = currentPg === 0;
+    prevBtn.id = "page-prev";
+    prevBtn.addEventListener("click", () => loadPage(currentPg - 1));
+    container.appendChild(prevBtn);
+
+    const maxButtons = 5;
+    let startPage = Math.max(0, currentPg - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPgs - 1, startPage + maxButtons - 1);
+    if (endPage - startPage < maxButtons - 1) {
+        startPage = Math.max(0, endPage - maxButtons + 1);
+    }
+
+    if (startPage > 0) {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "…";
+        ellipsis.classList.add("pagination-ellipsis");
+        container.appendChild(ellipsis);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i + 1;
+        pageBtn.id = `page-btn-${i}`;
+        if (i === currentPg) pageBtn.classList.add("active");
+        const pageIndex = i;
+        pageBtn.addEventListener("click", () => loadPage(pageIndex));
+        container.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPgs - 1) {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "…";
+        ellipsis.classList.add("pagination-ellipsis");
+        container.appendChild(ellipsis);
+    }
+
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next →";
+    nextBtn.disabled = currentPg >= totalPgs - 1;
+    nextBtn.id = "page-next";
+    nextBtn.addEventListener("click", () => loadPage(currentPg + 1));
+    container.appendChild(nextBtn);
+}
+
+async function loadPage(page) {
+    currentPage = page;
+    const data = await fetchSkills(page, PAGE_SIZE);
+    if (!data) {
+        document.querySelector(".skills").innerHTML = "<p>Error loading skills.</p>";
+        return;
+    }
+    totalPages = data.totalPages;
+    renderSkills(data.content);
+    renderPagination(currentPage, totalPages);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function buildAdminControls(type, id) {
@@ -96,7 +172,7 @@ function buildAdminControls(type, id) {
 
             if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
 
-            location.reload();
+            loadPage(currentPage);
         } catch (error) {
             console.error('Error deleting item:', error);
             alert('Could not delete this item.');
@@ -108,4 +184,4 @@ function buildAdminControls(type, id) {
     return controls;
 }
 
-displayAllSkills();
+loadPage(0);

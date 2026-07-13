@@ -144,6 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="thumbnail-divider">or</div>
                     <input type="url" id="thumbnail-url-input" placeholder="Paste an image URL instead" class="modal-input">
                     <input type="text" id="category-input" placeholder="Category" class="modal-input" required value="${isEditMode ? itemData.category : ''}">
+                    <div class="modal-sorting-controls" style="margin: 12px 0; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+                        <label class="modal-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; user-select: none;">
+                            <input type="checkbox" id="pinned-input" ${isEditMode && itemData.pinned ? 'checked' : ''}>
+                            Pin item to top of list
+                        </label>
+                        <label for="sort-order-input" class="modal-label" style="font-size: 0.85rem; margin-top: 4px;">Sort Order / Weight (lower is first):</label>
+                        <input type="number" id="sort-order-input" placeholder="0" class="modal-input" style="width: 100%; box-sizing: border-box;" value="${isEditMode ? (itemData.sortOrder !== undefined ? itemData.sortOrder : 0) : 0}">
+                    </div>
                     ${type !== 'skill' ? `
                     <div class="skills-picker-container">
                         <label class="modal-label">Attach Skills</label>
@@ -305,7 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const payload = {
-            category: categoryInput
+            category: categoryInput,
+            pinned: document.getElementById('pinned-input').checked,
+            sortOrder: parseInt(document.getElementById('sort-order-input').value, 10) || 0
         };
 
         if (thumbnailUrl) {
@@ -708,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let listHtml = items.map(item => `
                 <li class="content-item">
-                    <span>${item.title || item.name}</span>
+                    <span>${item.pinned ? '📌 ' : ''}${item.title || item.name}</span>
                     <div>
                         <button class="edit-button" data-id="${item.id}" data-type="${type}">Edit</button>
                         <button class="delete-button" data-id="${item.id}" data-type="${type}">Delete</button>

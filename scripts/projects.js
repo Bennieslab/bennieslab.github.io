@@ -1,19 +1,20 @@
 const SERVER_URL = "https://bennieslab-backend.onrender.com";
 const isAdmin = !!localStorage.getItem('jwt_token');
 
-async function fetchProjects() {
-    try {
-        let response = await fetch(`${SERVER_URL}/projects`);
-        let projectsData = await response.json();
+const PAGE_SIZE = 6;
+let currentPage = 0;
+let totalPages = 1;
 
+async function fetchProjects(page = 0, size = PAGE_SIZE) {
+    try {
+        let response = await fetch(`${SERVER_URL}/projects?page=${page}&size=${size}`);
         if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
-
-        return projectsData;
+        return await response.json(); // Spring Page<ProjectDto>
     } catch (error) {
         console.error("Error fetching projects: ", error);
-        return [];
+        return null;
     }
 }
 
@@ -72,81 +73,147 @@ function getPlainTextSnippet(markdownContent, maxLength = 120) {
     return plainText;
 }
 
-async function displayProjects() {
+function renderProjects(projects) {
     let projectsContainer = document.querySelector(".project-cards");
-    if (projectsContainer) {
-        projectsContainer.innerHTML = "";
-
-        try {
-            let projects = await fetchProjects();
-
-            if (!projects || projects.length === 0) {
-                projectsContainer.innerHTML = "<p>No projects to display yet.</p>";
-                return;
-            }
-
-            projects.forEach(project => {
-                let projectDiv = document.createElement("div");
-                projectDiv.classList.add("project");
-                projectDiv.addEventListener('click', () => {
-                    window.location.href = `project-detail.html?id=${project.id}`;
-                });
-
-                let projectThumbnail = document.createElement("div");
-                projectThumbnail.classList.add("thumbnail-container");
-                if (project.thumbnailUrl) {
-                    let img = document.createElement("img");
-                    img.src = project.thumbnailUrl;
-                    img.alt = project.name + " thumbnail";
-                    img.classList.add("project-thumbnail-img");
-                    projectThumbnail.appendChild(img);
-                }
-
-                let projectMetadata = document.createElement("div");
-                projectMetadata.classList.add("metadata");
-
-                let projectNameElement = document.createElement("h2");
-                let descriptionElement = document.createElement("p");
-                let categoryElement = document.createElement("span");
-                let datePostedElement = document.createElement("span");
-                let lastUpdateElement = document.createElement("span");
-
-                projectNameElement.classList.add("project-title");
-                descriptionElement.classList.add("project-content");
-                categoryElement.classList.add("category");
-                datePostedElement.classList.add("date-posted");
-                lastUpdateElement.classList.add("last-updated");
-
-                projectNameElement.textContent = project.name;
-                descriptionElement.textContent = getPlainTextSnippet(project.description, 120);
-                categoryElement.textContent = project.category;
-                
-                datePostedElement.textContent = "Posted: " + formatDateTimeArray(project.datePosted);
-                lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(project.lastUpdated);
-
-                projectMetadata.appendChild(projectNameElement);
-                projectMetadata.appendChild(descriptionElement);
-                projectMetadata.appendChild(categoryElement);
-                projectMetadata.appendChild(datePostedElement);
-                projectMetadata.appendChild(document.createElement("br"));
-                projectMetadata.appendChild(lastUpdateElement);
-
-                projectDiv.appendChild(projectThumbnail);
-                projectDiv.appendChild(projectMetadata);
-
-                if (isAdmin) {
-                    projectDiv.appendChild(buildAdminControls('project', project.id));
-                }
-
-                projectsContainer.appendChild(projectDiv);
-            });
-        } catch (error) {
-            console.error("Error displaying projects:", error);
-            projectsContainer.innerHTML = "<p>Error loading projects.</p>";
-        }
-    } else {
+    if (!projectsContainer) {
         console.error("No element with class 'project-cards' found.");
+        return;
     }
+    projectsContainer.innerHTML = "";
+
+    if (!projects || projects.length === 0) {
+        projectsContainer.innerHTML = "<p>No projects to display yet.</p>";
+        return;
+    }
+
+    projects.forEach(project => {
+        let projectDiv = document.createElement("div");
+        projectDiv.classList.add("project");
+        if (project.pinned) projectDiv.classList.add("pinned-item");
+        projectDiv.addEventListener('click', () => {
+            window.location.href = `project-detail.html?id=${project.id}`;
+        });
+
+        let projectThumbnail = document.createElement("div");
+        projectThumbnail.classList.add("thumbnail-container");
+        if (project.thumbnailUrl) {
+            let img = document.createElement("img");
+            img.src = project.thumbnailUrl;
+            img.alt = project.name + " thumbnail";
+            img.classList.add("project-thumbnail-img");
+            projectThumbnail.appendChild(img);
+        }
+
+        let projectMetadata = document.createElement("div");
+        projectMetadata.classList.add("metadata");
+
+        let projectNameElement = document.createElement("h2");
+        let descriptionElement = document.createElement("p");
+        let categoryElement = document.createElement("span");
+        let datePostedElement = document.createElement("span");
+        let lastUpdateElement = document.createElement("span");
+
+        projectNameElement.classList.add("project-title");
+        descriptionElement.classList.add("project-content");
+        categoryElement.classList.add("category");
+        datePostedElement.classList.add("date-posted");
+        lastUpdateElement.classList.add("last-updated");
+
+        projectNameElement.textContent = project.name;
+        if (project.pinned) {
+            const pin = document.createElement("span");
+            pin.classList.add("pin-badge");
+            pin.textContent = "📌";
+            projectNameElement.prepend(pin);
+        }
+        descriptionElement.textContent = getPlainTextSnippet(project.description, 120);
+        categoryElement.textContent = project.category;
+        
+        datePostedElement.textContent = "Posted: " + formatDateTimeArray(project.datePosted);
+        lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(project.lastUpdated);
+
+        projectMetadata.appendChild(projectNameElement);
+        projectMetadata.appendChild(descriptionElement);
+        projectMetadata.appendChild(categoryElement);
+        projectMetadata.appendChild(datePostedElement);
+        projectMetadata.appendChild(document.createElement("br"));
+        projectMetadata.appendChild(lastUpdateElement);
+
+        projectDiv.appendChild(projectThumbnail);
+        projectDiv.appendChild(projectMetadata);
+
+        if (isAdmin) {
+            projectDiv.appendChild(buildAdminControls('project', project.id));
+        }
+
+        projectsContainer.appendChild(projectDiv);
+    });
+}
+
+function renderPagination(currentPg, totalPgs) {
+    const container = document.getElementById("pagination-projects");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (totalPgs <= 1) return;
+
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "← Previous";
+    prevBtn.disabled = currentPg === 0;
+    prevBtn.id = "page-prev";
+    prevBtn.addEventListener("click", () => loadPage(currentPg - 1));
+    container.appendChild(prevBtn);
+
+    const maxButtons = 5;
+    let startPage = Math.max(0, currentPg - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPgs - 1, startPage + maxButtons - 1);
+    if (endPage - startPage < maxButtons - 1) {
+        startPage = Math.max(0, endPage - maxButtons + 1);
+    }
+
+    if (startPage > 0) {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "…";
+        ellipsis.classList.add("pagination-ellipsis");
+        container.appendChild(ellipsis);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i + 1;
+        pageBtn.id = `page-btn-${i}`;
+        if (i === currentPg) pageBtn.classList.add("active");
+        const pageIndex = i;
+        pageBtn.addEventListener("click", () => loadPage(pageIndex));
+        container.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPgs - 1) {
+        const ellipsis = document.createElement("span");
+        ellipsis.textContent = "…";
+        ellipsis.classList.add("pagination-ellipsis");
+        container.appendChild(ellipsis);
+    }
+
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next →";
+    nextBtn.disabled = currentPg >= totalPgs - 1;
+    nextBtn.id = "page-next";
+    nextBtn.addEventListener("click", () => loadPage(currentPg + 1));
+    container.appendChild(nextBtn);
+}
+
+async function loadPage(page) {
+    currentPage = page;
+    const data = await fetchProjects(page, PAGE_SIZE);
+    if (!data) {
+        document.querySelector(".project-cards").innerHTML = "<p>Error loading projects.</p>";
+        return;
+    }
+    totalPages = data.totalPages;
+    renderProjects(data.content);
+    renderPagination(currentPage, totalPages);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function buildAdminControls(type, id) {
@@ -186,7 +253,7 @@ function buildAdminControls(type, id) {
 
             if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
 
-            location.reload();
+            loadPage(currentPage);
         } catch (error) {
             console.error('Error deleting item:', error);
             alert('Could not delete this item.');
@@ -198,4 +265,4 @@ function buildAdminControls(type, id) {
     return controls;
 }
 
-displayProjects();
+loadPage(0);
