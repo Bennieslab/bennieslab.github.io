@@ -135,6 +135,12 @@ html[data-theme="dark"] .post-container {
     background-color: transparent;
 }
 
+/* Dark mode: category tags */
+html[data-theme="dark"] .category {
+    background-color: #23272f;
+    color: #aeb6c0;
+}
+
 /* Dark mode: skill chips */
 html[data-theme="dark"] .skill-chip {
     background: transparent;
