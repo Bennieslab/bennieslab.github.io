@@ -35,6 +35,17 @@
     </div>
 
     <main class="project-detail-main">
+
+        <aside class="detail-skills-sidebar" id="projectSkillsSidebar" aria-label="Skills used in this project">
+            <h2 class="skills-sidebar-heading">Skills</h2>
+            <div class="skills-sidebar-list" id="projectSkillsList">
+                <!-- skill chips injected by JS -->
+            </div>
+        </aside>
+
+        <!-- right-pane placeholder: invisible today (0px column), add content + bump width later -->
+        <aside class="detail-sidebar-right" aria-hidden="true"></aside>
+
         <div class="project-container">
             <div class="project-detail-thumbnail-container">
                 <img id="projectDetailThumbnail" src="" alt="Project Thumbnail" style="display:none;">
@@ -51,6 +62,7 @@
                 <p>Loading project content...</p>
             </div>
         </div>
+
     </main>
 
     <footer>

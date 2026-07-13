@@ -102,11 +102,48 @@ async function displayProject() {
         }
 
         projectContentElement.innerHTML = marked.parse(project.description);
+
+        // Render skills sidebar if skills are attached
+        renderSkillsSidebar(project.skills);
     } else {
         projectTitleElement.textContent = "Project Not Found";
         projectContentElement.innerHTML = "<p>The requested project could not be loaded.</p>";
         pageTitleElement.textContent = "Error";
     }
+}
+
+/**
+ * Builds skill chip links in the left sidebar.
+ * The sidebar stays hidden (display:none) if there are no skills.
+ */
+function renderSkillsSidebar(skills) {
+    const sidebar = document.getElementById('projectSkillsSidebar');
+    const list    = document.getElementById('projectSkillsList');
+    if (!sidebar || !list || !skills || skills.length === 0) return;
+
+    skills.forEach(skill => {
+        const chip = document.createElement('a');
+        chip.href = `skill-detail.html?id=${skill.id}`;
+        chip.className = 'skill-chip';
+        chip.title = skill.description || skill.name;
+
+        if (skill.thumbnailUrl) {
+            const img = document.createElement('img');
+            img.src = skill.thumbnailUrl;
+            img.alt = skill.name;
+            img.className = 'skill-chip-thumb';
+            chip.appendChild(img);
+        }
+
+        const label = document.createElement('span');
+        label.className = 'skill-chip-name';
+        label.textContent = skill.name;
+        chip.appendChild(label);
+
+        list.appendChild(chip);
+    });
+
+    sidebar.style.display = 'block';
 }
 
 document.addEventListener('DOMContentLoaded', displayProject);
