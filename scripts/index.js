@@ -60,7 +60,10 @@ async function displayHighlights(containerSelector, apiPath, linkPrefix, cardCla
         if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
-        const highlightData = await response.json();
+        const highlightResponse = await response.json();
+        const highlightData = Array.isArray(highlightResponse)
+            ? highlightResponse
+            : (highlightResponse.content || []);
         const container = document.querySelector(containerSelector);
 
         container.innerHTML = '';
