@@ -214,6 +214,13 @@ html[data-theme="dark"] .carousel-dot.active {
     background: #d20a2e;
 }
 
+/* Dark mode: feed lists card hovers (projects, blogs, skills) */
+html[data-theme="dark"] .project:hover,
+html[data-theme="dark"] .blog-post:hover,
+html[data-theme="dark"] .skill:hover {
+    background-color: #1b1f26;
+}
+
 @media (max-width: 900px) {
     .theme-toggle-wrapper {
         order: 2;
