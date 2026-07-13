@@ -8,19 +8,19 @@ body {
 
 /* ── Layout shell: 3-column grid ─────────────────────────────────────────
    Columns: [skills-left] [content] [sidebar-right]
-   Right column is 0px today — to add it later, change 0px → desired width
-   and bump max-width accordingly. No HTML rework needed.
+   Content uses 1fr so it grows to fill the free space, keeping sidebar at 200px
+   Right column is 0px today — to add it later, change 0px → desired width.
    ─────────────────────────────────────────────────────────────────────── */
 main.post-detail-main {
     display: grid;
-    grid-template-columns: 200px minmax(0, 720px) 0px;
-    grid-template-areas: "skills-left content sidebar-right";
+    grid-template-columns: 1fr 200px minmax(0, 720px) 200px 1fr;
+    grid-template-areas: ". skills-left content sidebar-right .";
     gap: 24px;
     align-items: start;
-    max-width: 968px; /* 200 + 24 + 720 + 24 + 0 */
     width: 100%;
+    max-width: 100%;
     margin: 20px auto 40px;
-    padding: 0 20px;
+    padding: 0;
     background-color: transparent;
 }
 
@@ -174,53 +174,49 @@ main.post-detail-main {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #999;
-    margin: 0 0 12px 4px;
+    margin: 0 0 10px 0;
 }
 
 .skills-sidebar-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
 }
 
+/* Inline row: small icon + name. No card border or background. */
 .skill-chip {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 6px;
-    padding: 10px 8px;
-    border-radius: 8px;
-    background: #ffffff;
-    border: 1px solid #e8e8e8;
+    gap: 8px;
+    padding: 5px 4px;
+    border-radius: 6px;
     text-decoration: none;
     color: #3d3d3d;
-    font-size: 0.8em;
-    font-weight: 600;
-    text-align: center;
-    transition: background 0.15s ease, transform 0.15s ease;
+    font-size: 0.82em;
+    font-weight: 500;
+    transition: color 0.15s ease;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
-.skill-chip:hover {
-    background: #f4f4f4;
-    transform: scale(1.03);
-    border-color: #d20a2e;
+.skill-chip:hover .skill-chip-name {
     color: #d20a2e;
 }
 
 .skill-chip-thumb {
-    width: 40px;
-    height: 40px;
+    width: 22px;
+    height: 22px;
     object-fit: contain;
     display: block;
-    border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .skill-chip-name {
-    line-height: 1.3;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.15s ease;
 }
 
 /* Right pane — reserved, invisible today */
@@ -279,7 +275,6 @@ nav {
 
 nav a {
     padding: 6px;
-    display: inline-block;
 }
 
 nav img:hover {
@@ -375,21 +370,18 @@ nav img:hover {
         flex-direction: row;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        gap: 8px;
-        padding-bottom: 6px; /* room for scrollbar */
+        gap: 6px;
+        padding-bottom: 4px;
     }
 
     .skill-chip {
-        flex-direction: row;
         flex-shrink: 0;
         white-space: nowrap;
-        padding: 6px 10px;
-        text-align: left;
     }
 
     .skill-chip-thumb {
-        width: 28px;
-        height: 28px;
+        width: 18px;
+        height: 18px;
     }
 
     .post-container {
@@ -458,14 +450,13 @@ nav img:hover {
         font-size: 1em;
     }
 
-    /* Tighten chips further on small screens */
+    /* Tighten chips on small screens */
     .skill-chip {
         font-size: 0.75em;
-        padding: 5px 8px;
     }
 
     .skill-chip-thumb {
-        width: 22px;
-        height: 22px;
+        width: 16px;
+        height: 16px;
     }
 }

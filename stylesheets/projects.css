@@ -53,8 +53,7 @@ nav {
 }
 
 nav a {
-    padding: 6px;
-    display: inline-block;
+    padding: 6px; /* theme-toggle.css owns nav a display/flex direction */
 }
 
 nav img:hover {

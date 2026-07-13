@@ -84,6 +84,39 @@ html[data-theme="dark"] nav img {
 
 html[data-theme="dark"] nav img:hover {
     opacity: 1;
+    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
+}
+
+/* Nav link red hover: show a label and tint icon red */
+nav a {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px;
+    position: relative;
+    text-decoration: none;
+}
+
+nav a .nav-label {
+    display: block;
+    font-size: 0.6em;
+    font-weight: 700;
+    color: transparent;
+    transition: color 0.15s ease;
+    line-height: 1;
+    user-select: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+nav a:hover .nav-label {
+    color: #d20a2e;
+}
+
+nav a:hover img {
+    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
+    transform: scale(1.1);
 }
 
 html[data-theme="dark"] .contact,
@@ -94,6 +127,48 @@ html[data-theme="dark"] side {
 html[data-theme="dark"] .theme-toggle {
     background: #1b1f26;
     border-color: #343a44;
+}
+
+/* Dark mode: content card backgrounds */
+html[data-theme="dark"] .project-container,
+html[data-theme="dark"] .post-container {
+    background-color: transparent;
+}
+
+/* Dark mode: skill chips */
+html[data-theme="dark"] .skill-chip {
+    background: transparent;
+    border-color: transparent;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .skill-chip:hover {
+    background: transparent;
+    border-color: transparent;
+    color: #d20a2e;
+}
+
+/* Dark mode: home page thumbnail clears bg when it contains an image */
+html[data-theme="dark"] .thumbnail-container {
+    background: #23272f;
+}
+
+html[data-theme="dark"] .thumbnail-container:has(img) {
+    background: none;
+}
+
+/* Dark mode: nav label inherits tint on hover */
+html[data-theme="dark"] nav a .nav-label {
+    color: transparent;
+}
+
+html[data-theme="dark"] nav a:hover .nav-label {
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] nav a:hover img {
+    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
+    opacity: 1;
 }
 
 html[data-theme="dark"] .social_icons a {
