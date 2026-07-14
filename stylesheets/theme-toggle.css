@@ -185,6 +185,29 @@ html[data-theme="dark"] .skill-stat-row {
     color: #aeb6c0;
 }
 
+html[data-theme="dark"] .filter-control {
+    color: #7f8894;
+}
+
+html[data-theme="dark"] .filter-select,
+html[data-theme="dark"] .filter-clear-btn,
+html[data-theme="dark"] .filter-chip {
+    background: #1b1f26;
+    border-color: #343a44;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .filter-select:focus,
+html[data-theme="dark"] .filter-clear-btn:hover,
+html[data-theme="dark"] .filter-chip.is-active {
+    border-color: #d20a2e;
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .filter-status {
+    color: #7f8894;
+}
+
 html[data-theme="dark"] .skill-stat-row:hover,
 html[data-theme="dark"] .github-url {
     color: #d20a2e;

@@ -5,6 +5,9 @@ const PAGE_SIZE = 6;
 let currentPage = 0;
 let totalPages = 1;
 let pageLoading = false;
+let allProjects = [];
+let activeFilters = { category: 'all', skill: 'all' };
+let filterControlsBound = false;
 
 async function fetchProjects(page = 0, size = PAGE_SIZE) {
     try {
@@ -74,6 +77,147 @@ function getPlainTextSnippet(markdownContent, maxLength = 120) {
     return plainText;
 }
 
+function getSkillIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('skill');
+}
+
+async function fetchAllProjects() {
+    const firstPage = await fetchProjects(0, 100);
+    if (!firstPage) return null;
+
+    const projects = Array.isArray(firstPage.content) ? [...firstPage.content] : [];
+    const total = firstPage.totalPages || 1;
+
+    for (let page = 1; page < total; page++) {
+        const nextPage = await fetchProjects(page, 100);
+        if (nextPage && Array.isArray(nextPage.content)) {
+            projects.push(...nextPage.content);
+        }
+    }
+
+    return projects;
+}
+
+function getProjectSkills(project) {
+    return Array.isArray(project.skills) ? project.skills : Array.from(project.skills || []);
+}
+
+function getUniqueCategories(items) {
+    return Array.from(new Set(items.map(item => item.category).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+}
+
+function getUniqueSkills(items) {
+    const skills = new Map();
+    items.forEach(item => {
+        getProjectSkills(item).forEach(skill => {
+            if (skill && skill.id != null && !skills.has(String(skill.id))) {
+                skills.set(String(skill.id), skill);
+            }
+        });
+    });
+    return Array.from(skills.values()).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+}
+
+function itemMatchesFilters(item) {
+    const matchesCategory = activeFilters.category === 'all' || item.category === activeFilters.category;
+    const matchesSkill = activeFilters.skill === 'all' || getProjectSkills(item).some(skill => String(skill.id) === String(activeFilters.skill));
+    return matchesCategory && matchesSkill;
+}
+
+function syncFilterUrl() {
+    const url = new URL(window.location.href);
+    if (activeFilters.category && activeFilters.category !== 'all') {
+        url.searchParams.set('category', activeFilters.category);
+    } else {
+        url.searchParams.delete('category');
+    }
+    if (activeFilters.skill && activeFilters.skill !== 'all') {
+        url.searchParams.set('skill', activeFilters.skill);
+    } else {
+        url.searchParams.delete('skill');
+    }
+    history.replaceState({}, '', url);
+}
+
+function updateFilterSummary() {
+    const summary = document.getElementById('filterSummary');
+    if (!summary) return;
+
+    const parts = [];
+    if (activeFilters.category !== 'all') parts.push(`Category: ${activeFilters.category}`);
+    if (activeFilters.skill !== 'all') {
+        const skill = getUniqueSkills(allProjects).find(item => String(item.id) === String(activeFilters.skill));
+        parts.push(`Skill: ${skill ? skill.name : activeFilters.skill}`);
+    }
+
+    summary.textContent = parts.length ? parts.join(' · ') : 'All projects';
+}
+
+function renderFilterControls() {
+    const filters = document.querySelector('.filters');
+    const tags = document.querySelector('.tags');
+    const dropdowns = document.querySelector('.filter-dropdowns');
+    if (!filters || !tags || !dropdowns) return;
+
+    const categories = getUniqueCategories(allProjects);
+    const skills = getUniqueSkills(allProjects);
+    const presetSkill = getSkillIdFromUrl();
+    if (presetSkill && activeFilters.skill === 'all') {
+        activeFilters.skill = presetSkill;
+    }
+
+    filters.style.display = 'grid';
+    tags.innerHTML = `
+        <button type="button" class="filter-clear-btn" id="clearFilters">Clear filters</button>
+        <span class="filter-status" id="filterSummary">All projects</span>
+    `;
+    dropdowns.innerHTML = `
+        <label class="filter-control" for="projectCategoryFilter">
+            Category
+            <select id="projectCategoryFilter" class="filter-select">
+                <option value="all">All categories</option>
+                ${categories.map(category => `<option value="${category}">${category}</option>`).join('')}
+            </select>
+        </label>
+        <label class="filter-control" for="projectSkillFilter">
+            Skill
+            <select id="projectSkillFilter" class="filter-select">
+                <option value="all">All skills</option>
+                ${skills.map(skill => `<option value="${skill.id}">${skill.name}</option>`).join('')}
+            </select>
+        </label>
+    `;
+
+    document.getElementById('projectCategoryFilter').value = activeFilters.category;
+    document.getElementById('projectSkillFilter').value = activeFilters.skill;
+    document.getElementById('clearFilters').addEventListener('click', () => {
+        activeFilters = { category: 'all', skill: 'all' };
+        document.getElementById('projectCategoryFilter').value = 'all';
+        document.getElementById('projectSkillFilter').value = 'all';
+        syncFilterUrl();
+        currentPage = 0;
+        renderCurrentProjects();
+    });
+
+    document.getElementById('projectCategoryFilter').addEventListener('change', (e) => {
+        activeFilters.category = e.target.value;
+        syncFilterUrl();
+        currentPage = 0;
+        renderCurrentProjects();
+    });
+
+    document.getElementById('projectSkillFilter').addEventListener('change', (e) => {
+        activeFilters.skill = e.target.value;
+        syncFilterUrl();
+        currentPage = 0;
+        renderCurrentProjects();
+    });
+
+    filterControlsBound = true;
+    updateFilterSummary();
+}
+
 function renderProjects(projects) {
     let projectsContainer = document.querySelector(".project-cards");
     if (!projectsContainer) {
@@ -112,13 +256,11 @@ function renderProjects(projects) {
         let descriptionElement = document.createElement("p");
         let categoryElement = document.createElement("span");
         let datePostedElement = document.createElement("span");
-        let lastUpdateElement = document.createElement("span");
 
         projectNameElement.classList.add("project-title");
         descriptionElement.classList.add("project-content");
         categoryElement.classList.add("category");
         datePostedElement.classList.add("date-posted");
-        lastUpdateElement.classList.add("last-updated");
 
         projectNameElement.textContent = project.name;
         if (project.pinned) {
@@ -126,16 +268,12 @@ function renderProjects(projects) {
         }
         descriptionElement.textContent = getPlainTextSnippet(project.description, 120);
         categoryElement.textContent = project.category;
-        
         datePostedElement.textContent = "Posted: " + formatDateTimeArray(project.datePosted);
-        lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(project.lastUpdated);
 
         projectMetadata.appendChild(projectNameElement);
         projectMetadata.appendChild(descriptionElement);
         projectMetadata.appendChild(categoryElement);
         projectMetadata.appendChild(datePostedElement);
-        projectMetadata.appendChild(document.createElement("br"));
-        projectMetadata.appendChild(lastUpdateElement);
 
         projectDiv.appendChild(projectThumbnail);
         projectDiv.appendChild(projectMetadata);
@@ -146,6 +284,25 @@ function renderProjects(projects) {
 
         projectsContainer.appendChild(projectDiv);
     });
+}
+
+function renderCurrentProjects() {
+    if (!allProjects.length) {
+        renderProjects([]);
+        renderPagination(0, 1);
+        updateFilterSummary();
+        return;
+    }
+
+    const filtered = allProjects.filter(itemMatchesFilters);
+    totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages - 1) currentPage = 0;
+
+    const start = currentPage * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    renderProjects(filtered.slice(start, end));
+    renderPagination(currentPage, totalPages);
+    updateFilterSummary();
 }
 
 function renderPagination(currentPg, totalPgs) {
@@ -202,23 +359,36 @@ function renderPagination(currentPg, totalPgs) {
 }
 
 async function loadPage(page) {
+    currentPage = page;
+    renderCurrentProjects();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function initializeProjects() {
     if (pageLoading) return;
     pageLoading = true;
     const paginationContainer = document.getElementById("pagination-projects");
     const loader = window.showActionLoader
         ? showActionLoader(paginationContainer, { variant: 'block', disable: false })
         : null;
-    currentPage = page;
     try {
-        const data = await fetchProjects(page, PAGE_SIZE);
+        const data = await fetchAllProjects();
         if (!data) {
             document.querySelector(".project-cards").innerHTML = "<p>Error loading projects.</p>";
             return;
         }
-        totalPages = data.totalPages;
-        renderProjects(data.content);
-        renderPagination(currentPage, totalPages);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        allProjects = data;
+
+        if (!filterControlsBound) {
+            const url = new URL(window.location.href);
+            activeFilters.category = url.searchParams.get('category') || 'all';
+            activeFilters.skill = url.searchParams.get('skill') || 'all';
+            renderFilterControls();
+        } else {
+            updateFilterSummary();
+        }
+
+        renderCurrentProjects();
     } finally {
         if (loader) loader.hide();
         pageLoading = false;
@@ -262,7 +432,7 @@ function buildAdminControls(type, id) {
 
             if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
 
-            loadPage(currentPage);
+            initializeProjects();
         } catch (error) {
             console.error('Error deleting item:', error);
             alert('Could not delete this item.');
@@ -274,4 +444,4 @@ function buildAdminControls(type, id) {
     return controls;
 }
 
-loadPage(0);
+document.addEventListener('DOMContentLoaded', initializeProjects);

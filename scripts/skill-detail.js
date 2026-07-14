@@ -97,7 +97,16 @@ function itemHasSkill(item, skillId) {
 async function displaySkillCounts(skillId) {
     const projectsCountElement = document.getElementById('skillProjectsCount');
     const postsCountElement = document.getElementById('skillPostsCount');
+    const projectsLink = document.getElementById('skillProjectsLink');
+    const postsLink = document.getElementById('skillPostsLink');
     if (!projectsCountElement || !postsCountElement) return;
+
+    if (projectsLink) {
+        projectsLink.href = `projects.html?skill=${encodeURIComponent(skillId)}`;
+    }
+    if (postsLink) {
+        postsLink.href = `blogs.html?skill=${encodeURIComponent(skillId)}`;
+    }
 
     const [projects, posts] = await Promise.all([
         fetchAllPagedContent('/projects'),
