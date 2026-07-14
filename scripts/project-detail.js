@@ -29,9 +29,9 @@ function formatDateTimeArray(dateTimeArray) {
 
     if (projectDate >= startOfWeek && projectDate <= now) {
         return projectDate.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-               projectDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            projectDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
-    
+
     if (projectDate.getFullYear() === now.getFullYear()) {
         return projectDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
     }
@@ -57,6 +57,17 @@ async function fetchProject(id) {
         console.error("Error fetching project:", error);
         return null;
     }
+}
+
+/**
+ * Runs highlight.js over every code block inside the rendered project content.
+ * Safe to call even if the highlight.js script hasn't loaded for some reason.
+ */
+function highlightCodeBlocks(container) {
+    if (!window.hljs || !container) return;
+    container.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+    });
 }
 
 async function displayProject() {
@@ -94,7 +105,7 @@ async function displayProject() {
         datePostedElement.textContent = formatDateTimeArray(project.datePosted);
         lastUpdateElement.textContent = formatDateTimeArray(project.lastUpdated);
         renderGithubUrl(project, projectGithubRow, projectGithubElement);
-        
+
         // Display thumbnail if available
         if (project.thumbnailUrl) {
             // FIX: Prepend the SERVER_URL to the relative thumbnail path
@@ -105,6 +116,7 @@ async function displayProject() {
         }
 
         projectContentElement.innerHTML = marked.parse(project.description);
+        highlightCodeBlocks(projectContentElement);
 
         // Render skills sidebar if skills are attached
         renderSkillsSidebar(project.skills);
@@ -135,7 +147,7 @@ function renderGithubUrl(project, row, link) {
  */
 function renderSkillsSidebar(skills) {
     const sidebar = document.getElementById('projectSkillsSidebar');
-    const list    = document.getElementById('projectSkillsList');
+    const list = document.getElementById('projectSkillsList');
     if (!sidebar || !list || !skills || skills.length === 0) return;
 
     skills.forEach(skill => {

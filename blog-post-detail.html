@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Blog Post</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="stylesheets/blogs.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/blog-post-detail.css">
     <script src="scripts/theme-toggle.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheets/theme-toggle.css">
+
+    <!-- Code snippet syntax highlighting -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
+
 <body>
     <div class="navbar">
         <a href="#" class="sitename"><span class="red-text">Bennies</span>lab</a>
@@ -23,15 +32,29 @@
             <a href="profile.html"><img src="src/cv.png" alt="Profile"><span class="nav-label">Profile</span></a>
         </nav>
         <div class="theme-toggle-wrapper">
-    <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
-        <span class="theme-toggle__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
-        </span>
-        <span class="theme-toggle__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3Z"></path></svg>
-        </span>
-    </button>
-</div>
+            <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+                <span class="theme-toggle__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2"></path>
+                        <path d="M12 20v2"></path>
+                        <path d="m4.93 4.93 1.41 1.41"></path>
+                        <path d="m17.66 17.66 1.41 1.41"></path>
+                        <path d="M2 12h2"></path>
+                        <path d="M20 12h2"></path>
+                        <path d="m6.34 17.66-1.41 1.41"></path>
+                        <path d="m19.07 4.93-1.41 1.41"></path>
+                    </svg>
+                </span>
+                <span class="theme-toggle__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3Z"></path>
+                    </svg>
+                </span>
+            </button>
+        </div>
     </div>
 
     <main class="post-detail-main">
@@ -47,11 +70,12 @@
         <aside class="detail-sidebar-right" aria-hidden="true"></aside>
 
         <div class="post-container">
+            <h1 class="post-detail-title">Loading...</h1>
+
             <div class="post-detail-thumbnail-container">
                 <img id="postDetailThumbnail" src="" alt="Post Thumbnail" style="display:none;">
             </div>
 
-            <h1 class="post-detail-title">Loading...</h1>
             <div class="post-meta">
                 <span class="category">Category</span>
                 <span class="date-posted">Posted: Loading...</span>
@@ -75,4 +99,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
     <script src="scripts/blog-post-detail.js"></script>
 </body>
+
 </html>

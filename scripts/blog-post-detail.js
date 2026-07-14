@@ -29,9 +29,9 @@ function formatDateTimeArray(dateTimeArray) {
 
     if (postDate >= startOfWeek && postDate <= now) {
         return postDate.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-               postDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            postDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
-    
+
     if (postDate.getFullYear() === now.getFullYear()) {
         return postDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
     }
@@ -57,6 +57,17 @@ async function fetchBlogPost(id) {
         console.error("Error fetching blog post:", error);
         return null;
     }
+}
+
+/**
+ * Runs highlight.js over every code block inside the rendered post content.
+ * Safe to call even if the highlight.js script hasn't loaded for some reason.
+ */
+function highlightCodeBlocks(container) {
+    if (!window.hljs || !container) return;
+    container.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+    });
 }
 
 async function displayBlogPost() {
@@ -97,6 +108,7 @@ async function displayBlogPost() {
         }
 
         postContentElement.innerHTML = marked.parse(post.content);
+        highlightCodeBlocks(postContentElement);
 
         // Render skills sidebar if skills are attached
         renderSkillsSidebar(post.skills);
@@ -113,7 +125,7 @@ async function displayBlogPost() {
  */
 function renderSkillsSidebar(skills) {
     const sidebar = document.getElementById('postSkillsSidebar');
-    const list    = document.getElementById('postSkillsList');
+    const list = document.getElementById('postSkillsList');
     if (!sidebar || !list || !skills || skills.length === 0) return;
 
     skills.forEach(skill => {

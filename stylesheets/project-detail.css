@@ -33,6 +33,7 @@ main.project-detail-main {
 }
 
 .project-detail-title {
+    font-family: 'Lora', Georgia, serif;
     font-size: 2.2em;
     color: #3d3d3d;
     margin-bottom: 15px;
@@ -106,12 +107,14 @@ main.project-detail-main {
     white-space: nowrap;
 }
 
-.date-posted, .last-updated {
+.date-posted,
+.last-updated {
     font-size: 0.85em;
     color: #666;
 }
 
 .project-content-rendered {
+    font-family: 'Lora', Georgia, serif;
     line-height: 1.6;
     font-size: 1.1em;
     color: #3d3d3d;
@@ -130,9 +133,18 @@ main.project-detail-main {
     line-height: 1.3;
 }
 
-.project-content-rendered h1 { font-size: 2em; }
-.project-content-rendered h2 { font-size: 1.7em; }
-.project-content-rendered h3 { font-size: 1.4em; }
+.project-content-rendered h1 {
+    font-size: 2em;
+}
+
+.project-content-rendered h2 {
+    font-size: 1.7em;
+}
+
+.project-content-rendered h3 {
+    font-size: 1.4em;
+}
+
 .project-content-rendered p {
     margin-bottom: 1em;
 }
@@ -158,7 +170,7 @@ main.project-detail-main {
     display: block;
     margin: 20px auto;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .project-content-rendered code {
@@ -180,6 +192,7 @@ main.project-detail-main {
 }
 
 .project-content-rendered pre code {
+    font-family: 'Courier New', Courier, monospace;
     background-color: transparent;
     padding: 0;
     border-radius: 0;
@@ -190,7 +203,8 @@ main.project-detail-main {
 /* ── Skills sidebar — desktop (left column) ──────────────────────────── */
 .detail-skills-sidebar {
     grid-area: skills-left;
-    display: none; /* JS sets display:block when skills exist */
+    display: none;
+    /* JS sets display:block when skills exist */
     position: sticky;
     top: 20px;
     align-self: start;
@@ -250,14 +264,16 @@ main.project-detail-main {
 /* Right pane — reserved, invisible today */
 .detail-sidebar-right {
     grid-area: sidebar-right;
-    display: none; /* change to block when right pane content is added */
+    display: none;
+    /* change to block when right pane content is added */
 }
 
 /* ── Responsive: collapse to single column at ≤ 900px ─────────────────── */
 @media (max-width: 900px) {
 
     main.project-detail-main {
-        display: block; /* drop grid, stack naturally */
+        display: block;
+        /* drop grid, stack naturally */
         width: 100%;
         padding: 10px;
         margin-top: 10px;

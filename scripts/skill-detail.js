@@ -59,6 +59,17 @@ async function fetchSkill(id) {
     }
 }
 
+/**
+ * Runs highlight.js over every code block inside the rendered skill content.
+ * Safe to call even if the highlight.js script hasn't loaded for some reason.
+ */
+function highlightCodeBlocks(container) {
+    if (!window.hljs || !container) return;
+    container.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+    });
+}
+
 async function fetchAllContent(path) {
     try {
         const response = await fetch(`${SERVER_URL}${path}`);
@@ -97,8 +108,14 @@ async function displaySkillCounts(skillId) {
         fetchAllContent(`/blog?skillId=${encodedSkillId}`)
     ]);
 
-    projectsCountElement.textContent = projects.filter(project => itemHasSkill(project, skillId)).length;
-    postsCountElement.textContent = posts.filter(post => itemHasSkill(post, skillId)).length;
+    // Leave the loading animation in place if a fetch failed, rather than
+    // crashing or falling back to a misleading "0".
+    if (Array.isArray(projects)) {
+        projectsCountElement.textContent = projects.filter(project => itemHasSkill(project, skillId)).length;
+    }
+    if (Array.isArray(posts)) {
+        postsCountElement.textContent = posts.filter(post => itemHasSkill(post, skillId)).length;
+    }
 }
 
 async function displaySkill() {
@@ -139,6 +156,7 @@ async function displaySkill() {
         }
 
         skillContentElement.innerHTML = marked.parse(skill.description);
+        highlightCodeBlocks(skillContentElement);
         displaySkillCounts(skill.id);
     } else {
         skillTitleElement.textContent = "Skill Not Found";
