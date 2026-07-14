@@ -108,6 +108,7 @@ async function displayBlogPost() {
         }
 
         postContentElement.innerHTML = marked.parse(post.content);
+        addCopyButtonsToCodeBlocks(postContentElement);
         highlightCodeBlocks(postContentElement);
 
         // Render skills sidebar if skills are attached
@@ -201,4 +202,37 @@ function buildAdminFab(type, id) {
     fab.appendChild(editBtn);
     fab.appendChild(deleteBtn);
     return fab;
+}
+
+function addCopyButtonsToCodeBlocks(container) {
+    if (!container) return;
+    container.querySelectorAll('pre').forEach((pre) => {
+        if (pre.querySelector('.code-copy-btn')) return; // avoid duplicates
+
+        pre.classList.add('code-block-wrapper');
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'code-copy-btn';
+        btn.setAttribute('aria-label', 'Copy code');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+
+        btn.addEventListener('click', async () => {
+            const code = pre.querySelector('code');
+            const text = code ? code.innerText : pre.innerText;
+            try {
+                await navigator.clipboard.writeText(text);
+                btn.classList.add('is-copied');
+                btn.setAttribute('aria-label', 'Copied!');
+                setTimeout(() => {
+                    btn.classList.remove('is-copied');
+                    btn.setAttribute('aria-label', 'Copy code');
+                }, 1500);
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+        });
+
+        pre.appendChild(btn);
+    });
 }

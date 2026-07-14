@@ -168,7 +168,7 @@ main.post-detail-main {
     background-color: transparent;
     padding: 0;
     border-radius: 0;
-    font-size: 1em;
+    font-size: 0.82em;
     color: inherit;
 }
 
@@ -475,4 +475,44 @@ nav img:hover {
         width: 16px;
         height: 16px;
     }
+}
+
+.code-block-wrapper {
+    position: relative;
+}
+
+.code-copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f8f8f2;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.code-block-wrapper:hover .code-copy-btn {
+    opacity: 1;
+}
+
+.code-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.code-copy-btn svg {
+    width: 15px;
+    height: 15px;
+}
+
+.code-copy-btn.is-copied {
+    color: #4ade80;
 }
