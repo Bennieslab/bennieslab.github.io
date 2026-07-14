@@ -53,10 +53,7 @@ function renderSkills(skills) {
         let skillName = document.createElement("h3");
         skillName.textContent = skill.name;
         if (skill.pinned) {
-            const pin = document.createElement("span");
-            pin.classList.add("pin-badge");
-            pin.textContent = "📌";
-            skillName.prepend(pin);
+            skillName.prepend(createPinBadge());
         }
 
         skillDiv.appendChild(skillThumbnail);

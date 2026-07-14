@@ -123,10 +123,7 @@ function renderPosts(posts) {
 
         postTitleElement.textContent = post.title;
         if (post.pinned) {
-            const pin = document.createElement("span");
-            pin.classList.add("pin-badge");
-            pin.textContent = "📌";
-            postTitleElement.prepend(pin);
+            postTitleElement.prepend(createPinBadge());
         }
         postContentElement.textContent = getPlainTextSnippet(post.content, 120);
         postCategoryElement.textContent = post.category;

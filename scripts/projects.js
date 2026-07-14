@@ -122,10 +122,7 @@ function renderProjects(projects) {
 
         projectNameElement.textContent = project.name;
         if (project.pinned) {
-            const pin = document.createElement("span");
-            pin.classList.add("pin-badge");
-            pin.textContent = "📌";
-            projectNameElement.prepend(pin);
+            projectNameElement.prepend(createPinBadge());
         }
         descriptionElement.textContent = getPlainTextSnippet(project.description, 120);
         categoryElement.textContent = project.category;

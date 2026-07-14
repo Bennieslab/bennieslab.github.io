@@ -741,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let listHtml = items.map(item => `
                 <li class="content-item">
-                    <span>${item.pinned ? '📌 ' : ''}${item.title || item.name}</span>
+                    <span>${item.pinned ? getPinBadgeHtml() + ' ' : ''}${item.title || item.name}</span>
                     <div>
                         <button class="edit-button" data-id="${item.id}" data-type="${type}">Edit</button>
                         <button class="delete-button" data-id="${item.id}" data-type="${type}">Delete</button>

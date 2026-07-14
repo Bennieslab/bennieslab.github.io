@@ -190,6 +190,10 @@ html[data-theme="dark"] .github-url {
     color: #d20a2e;
 }
 
+html[data-theme="dark"] .pin-badge {
+    color: #d20a2e;
+}
+
 /* Dark mode: skill chips */
 html[data-theme="dark"] .skill-chip {
     background: transparent;
