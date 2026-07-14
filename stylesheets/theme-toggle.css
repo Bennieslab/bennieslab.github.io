@@ -70,7 +70,7 @@ html[data-theme="dark"] p {
 
 html[data-theme="dark"] nav,
 html[data-theme="dark"] .thumbnail-container,
-html[data-theme="dark"] .timeline-cards > div,
+html[data-theme="dark"] .timeline-cards>div,
 html[data-theme="dark"] .review,
 html[data-theme="dark"] .enter-review,
 html[data-theme="dark"] main.admin-main {
@@ -156,6 +156,14 @@ html[data-theme="dark"] .post-container {
     background-color: transparent;
 }
 
+/* Dark mode: skill detail page card
+   (skill-detail-main IS the white card, unlike project/post pages where
+   main is transparent and a nested .project-container/.post-container
+   carries the background) */
+html[data-theme="dark"] main.skill-detail-main {
+    background-color: transparent;
+}
+
 /* Dark mode: category tags */
 html[data-theme="dark"] .category {
     background-color: #23272f;
@@ -214,7 +222,7 @@ html[data-theme="dark"] .social_icons img {
     filter: invert(77%) sepia(7%) saturate(441%) hue-rotate(174deg) brightness(92%) contrast(87%);
 }
 
-html[data-theme="dark"] .highlights > div > div:nth-child(2) > div:hover {
+html[data-theme="dark"] .highlights>div>div:nth-child(2)>div:hover {
     background: #1b1f26;
 }
 
