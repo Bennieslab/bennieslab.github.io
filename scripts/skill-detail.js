@@ -59,6 +59,55 @@ async function fetchSkill(id) {
     }
 }
 
+async function fetchPagedContent(path, page = 0, size = 1000) {
+    try {
+        const response = await fetch(`${SERVER_URL}${path}?page=${page}&size=${size}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error. Status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(`Error fetching ${path}:`, error);
+        return null;
+    }
+}
+
+async function fetchAllPagedContent(path) {
+    const firstPage = await fetchPagedContent(path);
+    if (!firstPage) return [];
+
+    const content = Array.isArray(firstPage.content) ? [...firstPage.content] : [];
+    const totalPages = firstPage.totalPages || 1;
+
+    for (let page = 1; page < totalPages; page++) {
+        const nextPage = await fetchPagedContent(path, page);
+        if (nextPage && Array.isArray(nextPage.content)) {
+            content.push(...nextPage.content);
+        }
+    }
+
+    return content;
+}
+
+function itemHasSkill(item, skillId) {
+    const skills = Array.isArray(item.skills) ? item.skills : Array.from(item.skills || []);
+    return skills.some(skill => String(skill.id) === String(skillId));
+}
+
+async function displaySkillCounts(skillId) {
+    const projectsCountElement = document.getElementById('skillProjectsCount');
+    const postsCountElement = document.getElementById('skillPostsCount');
+    if (!projectsCountElement || !postsCountElement) return;
+
+    const [projects, posts] = await Promise.all([
+        fetchAllPagedContent('/projects'),
+        fetchAllPagedContent('/blog')
+    ]);
+
+    projectsCountElement.textContent = projects.filter(project => itemHasSkill(project, skillId)).length;
+    postsCountElement.textContent = posts.filter(post => itemHasSkill(post, skillId)).length;
+}
+
 async function displaySkill() {
     const skillId = getSkillIdFromUrl();
     const pageTitleElement = document.getElementById('pageTitle');
@@ -97,6 +146,7 @@ async function displaySkill() {
         }
 
         skillContentElement.innerHTML = marked.parse(skill.description);
+        displaySkillCounts(skill.id);
     } else {
         skillTitleElement.textContent = "Skill Not Found";
         skillContentElement.innerHTML = "<p>The requested skill could not be loaded.</p>";

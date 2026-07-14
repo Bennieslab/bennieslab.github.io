@@ -152,7 +152,8 @@ html[data-theme="dark"] .theme-toggle {
 
 /* Dark mode: content card backgrounds */
 html[data-theme="dark"] .project-container,
-html[data-theme="dark"] .post-container {
+html[data-theme="dark"] .post-container,
+html[data-theme="dark"] .skill-container {
     background-color: transparent;
 }
 
@@ -168,6 +169,25 @@ html[data-theme="dark"] main.skill-detail-main {
 html[data-theme="dark"] .category {
     background-color: #23272f;
     color: #aeb6c0;
+}
+
+html[data-theme="dark"] .project-properties {
+    border-color: #2b3038;
+}
+
+html[data-theme="dark"] .project-property-label,
+html[data-theme="dark"] .skill-stat-value {
+    color: #7f8894;
+}
+
+html[data-theme="dark"] .project-property-value,
+html[data-theme="dark"] .skill-stat-row {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .skill-stat-row:hover,
+html[data-theme="dark"] .github-url {
+    color: #d20a2e;
 }
 
 /* Dark mode: skill chips */

@@ -63,24 +63,52 @@ main.project-detail-main {
     font-size: 0.9em;
 }
 
+.project-properties {
+    display: grid;
+    gap: 2px;
+    padding: 8px 0;
+    border-top: 1px solid #e6e6e6;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.project-property-row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    min-height: 30px;
+    gap: 12px;
+}
+
+.project-property-label {
+    color: #858585;
+    font-size: 0.78rem;
+}
+
+.project-property-value {
+    min-width: 0;
+    color: #3d3d3d;
+}
+
 .category {
-    margin-bottom: 15px;
+    margin-bottom: 0;
     width: fit-content;
     padding: 5px 12px;
     display: inline-block;
     border-radius: 5px;
     background: #e8e8e8;
     font-weight: bold;
-    margin-right: 15px;
+}
+
+.github-url {
+    color: #d20a2e;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .date-posted, .last-updated {
     font-size: 0.85em;
     color: #666;
-}
-
-.last-updated {
-    margin-left: 15px;
 }
 
 .project-content-rendered {

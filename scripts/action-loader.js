@@ -22,7 +22,9 @@
             element.classList.add('is-loading');
         }
 
-        if (options.placement === 'inside') {
+        const shouldPlaceInside = options.placement === 'inside' && element.tagName !== 'BUTTON';
+
+        if (shouldPlaceInside) {
             element.appendChild(loader);
         } else if (options.placement === 'before') {
             element.parentNode.insertBefore(loader, element);

@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="thumbnail-divider">or</div>
                     <input type="url" id="thumbnail-url-input" placeholder="Paste an image URL instead" class="modal-input">
                     <input type="text" id="category-input" placeholder="Category" class="modal-input" required value="${isEditMode ? itemData.category : ''}">
+                    ${type === 'project' ? `<input type="url" id="github-url-input" placeholder="GitHub URL" class="modal-input" value="${isEditMode ? (itemData.githubUrl || '') : ''}">` : ''}
                     <div class="modal-sorting-controls" style="margin: 12px 0; text-align: left; display: flex; flex-direction: column; gap: 8px;">
                         <label class="modal-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; user-select: none;">
                             <input type="checkbox" id="pinned-input" ${isEditMode && itemData.pinned ? 'checked' : ''}>
@@ -334,6 +335,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (type === 'blog') {
             payload.title = titleInput;
             payload.content = contentBody;
+        }
+
+        if (type === 'project') {
+            const githubUrlInput = document.getElementById('github-url-input');
+            payload.githubUrl = githubUrlInput ? githubUrlInput.value.trim() : '';
         }
 
         if (type !== 'skill') {

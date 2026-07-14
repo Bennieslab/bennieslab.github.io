@@ -152,11 +152,12 @@ main {
     padding: 5px;
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr;
+    grid-template-columns: minmax(0, 44%) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     gap: 20px;
-    aspect-ratio: 3 / 1;
+    height: 230px;
     border-radius: 10px;
+    overflow: hidden;
 }
 
 .blog-post:hover {
@@ -176,6 +177,9 @@ main {
 .thumbnail-container {
     border-radius: 7px;
     background: #e8e8e8;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .thumbnail-container img {
@@ -189,6 +193,31 @@ main {
 .date-posted, .last-updated {
     font-size: 0.85em;
     color: #666;
+}
+
+.metadata {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.post-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.post-content {
+    margin-bottom: 10px;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
 }
 
 footer {
@@ -240,13 +269,14 @@ footer>div {
     .blog-post {
         display: flex;
         flex-direction: column;
-        aspect-ratio: unset;
+        height: 430px;
         gap: 10px;
     }
 
     .thumbnail-container {
         width: 100%;
-        height: auto;
+        height: 220px;
+        flex: 0 0 220px;
         aspect-ratio: 4 / 3;
     }
 }
@@ -286,6 +316,7 @@ footer>div {
     .blog-post {
         flex-direction: column;
         gap: 10px;
+        height: 410px;
     }
 }
 

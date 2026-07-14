@@ -128,7 +128,7 @@ async function loadPage(page) {
     pageLoading = true;
     const paginationContainer = document.getElementById("pagination-skills");
     const loader = window.showActionLoader
-        ? showActionLoader(paginationContainer, { placement: 'inside', variant: 'inline', disable: false })
+        ? showActionLoader(paginationContainer, { variant: 'block', disable: false })
         : null;
     currentPage = page;
     try {

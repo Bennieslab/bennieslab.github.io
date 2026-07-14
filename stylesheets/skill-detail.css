@@ -7,17 +7,66 @@ body {
 }
 
 main.skill-detail-main {
-    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 200px minmax(0, 720px) 200px 1fr;
+    grid-template-areas: ". stats content . .";
+    gap: 24px;
+    align-items: start;
+    margin: 20px auto 40px;
     width: 100%;
-    max-width: 720px;
-    padding: 20px;
-    background-color: #ffffff;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    max-width: 100%;
+    padding: 0;
+    background-color: transparent;
 }
 
 .skill-container {
-    padding: 0;
+    grid-area: content;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+}
+
+.skill-stats-sidebar {
+    grid-area: stats;
+    position: sticky;
+    top: 20px;
+    align-self: start;
+}
+
+.skill-stats-heading {
+    font-size: 0.75em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #999;
+    margin: 0 0 10px 0;
+}
+
+.skill-stat-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    padding: 6px 4px;
+    border-radius: 6px;
+    color: #3d3d3d;
+    text-decoration: none;
+}
+
+.skill-stat-row:hover {
+    color: #d20a2e;
+}
+
+.skill-stat-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.skill-stat-value {
+    color: #858585;
+    font-size: 0.82em;
+    font-weight: 700;
 }
 
 .skill-detail-title {
@@ -280,8 +329,33 @@ nav img:hover {
 @media (max-width: 900px) {
 
     main.skill-detail-main {
+        display: block;
         width: 100%;
         padding: 10px;
+        margin-top: 10px;
+    }
+
+    .skill-stats-sidebar {
+        position: static;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        overflow-x: auto;
+    }
+
+    .skill-stats-heading {
+        margin: 0;
+        flex: 0 0 auto;
+    }
+
+    .skill-stat-row {
+        flex: 0 0 auto;
+        min-width: 110px;
+    }
+
+    .skill-container {
+        border-radius: 6px;
     }
 
     .skill-detail-thumbnail-container {

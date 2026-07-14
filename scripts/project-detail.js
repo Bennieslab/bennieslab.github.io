@@ -65,6 +65,8 @@ async function displayProject() {
     const projectDetailThumbnail = document.getElementById('projectDetailThumbnail');
     const projectTitleElement = document.querySelector('.project-detail-title');
     const projectCategoryElement = document.querySelector('.project-meta .category');
+    const projectGithubRow = document.querySelector('.project-github-row');
+    const projectGithubElement = document.querySelector('.github-url');
     const datePostedElement = document.querySelector('.project-meta .date-posted');
     const lastUpdateElement = document.querySelector('.project-meta .last-updated');
     const projectContentElement = document.querySelector('.project-content-rendered');
@@ -89,8 +91,9 @@ async function displayProject() {
         pageTitleElement.textContent = project.name;
         projectTitleElement.textContent = project.name;
         projectCategoryElement.textContent = project.category;
-        datePostedElement.textContent = "Posted: " + formatDateTimeArray(project.datePosted);
-        lastUpdateElement.textContent = "Last Updated: " + formatDateTimeArray(project.lastUpdated);
+        datePostedElement.textContent = formatDateTimeArray(project.datePosted);
+        lastUpdateElement.textContent = formatDateTimeArray(project.lastUpdated);
+        renderGithubUrl(project, projectGithubRow, projectGithubElement);
         
         // Display thumbnail if available
         if (project.thumbnailUrl) {
@@ -110,6 +113,20 @@ async function displayProject() {
         projectContentElement.innerHTML = "<p>The requested project could not be loaded.</p>";
         pageTitleElement.textContent = "Error";
     }
+}
+
+function renderGithubUrl(project, row, link) {
+    if (!row || !link) return;
+
+    const githubUrl = project.githubUrl || project.gitHubUrl || project.repositoryUrl || project.repoUrl;
+    if (!githubUrl) {
+        row.hidden = true;
+        return;
+    }
+
+    link.href = githubUrl;
+    link.textContent = githubUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    row.hidden = false;
 }
 
 /**

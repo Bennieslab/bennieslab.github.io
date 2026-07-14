@@ -1,7 +1,7 @@
 .action-loader {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    width: 46px;
+    width: 54px;
     height: 8px;
     padding: 0;
     overflow: hidden;
@@ -13,11 +13,11 @@
 .action-loader::before {
     content: "";
     display: block;
-    width: 8px;
+    width: 22px;
     height: 8px;
     border-radius: 999px;
     background: #d20a2e;
-    animation: action-loader-slide 1.15s ease-in-out infinite;
+    animation: action-loader-slide 1.1s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
 }
 
 .action-loader--block {
@@ -25,11 +25,11 @@
 }
 
 .action-loader--inline {
-    margin-left: 10px;
+    margin: 12px auto;
 }
 
 .action-loader--button {
-    margin-left: 8px;
+    margin: 10px auto 0;
 }
 
 .pagination .action-loader {
@@ -48,26 +48,10 @@ html[data-theme="dark"] .action-loader {
 }
 
 @keyframes action-loader-slide {
-    0%,
-    10% {
-        width: 8px;
+    0% {
         transform: translateX(0);
-    }
-    42% {
-        width: 26px;
-        transform: translateX(10px);
-    }
-    50%,
-    60% {
-        width: 8px;
-        transform: translateX(38px);
-    }
-    92% {
-        width: 26px;
-        transform: translateX(10px);
     }
     100% {
-        width: 8px;
-        transform: translateX(0);
+        transform: translateX(32px);
     }
 }
