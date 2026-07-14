@@ -5,13 +5,20 @@ const PAGE_SIZE = 6;
 let currentPage = 0;
 let totalPages = 1;
 let pageLoading = false;
-let allProjects = [];
-let activeFilters = { category: 'all', skill: 'all' };
-let filterControlsBound = false;
+let activeFilters = { category: 'all', skillId: 'all' };
+let filterCategories = [];
+let filterSkills = [];
 
-async function fetchProjects(page = 0, size = PAGE_SIZE) {
+async function fetchProjects(page = 0, size = PAGE_SIZE, filters = {}) {
     try {
-        let response = await fetch(`${SERVER_URL}/projects?page=${page}&size=${size}`);
+        const params = new URLSearchParams({ page, size });
+        if (filters.category && filters.category !== 'all') {
+            params.set('category', filters.category);
+        }
+        if (filters.skillId && filters.skillId !== 'all') {
+            params.set('skillId', filters.skillId);
+        }
+        let response = await fetch(`${SERVER_URL}/projects?${params.toString()}`);
         if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
@@ -79,50 +86,29 @@ function getPlainTextSnippet(markdownContent, maxLength = 120) {
 
 function getSkillIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('skill');
+    return params.get('skill') || params.get('skillId');
 }
 
-async function fetchAllProjects() {
-    const firstPage = await fetchProjects(0, 100);
-    if (!firstPage) return null;
-
-    const projects = Array.isArray(firstPage.content) ? [...firstPage.content] : [];
-    const total = firstPage.totalPages || 1;
-
-    for (let page = 1; page < total; page++) {
-        const nextPage = await fetchProjects(page, 100);
-        if (nextPage && Array.isArray(nextPage.content)) {
-            projects.push(...nextPage.content);
-        }
+async function fetchProjectCategories() {
+    try {
+        const response = await fetch(`${SERVER_URL}/projects/categories`);
+        if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching project categories:', error);
+        return [];
     }
-
-    return projects;
 }
 
-function getProjectSkills(project) {
-    return Array.isArray(project.skills) ? project.skills : Array.from(project.skills || []);
-}
-
-function getUniqueCategories(items) {
-    return Array.from(new Set(items.map(item => item.category).filter(Boolean))).sort((a, b) => a.localeCompare(b));
-}
-
-function getUniqueSkills(items) {
-    const skills = new Map();
-    items.forEach(item => {
-        getProjectSkills(item).forEach(skill => {
-            if (skill && skill.id != null && !skills.has(String(skill.id))) {
-                skills.set(String(skill.id), skill);
-            }
-        });
-    });
-    return Array.from(skills.values()).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-}
-
-function itemMatchesFilters(item) {
-    const matchesCategory = activeFilters.category === 'all' || item.category === activeFilters.category;
-    const matchesSkill = activeFilters.skill === 'all' || getProjectSkills(item).some(skill => String(skill.id) === String(activeFilters.skill));
-    return matchesCategory && matchesSkill;
+async function fetchSkillOptions() {
+    try {
+        const response = await fetch(`${SERVER_URL}/skills`);
+        if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching skill options:', error);
+        return [];
+    }
 }
 
 function syncFilterUrl() {
@@ -132,9 +118,10 @@ function syncFilterUrl() {
     } else {
         url.searchParams.delete('category');
     }
-    if (activeFilters.skill && activeFilters.skill !== 'all') {
-        url.searchParams.set('skill', activeFilters.skill);
+    if (activeFilters.skillId && activeFilters.skillId !== 'all') {
+        url.searchParams.set('skillId', activeFilters.skillId);
     } else {
+        url.searchParams.delete('skillId');
         url.searchParams.delete('skill');
     }
     history.replaceState({}, '', url);
@@ -146,9 +133,9 @@ function updateFilterSummary() {
 
     const parts = [];
     if (activeFilters.category !== 'all') parts.push(`Category: ${activeFilters.category}`);
-    if (activeFilters.skill !== 'all') {
-        const skill = getUniqueSkills(allProjects).find(item => String(item.id) === String(activeFilters.skill));
-        parts.push(`Skill: ${skill ? skill.name : activeFilters.skill}`);
+    if (activeFilters.skillId !== 'all') {
+        const skill = filterSkills.find(item => String(item.id) === String(activeFilters.skillId));
+        parts.push(`Skill: ${skill ? skill.name : activeFilters.skillId}`);
     }
 
     summary.textContent = parts.length ? parts.join(' · ') : 'All projects';
@@ -160,13 +147,6 @@ function renderFilterControls() {
     const dropdowns = document.querySelector('.filter-dropdowns');
     if (!filters || !tags || !dropdowns) return;
 
-    const categories = getUniqueCategories(allProjects);
-    const skills = getUniqueSkills(allProjects);
-    const presetSkill = getSkillIdFromUrl();
-    if (presetSkill && activeFilters.skill === 'all') {
-        activeFilters.skill = presetSkill;
-    }
-
     filters.style.display = 'grid';
     tags.innerHTML = `
         <button type="button" class="filter-clear-btn" id="clearFilters">Clear filters</button>
@@ -177,44 +157,42 @@ function renderFilterControls() {
             Category
             <select id="projectCategoryFilter" class="filter-select">
                 <option value="all">All categories</option>
-                ${categories.map(category => `<option value="${category}">${category}</option>`).join('')}
+                ${filterCategories.map(category => `<option value="${category}">${category}</option>`).join('')}
             </select>
         </label>
         <label class="filter-control" for="projectSkillFilter">
             Skill
             <select id="projectSkillFilter" class="filter-select">
                 <option value="all">All skills</option>
-                ${skills.map(skill => `<option value="${skill.id}">${skill.name}</option>`).join('')}
+                ${filterSkills.map(skill => `<option value="${skill.id}">${skill.name}</option>`).join('')}
             </select>
         </label>
     `;
 
     document.getElementById('projectCategoryFilter').value = activeFilters.category;
-    document.getElementById('projectSkillFilter').value = activeFilters.skill;
+    document.getElementById('projectSkillFilter').value = activeFilters.skillId;
     document.getElementById('clearFilters').addEventListener('click', () => {
-        activeFilters = { category: 'all', skill: 'all' };
+        activeFilters = { category: 'all', skillId: 'all' };
         document.getElementById('projectCategoryFilter').value = 'all';
         document.getElementById('projectSkillFilter').value = 'all';
         syncFilterUrl();
         currentPage = 0;
-        renderCurrentProjects();
+        loadPage(0);
     });
 
     document.getElementById('projectCategoryFilter').addEventListener('change', (e) => {
         activeFilters.category = e.target.value;
         syncFilterUrl();
         currentPage = 0;
-        renderCurrentProjects();
+        loadPage(0);
     });
 
     document.getElementById('projectSkillFilter').addEventListener('change', (e) => {
-        activeFilters.skill = e.target.value;
+        activeFilters.skillId = e.target.value;
         syncFilterUrl();
         currentPage = 0;
-        renderCurrentProjects();
+        loadPage(0);
     });
-
-    filterControlsBound = true;
     updateFilterSummary();
 }
 
@@ -286,25 +264,6 @@ function renderProjects(projects) {
     });
 }
 
-function renderCurrentProjects() {
-    if (!allProjects.length) {
-        renderProjects([]);
-        renderPagination(0, 1);
-        updateFilterSummary();
-        return;
-    }
-
-    const filtered = allProjects.filter(itemMatchesFilters);
-    totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-    if (currentPage > totalPages - 1) currentPage = 0;
-
-    const start = currentPage * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    renderProjects(filtered.slice(start, end));
-    renderPagination(currentPage, totalPages);
-    updateFilterSummary();
-}
-
 function renderPagination(currentPg, totalPgs) {
     const container = document.getElementById("pagination-projects");
     if (!container) return;
@@ -359,39 +318,47 @@ function renderPagination(currentPg, totalPgs) {
 }
 
 async function loadPage(page) {
-    currentPage = page;
-    renderCurrentProjects();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async function initializeProjects() {
     if (pageLoading) return;
     pageLoading = true;
     const paginationContainer = document.getElementById("pagination-projects");
     const loader = window.showActionLoader
         ? showActionLoader(paginationContainer, { variant: 'block', disable: false })
         : null;
+    currentPage = page;
     try {
-        const data = await fetchAllProjects();
+        const data = await fetchProjects(page, PAGE_SIZE, activeFilters);
         if (!data) {
             document.querySelector(".project-cards").innerHTML = "<p>Error loading projects.</p>";
             return;
         }
-        allProjects = data;
-
-        if (!filterControlsBound) {
-            const url = new URL(window.location.href);
-            activeFilters.category = url.searchParams.get('category') || 'all';
-            activeFilters.skill = url.searchParams.get('skill') || 'all';
-            renderFilterControls();
-        } else {
-            updateFilterSummary();
-        }
-
-        renderCurrentProjects();
+        totalPages = data.totalPages || 1;
+        renderProjects(data.content);
+        renderPagination(currentPage, totalPages);
+        updateFilterSummary();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
         if (loader) loader.hide();
         pageLoading = false;
+    }
+}
+
+async function initializeProjects() {
+    try {
+        const url = new URL(window.location.href);
+        activeFilters.category = url.searchParams.get('category') || 'all';
+        activeFilters.skillId = url.searchParams.get('skillId') || url.searchParams.get('skill') || 'all';
+
+        const [categories, skills] = await Promise.all([
+            fetchProjectCategories(),
+            fetchSkillOptions()
+        ]);
+
+        filterCategories = categories;
+        filterSkills = skills;
+        renderFilterControls();
+        await loadPage(0);
+    } catch (error) {
+        console.error('Error initializing projects:', error);
     }
 }
 
@@ -432,7 +399,7 @@ function buildAdminControls(type, id) {
 
             if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
 
-            initializeProjects();
+            await initializeProjects();
         } catch (error) {
             console.error('Error deleting item:', error);
             alert('Could not delete this item.');

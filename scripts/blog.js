@@ -5,13 +5,20 @@ const PAGE_SIZE = 6;
 let currentPage = 0;
 let totalPages = 1;
 let pageLoading = false;
-let allPosts = [];
-let activeFilters = { category: 'all', skill: 'all' };
-let filterControlsBound = false;
+let activeFilters = { category: 'all', skillId: 'all' };
+let filterCategories = [];
+let filterSkills = [];
 
-async function fetchPosts(page = 0, size = PAGE_SIZE) {
+async function fetchPosts(page = 0, size = PAGE_SIZE, filters = {}) {
     try {
-        let response = await fetch(`${SERVER_URL}/blog?page=${page}&size=${size}`);
+        const params = new URLSearchParams({ page, size });
+        if (filters.category && filters.category !== 'all') {
+            params.set('category', filters.category);
+        }
+        if (filters.skillId && filters.skillId !== 'all') {
+            params.set('skillId', filters.skillId);
+        }
+        let response = await fetch(`${SERVER_URL}/blog?${params.toString()}`);
         if (!response.ok) {
             throw new Error(`HTTP error. status: ${response.status}`);
         }
@@ -79,50 +86,29 @@ function getPlainTextSnippet(markdownContent, maxLength = 120) {
 
 function getSkillIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('skill');
+    return params.get('skill') || params.get('skillId');
 }
 
-async function fetchAllPosts() {
-    const firstPage = await fetchPosts(0, 100);
-    if (!firstPage) return null;
-
-    const posts = Array.isArray(firstPage.content) ? [...firstPage.content] : [];
-    const total = firstPage.totalPages || 1;
-
-    for (let page = 1; page < total; page++) {
-        const nextPage = await fetchPosts(page, 100);
-        if (nextPage && Array.isArray(nextPage.content)) {
-            posts.push(...nextPage.content);
-        }
+async function fetchPostCategories() {
+    try {
+        const response = await fetch(`${SERVER_URL}/blog/categories`);
+        if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching post categories:', error);
+        return [];
     }
-
-    return posts;
 }
 
-function getPostSkills(post) {
-    return Array.isArray(post.skills) ? post.skills : Array.from(post.skills || []);
-}
-
-function getUniqueCategories(items) {
-    return Array.from(new Set(items.map(item => item.category).filter(Boolean))).sort((a, b) => a.localeCompare(b));
-}
-
-function getUniqueSkills(items) {
-    const skills = new Map();
-    items.forEach(item => {
-        getPostSkills(item).forEach(skill => {
-            if (skill && skill.id != null && !skills.has(String(skill.id))) {
-                skills.set(String(skill.id), skill);
-            }
-        });
-    });
-    return Array.from(skills.values()).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-}
-
-function itemMatchesFilters(item) {
-    const matchesCategory = activeFilters.category === 'all' || item.category === activeFilters.category;
-    const matchesSkill = activeFilters.skill === 'all' || getPostSkills(item).some(skill => String(skill.id) === String(activeFilters.skill));
-    return matchesCategory && matchesSkill;
+async function fetchSkillOptions() {
+    try {
+        const response = await fetch(`${SERVER_URL}/skills`);
+        if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching skill options:', error);
+        return [];
+    }
 }
 
 function syncFilterUrl() {
@@ -132,9 +118,10 @@ function syncFilterUrl() {
     } else {
         url.searchParams.delete('category');
     }
-    if (activeFilters.skill && activeFilters.skill !== 'all') {
-        url.searchParams.set('skill', activeFilters.skill);
+    if (activeFilters.skillId && activeFilters.skillId !== 'all') {
+        url.searchParams.set('skillId', activeFilters.skillId);
     } else {
+        url.searchParams.delete('skillId');
         url.searchParams.delete('skill');
     }
     history.replaceState({}, '', url);
@@ -146,9 +133,9 @@ function updateFilterSummary() {
 
     const parts = [];
     if (activeFilters.category !== 'all') parts.push(`Category: ${activeFilters.category}`);
-    if (activeFilters.skill !== 'all') {
-        const skill = getUniqueSkills(allPosts).find(item => String(item.id) === String(activeFilters.skill));
-        parts.push(`Skill: ${skill ? skill.name : activeFilters.skill}`);
+    if (activeFilters.skillId !== 'all') {
+        const skill = filterSkills.find(item => String(item.id) === String(activeFilters.skillId));
+        parts.push(`Skill: ${skill ? skill.name : activeFilters.skillId}`);
     }
 
     summary.textContent = parts.length ? parts.join(' · ') : 'All posts';
@@ -160,13 +147,6 @@ function renderFilterControls() {
     const dropdowns = document.querySelector('.filter-dropdowns');
     if (!filters || !tags || !dropdowns) return;
 
-    const categories = getUniqueCategories(allPosts);
-    const skills = getUniqueSkills(allPosts);
-    const presetSkill = getSkillIdFromUrl();
-    if (presetSkill && activeFilters.skill === 'all') {
-        activeFilters.skill = presetSkill;
-    }
-
     filters.style.display = 'grid';
     tags.innerHTML = `
         <button type="button" class="filter-clear-btn" id="clearFilters">Clear filters</button>
@@ -177,44 +157,42 @@ function renderFilterControls() {
             Category
             <select id="postCategoryFilter" class="filter-select">
                 <option value="all">All categories</option>
-                ${categories.map(category => `<option value="${category}">${category}</option>`).join('')}
+                ${filterCategories.map(category => `<option value="${category}">${category}</option>`).join('')}
             </select>
         </label>
         <label class="filter-control" for="postSkillFilter">
             Skill
             <select id="postSkillFilter" class="filter-select">
                 <option value="all">All skills</option>
-                ${skills.map(skill => `<option value="${skill.id}">${skill.name}</option>`).join('')}
+                ${filterSkills.map(skill => `<option value="${skill.id}">${skill.name}</option>`).join('')}
             </select>
         </label>
     `;
 
     document.getElementById('postCategoryFilter').value = activeFilters.category;
-    document.getElementById('postSkillFilter').value = activeFilters.skill;
+    document.getElementById('postSkillFilter').value = activeFilters.skillId;
     document.getElementById('clearFilters').addEventListener('click', () => {
-        activeFilters = { category: 'all', skill: 'all' };
+        activeFilters = { category: 'all', skillId: 'all' };
         document.getElementById('postCategoryFilter').value = 'all';
         document.getElementById('postSkillFilter').value = 'all';
         syncFilterUrl();
         currentPage = 0;
-        renderCurrentPosts();
+        loadPage(0);
     });
 
     document.getElementById('postCategoryFilter').addEventListener('change', (e) => {
         activeFilters.category = e.target.value;
         syncFilterUrl();
         currentPage = 0;
-        renderCurrentPosts();
+        loadPage(0);
     });
 
     document.getElementById('postSkillFilter').addEventListener('change', (e) => {
-        activeFilters.skill = e.target.value;
+        activeFilters.skillId = e.target.value;
         syncFilterUrl();
         currentPage = 0;
-        renderCurrentPosts();
+        loadPage(0);
     });
-
-    filterControlsBound = true;
     updateFilterSummary();
 }
 
@@ -288,25 +266,6 @@ function renderPosts(posts) {
     });
 }
 
-function renderCurrentPosts() {
-    if (!allPosts.length) {
-        renderPosts([]);
-        renderPagination(0, 1);
-        updateFilterSummary();
-        return;
-    }
-
-    const filtered = allPosts.filter(itemMatchesFilters);
-    totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-    if (currentPage > totalPages - 1) currentPage = 0;
-
-    const start = currentPage * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    renderPosts(filtered.slice(start, end));
-    renderPagination(currentPage, totalPages);
-    updateFilterSummary();
-}
-
 function renderPagination(currentPg, totalPgs) {
     const container = document.getElementById("pagination-blog");
     if (!container) return;
@@ -361,39 +320,47 @@ function renderPagination(currentPg, totalPgs) {
 }
 
 async function loadPage(page) {
-    currentPage = page;
-    renderCurrentPosts();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async function initializePosts() {
     if (pageLoading) return;
     pageLoading = true;
     const paginationContainer = document.getElementById("pagination-blog");
     const loader = window.showActionLoader
         ? showActionLoader(paginationContainer, { variant: 'block', disable: false })
         : null;
+    currentPage = page;
     try {
-        const data = await fetchAllPosts();
+        const data = await fetchPosts(page, PAGE_SIZE, activeFilters);
         if (!data) {
             document.querySelector(".blog-posts").innerHTML = "<p>Error loading posts.</p>";
             return;
         }
-        allPosts = data;
-
-        if (!filterControlsBound) {
-            const url = new URL(window.location.href);
-            activeFilters.category = url.searchParams.get('category') || 'all';
-            activeFilters.skill = url.searchParams.get('skill') || 'all';
-            renderFilterControls();
-        } else {
-            updateFilterSummary();
-        }
-
-        renderCurrentPosts();
+        totalPages = data.totalPages || 1;
+        renderPosts(data.content);
+        renderPagination(currentPage, totalPages);
+        updateFilterSummary();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
         if (loader) loader.hide();
         pageLoading = false;
+    }
+}
+
+async function initializePosts() {
+    try {
+        const url = new URL(window.location.href);
+        activeFilters.category = url.searchParams.get('category') || 'all';
+        activeFilters.skillId = url.searchParams.get('skillId') || url.searchParams.get('skill') || 'all';
+
+        const [categories, skills] = await Promise.all([
+            fetchPostCategories(),
+            fetchSkillOptions()
+        ]);
+
+        filterCategories = categories;
+        filterSkills = skills;
+        renderFilterControls();
+        await loadPage(0);
+    } catch (error) {
+        console.error('Error initializing posts:', error);
     }
 }
 

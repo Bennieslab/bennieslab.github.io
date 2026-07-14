@@ -59,9 +59,9 @@ async function fetchSkill(id) {
     }
 }
 
-async function fetchPagedContent(path, page = 0, size = 1000) {
+async function fetchAllContent(path) {
     try {
-        const response = await fetch(`${SERVER_URL}${path}?page=${page}&size=${size}`);
+        const response = await fetch(`${SERVER_URL}${path}`);
         if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
@@ -70,23 +70,6 @@ async function fetchPagedContent(path, page = 0, size = 1000) {
         console.error(`Error fetching ${path}:`, error);
         return null;
     }
-}
-
-async function fetchAllPagedContent(path) {
-    const firstPage = await fetchPagedContent(path);
-    if (!firstPage) return [];
-
-    const content = Array.isArray(firstPage.content) ? [...firstPage.content] : [];
-    const totalPages = firstPage.totalPages || 1;
-
-    for (let page = 1; page < totalPages; page++) {
-        const nextPage = await fetchPagedContent(path, page);
-        if (nextPage && Array.isArray(nextPage.content)) {
-            content.push(...nextPage.content);
-        }
-    }
-
-    return content;
 }
 
 function itemHasSkill(item, skillId) {
@@ -102,15 +85,16 @@ async function displaySkillCounts(skillId) {
     if (!projectsCountElement || !postsCountElement) return;
 
     if (projectsLink) {
-        projectsLink.href = `projects.html?skill=${encodeURIComponent(skillId)}`;
+        projectsLink.href = `projects.html?skillId=${encodeURIComponent(skillId)}`;
     }
     if (postsLink) {
-        postsLink.href = `blogs.html?skill=${encodeURIComponent(skillId)}`;
+        postsLink.href = `blogs.html?skillId=${encodeURIComponent(skillId)}`;
     }
 
+    const encodedSkillId = encodeURIComponent(skillId);
     const [projects, posts] = await Promise.all([
-        fetchAllPagedContent('/projects'),
-        fetchAllPagedContent('/blog')
+        fetchAllContent(`/projects?skillId=${encodedSkillId}`),
+        fetchAllContent(`/blog?skillId=${encodedSkillId}`)
     ]);
 
     projectsCountElement.textContent = projects.filter(project => itemHasSkill(project, skillId)).length;
