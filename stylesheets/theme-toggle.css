@@ -171,6 +171,23 @@ html[data-theme="dark"] .category {
     color: #aeb6c0;
 }
 
+/* Dark mode: inline code chips inside rendered markdown content
+   (code blocks inside <pre> are excluded — they already carry their
+   own fixed dark theme regardless of site theme) */
+html[data-theme="dark"] .post-content-rendered code,
+html[data-theme="dark"] .project-content-rendered code,
+html[data-theme="dark"] .skill-content-rendered code {
+    background-color: #23272f;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .post-content-rendered pre code,
+html[data-theme="dark"] .project-content-rendered pre code,
+html[data-theme="dark"] .skill-content-rendered pre code {
+    background-color: transparent;
+    color: inherit;
+}
+
 html[data-theme="dark"] .project-properties {
     border-color: #2b3038;
 }
