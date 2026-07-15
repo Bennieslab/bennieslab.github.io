@@ -57,9 +57,9 @@ function formatDateTimeArray(dateTimeArray) {
 
     if (projectDate >= startOfWeek && projectDate <= now) {
         return projectDate.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-               projectDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            projectDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
-    
+
     if (projectDate.getFullYear() === now.getFullYear()) {
         return projectDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
     }
@@ -141,58 +141,74 @@ function updateFilterSummary() {
     summary.textContent = parts.length ? parts.join(' · ') : 'All projects';
 }
 
+let projectCategorySelect = null;
+let projectSkillSelect = null;
+
 function renderFilterControls() {
     const filters = document.querySelector('.filters');
     const tags = document.querySelector('.tags');
     const dropdowns = document.querySelector('.filter-dropdowns');
     if (!filters || !tags || !dropdowns) return;
 
-    filters.style.display = 'grid';
+    filters.style.display = 'flex';
     tags.innerHTML = `
         <button type="button" class="filter-clear-btn" id="clearFilters">Clear filters</button>
         <span class="filter-status" id="filterSummary">All projects</span>
     `;
     dropdowns.innerHTML = `
-        <label class="filter-control" for="projectCategoryFilter">
-            Category
-            <select id="projectCategoryFilter" class="filter-select">
-                <option value="all">All categories</option>
-                ${filterCategories.map(category => `<option value="${category}">${category}</option>`).join('')}
-            </select>
-        </label>
-        <label class="filter-control" for="projectSkillFilter">
-            Skill
-            <select id="projectSkillFilter" class="filter-select">
-                <option value="all">All skills</option>
-                ${filterSkills.map(skill => `<option value="${skill.id}">${skill.name}</option>`).join('')}
-            </select>
-        </label>
+        <div class="filter-control">
+            <span class="filter-control-label" id="projectCategoryFilterLabel">Category</span>
+        </div>
+        <div class="filter-control">
+            <span class="filter-control-label" id="projectSkillFilterLabel">Skill</span>
+        </div>
     `;
 
-    document.getElementById('projectCategoryFilter').value = activeFilters.category;
-    document.getElementById('projectSkillFilter').value = activeFilters.skillId;
+    const [categoryControl, skillControl] = dropdowns.querySelectorAll('.filter-control');
+
+    projectCategorySelect = createCustomSelect({
+        id: 'projectCategoryFilter',
+        options: [
+            { value: 'all', label: 'All categories' },
+            ...filterCategories.map(category => ({ value: category, label: category }))
+        ],
+        value: activeFilters.category,
+        onChange: (value) => {
+            activeFilters.category = value;
+            syncFilterUrl();
+            currentPage = 0;
+            loadPage(0);
+        }
+    });
+    categoryControl.appendChild(projectCategorySelect.element);
+    categoryControl.querySelector('.custom-select-trigger').setAttribute('aria-labelledby', 'projectCategoryFilterLabel');
+
+    projectSkillSelect = createCustomSelect({
+        id: 'projectSkillFilter',
+        options: [
+            { value: 'all', label: 'All skills' },
+            ...filterSkills.map(skill => ({ value: skill.id, label: skill.name }))
+        ],
+        value: activeFilters.skillId,
+        onChange: (value) => {
+            activeFilters.skillId = value;
+            syncFilterUrl();
+            currentPage = 0;
+            loadPage(0);
+        }
+    });
+    skillControl.appendChild(projectSkillSelect.element);
+    skillControl.querySelector('.custom-select-trigger').setAttribute('aria-labelledby', 'projectSkillFilterLabel');
+
     document.getElementById('clearFilters').addEventListener('click', () => {
         activeFilters = { category: 'all', skillId: 'all' };
-        document.getElementById('projectCategoryFilter').value = 'all';
-        document.getElementById('projectSkillFilter').value = 'all';
+        projectCategorySelect.setValue('all');
+        projectSkillSelect.setValue('all');
         syncFilterUrl();
         currentPage = 0;
         loadPage(0);
     });
 
-    document.getElementById('projectCategoryFilter').addEventListener('change', (e) => {
-        activeFilters.category = e.target.value;
-        syncFilterUrl();
-        currentPage = 0;
-        loadPage(0);
-    });
-
-    document.getElementById('projectSkillFilter').addEventListener('change', (e) => {
-        activeFilters.skillId = e.target.value;
-        syncFilterUrl();
-        currentPage = 0;
-        loadPage(0);
-    });
     updateFilterSummary();
 }
 

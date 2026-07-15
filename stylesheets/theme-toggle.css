@@ -185,11 +185,10 @@ html[data-theme="dark"] .skill-stat-row {
     color: #aeb6c0;
 }
 
-html[data-theme="dark"] .filter-control {
+html[data-theme="dark"] .filter-control-label {
     color: #7f8894;
 }
 
-html[data-theme="dark"] .filter-select,
 html[data-theme="dark"] .filter-clear-btn,
 html[data-theme="dark"] .filter-chip {
     background: #1b1f26;
@@ -197,10 +196,48 @@ html[data-theme="dark"] .filter-chip {
     color: #aeb6c0;
 }
 
-html[data-theme="dark"] .filter-select:focus,
 html[data-theme="dark"] .filter-clear-btn:hover,
 html[data-theme="dark"] .filter-chip.is-active {
     border-color: #d20a2e;
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .custom-select-trigger {
+    background: #1b1f26;
+    border-color: #343a44;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .custom-select-chevron {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .custom-select-trigger:hover {
+    border-color: #45505e;
+}
+
+html[data-theme="dark"] .custom-select.is-open .custom-select-trigger,
+html[data-theme="dark"] .custom-select-trigger:focus {
+    border-color: #d20a2e;
+}
+
+html[data-theme="dark"] .custom-select-options {
+    background: #1b1f26;
+    border-color: #343a44;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="dark"] .custom-select-option {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .custom-select-option:hover {
+    background: #23272f;
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .custom-select-option.is-selected {
+    background: rgba(210, 10, 46, 0.14);
     color: #d20a2e;
 }
 
@@ -296,10 +333,6 @@ html[data-theme="dark"] .project:hover,
 html[data-theme="dark"] .blog-post:hover,
 html[data-theme="dark"] .skill:hover {
     background-color: #1b1f26;
-}
-
-html[data-theme="dark"] .filter-select {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aeb6c0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
 }
 
 html[data-theme="dark"] {

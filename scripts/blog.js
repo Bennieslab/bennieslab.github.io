@@ -57,9 +57,9 @@ function formatDateTimeArray(dateTimeArray) {
 
     if (postDate >= startOfWeek && postDate <= now) {
         return postDate.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-               postDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            postDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
-    
+
     if (postDate.getFullYear() === now.getFullYear()) {
         return postDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
     }
@@ -141,58 +141,74 @@ function updateFilterSummary() {
     summary.textContent = parts.length ? parts.join(' · ') : 'All posts';
 }
 
+let postCategorySelect = null;
+let postSkillSelect = null;
+
 function renderFilterControls() {
     const filters = document.querySelector('.filters');
     const tags = document.querySelector('.tags');
     const dropdowns = document.querySelector('.filter-dropdowns');
     if (!filters || !tags || !dropdowns) return;
 
-    filters.style.display = 'grid';
+    filters.style.display = 'flex';
     tags.innerHTML = `
         <button type="button" class="filter-clear-btn" id="clearFilters">Clear filters</button>
         <span class="filter-status" id="filterSummary">All posts</span>
     `;
     dropdowns.innerHTML = `
-        <label class="filter-control" for="postCategoryFilter">
-            Category
-            <select id="postCategoryFilter" class="filter-select">
-                <option value="all">All categories</option>
-                ${filterCategories.map(category => `<option value="${category}">${category}</option>`).join('')}
-            </select>
-        </label>
-        <label class="filter-control" for="postSkillFilter">
-            Skill
-            <select id="postSkillFilter" class="filter-select">
-                <option value="all">All skills</option>
-                ${filterSkills.map(skill => `<option value="${skill.id}">${skill.name}</option>`).join('')}
-            </select>
-        </label>
+        <div class="filter-control">
+            <span class="filter-control-label" id="postCategoryFilterLabel">Category</span>
+        </div>
+        <div class="filter-control">
+            <span class="filter-control-label" id="postSkillFilterLabel">Skill</span>
+        </div>
     `;
 
-    document.getElementById('postCategoryFilter').value = activeFilters.category;
-    document.getElementById('postSkillFilter').value = activeFilters.skillId;
+    const [categoryControl, skillControl] = dropdowns.querySelectorAll('.filter-control');
+
+    postCategorySelect = createCustomSelect({
+        id: 'postCategoryFilter',
+        options: [
+            { value: 'all', label: 'All categories' },
+            ...filterCategories.map(category => ({ value: category, label: category }))
+        ],
+        value: activeFilters.category,
+        onChange: (value) => {
+            activeFilters.category = value;
+            syncFilterUrl();
+            currentPage = 0;
+            loadPage(0);
+        }
+    });
+    categoryControl.appendChild(postCategorySelect.element);
+    categoryControl.querySelector('.custom-select-trigger').setAttribute('aria-labelledby', 'postCategoryFilterLabel');
+
+    postSkillSelect = createCustomSelect({
+        id: 'postSkillFilter',
+        options: [
+            { value: 'all', label: 'All skills' },
+            ...filterSkills.map(skill => ({ value: skill.id, label: skill.name }))
+        ],
+        value: activeFilters.skillId,
+        onChange: (value) => {
+            activeFilters.skillId = value;
+            syncFilterUrl();
+            currentPage = 0;
+            loadPage(0);
+        }
+    });
+    skillControl.appendChild(postSkillSelect.element);
+    skillControl.querySelector('.custom-select-trigger').setAttribute('aria-labelledby', 'postSkillFilterLabel');
+
     document.getElementById('clearFilters').addEventListener('click', () => {
         activeFilters = { category: 'all', skillId: 'all' };
-        document.getElementById('postCategoryFilter').value = 'all';
-        document.getElementById('postSkillFilter').value = 'all';
+        postCategorySelect.setValue('all');
+        postSkillSelect.setValue('all');
         syncFilterUrl();
         currentPage = 0;
         loadPage(0);
     });
 
-    document.getElementById('postCategoryFilter').addEventListener('change', (e) => {
-        activeFilters.category = e.target.value;
-        syncFilterUrl();
-        currentPage = 0;
-        loadPage(0);
-    });
-
-    document.getElementById('postSkillFilter').addEventListener('change', (e) => {
-        activeFilters.skillId = e.target.value;
-        syncFilterUrl();
-        currentPage = 0;
-        loadPage(0);
-    });
     updateFilterSummary();
 }
 
@@ -219,7 +235,7 @@ function renderPosts(posts) {
 
         let postThumbnail = document.createElement("div");
         postThumbnail.classList.add("thumbnail-container");
-        
+
         if (post.thumbnailUrl) {
             let img = document.createElement("img");
             img.src = post.thumbnailUrl;

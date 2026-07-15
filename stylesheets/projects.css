@@ -147,6 +147,9 @@ main {
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+.filter-control-label {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -154,46 +157,109 @@ main {
     color: #7d7d7d;
 }
 
-.filter-select {
+/* ── Custom select (replaces native <select>, which can't be
+   restyled consistently across browsers/OS dark-mode) ────────────── */
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select-trigger {
     width: 100%;
     min-height: 40px;
-    padding: 0 12px;
+    padding: 0 34px 0 12px;
+    display: flex;
+    align-items: center;
     border: 1px solid #d8d8d8;
     border-radius: 8px;
     background: #ffffff;
     color: #3d3d3d;
     font: inherit;
-}
-
-.filter-select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237d7d7d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 14px;
-    padding-right: 34px;
+    text-align: left;
+    cursor: pointer;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.filter-select:hover {
+.custom-select-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom-select-chevron {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    color: #7d7d7d;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: transform 0.15s ease;
+}
+
+.custom-select-chevron svg {
+    width: 100%;
+    height: 100%;
+}
+
+.custom-select.is-open .custom-select-chevron {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.custom-select-trigger:hover {
     border-color: #bcbcbc;
 }
 
-.filter-select:focus {
+.custom-select.is-open .custom-select-trigger,
+.custom-select-trigger:focus {
     outline: none;
     border-color: #d20a2e;
     box-shadow: 0 0 0 3px rgba(210, 10, 46, 0.12);
 }
 
-.filter-clear-btn {
-    transition: border-color 0.15s ease, color 0.15s ease;
+.custom-select-options {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: 240px;
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
 }
 
-.filter-select:focus {
-    outline: none;
-    border-color: #d20a2e;
+.custom-select-option {
+    padding: 8px 10px;
+    border-radius: 6px;
+    overflow: hidden;
+    color: #3d3d3d;
+    font-size: 0.86rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.custom-select-option:hover {
+    background: #f4f4f4;
+    color: #d20a2e;
+}
+
+.custom-select-option.is-selected {
+    background: rgba(210, 10, 46, 0.06);
+    color: #d20a2e;
+    font-weight: 700;
+}
+
+.filter-clear-btn {
+    transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .filter-clear-btn {
