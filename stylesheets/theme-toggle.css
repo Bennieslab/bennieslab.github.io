@@ -302,6 +302,14 @@ html[data-theme="dark"] .filter-select {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aeb6c0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
 }
 
+html[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+html:not([data-theme="dark"]) {
+    color-scheme: light;
+}
+
 @media (max-width: 900px) {
     .theme-toggle-wrapper {
         order: 2;
