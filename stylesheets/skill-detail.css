@@ -254,6 +254,18 @@ main.skill-detail-main {
     color: inherit;
 }
 
+.skill-content-rendered .katex {
+    color: inherit;
+    font-size: 1.05em;
+}
+
+.skill-content-rendered .katex-display {
+    margin: 1em 0;
+    padding: 4px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 .navbar {
     display: flex;
     justify-content: space-between;
