@@ -86,6 +86,7 @@ async function displayProject() {
         projectTitleElement.textContent = "Project Not Found";
         projectContentElement.innerHTML = "<p>No project ID provided in the URL.</p>";
         pageTitleElement.textContent = "Error";
+        document.body.classList.remove('is-loading');
         return;
     }
 
@@ -126,6 +127,8 @@ async function displayProject() {
         projectContentElement.innerHTML = "<p>The requested project could not be loaded.</p>";
         pageTitleElement.textContent = "Error";
     }
+
+    document.body.classList.remove('is-loading');
 }
 
 function renderGithubUrl(project, row, link) {
