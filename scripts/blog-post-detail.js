@@ -111,6 +111,7 @@ async function displayBlogPost() {
         postContentElement.innerHTML = marked.parse(post.content);
         addCopyButtonsToCodeBlocks(postContentElement);
         highlightCodeBlocks(postContentElement);
+        renderMathContent(postContentElement);
 
         // Render skills sidebar if skills are attached
         renderSkillsSidebar(post.skills);
@@ -155,6 +156,25 @@ function renderSkillsSidebar(skills) {
     });
 
     sidebar.style.display = 'block';
+}
+
+/**
+ * Runs KaTeX auto-render over the post content to typeset LaTeX.
+ * Safe to call even if the KaTeX script hasn't loaded for some reason.
+ * Only \( \), \[ \], and $$ $$ are recognized — bare single $...$ is
+ * intentionally left out so ordinary prices/text with $ signs don't
+ * get misinterpreted as math.
+ */
+function renderMathContent(container) {
+    if (!window.renderMathInElement || !container) return;
+    renderMathInElement(container, {
+        delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\[', right: '\\]', display: true },
+            { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false
+    });
 }
 
 document.addEventListener('DOMContentLoaded', displayBlogPost);

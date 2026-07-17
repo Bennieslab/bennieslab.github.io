@@ -203,6 +203,18 @@ main.post-detail-main {
     color: inherit;
 }
 
+.post-content-rendered .katex {
+    color: inherit;
+    font-size: 1.05em;
+}
+
+.post-content-rendered .katex-display {
+    margin: 1em 0;
+    padding: 4px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 /* ── Skills sidebar — desktop (left column) ──────────────────────────── */
 .detail-skills-sidebar {
     grid-area: skills-left;
