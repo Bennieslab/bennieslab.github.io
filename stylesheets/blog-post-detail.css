@@ -6,6 +6,37 @@ body {
     overflow-x: hidden;
 }
 
+/* ── Full-page loading state ───────────────────────────────────────────
+   Body carries .is-loading until the post finishes fetching. While
+   present, the loader is centered under the navbar and the main content
+   grid stays hidden — nothing partially-loaded flashes on screen.
+   ─────────────────────────────────────────────────────────────────────── */
+.detail-loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    width: 100%;
+}
+
+.detail-loading .action-loader {
+    width: 90px;
+    height: 10px;
+}
+
+.detail-loading .action-loader::before {
+    width: 36px;
+    height: 10px;
+}
+
+body.is-loading .detail-loading {
+    display: flex;
+}
+
+body.is-loading main.post-detail-main {
+    display: none;
+}
+
 /* ── Layout shell: 3-column grid ─────────────────────────────────────────
    Columns: [skills-left] [content] [sidebar-right]
    Content uses 1fr so it grows to fill the free space, keeping sidebar at 200px

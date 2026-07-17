@@ -84,6 +84,7 @@ async function displayBlogPost() {
         postTitleElement.textContent = "Post Not Found";
         postContentElement.innerHTML = "<p>No blog post ID provided in the URL.</p>";
         pageTitleElement.textContent = "Error";
+        document.body.classList.remove('is-loading');
         return;
     }
 
@@ -118,6 +119,8 @@ async function displayBlogPost() {
         postContentElement.innerHTML = "<p>The requested blog post could not be loaded.</p>";
         pageTitleElement.textContent = "Error";
     }
+
+    document.body.classList.remove('is-loading');
 }
 
 /**

@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/blog-post-detail.css">
     <script src="scripts/theme-toggle.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheets/theme-toggle.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/action-loader.css">
 
     <!-- Code snippet syntax highlighting -->
     <link rel="stylesheet"
@@ -22,7 +23,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 
-<body>
+<body class="is-loading">
     <div class="navbar">
         <a href="#" class="sitename"><span class="red-text">Bennies</span>lab</a>
         <nav>
@@ -55,6 +56,10 @@
                 </span>
             </button>
         </div>
+    </div>
+
+    <div class="detail-loading" role="status" aria-label="Loading post">
+        <span class="action-loader action-loader--block"></span>
     </div>
 
     <main class="post-detail-main">
