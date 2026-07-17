@@ -161,17 +161,19 @@ function renderSkillsSidebar(skills) {
 /**
  * Runs KaTeX auto-render over the post content to typeset LaTeX.
  * Safe to call even if the KaTeX script hasn't loaded for some reason.
- * Only \( \), \[ \], and $$ $$ are recognized — bare single $...$ is
- * intentionally left out so ordinary prices/text with $ signs don't
- * get misinterpreted as math.
+ * Uses $...$ (inline) and $$...$$ (display) as delimiters. Backslash
+ * forms like \( \) and \[ \] don't survive markdown's own escaping
+ * (marked strips the backslash before punctuation, e.g. \( -> ( ),
+ * so dollar delimiters are the only reliable option here. Content
+ * inside <code>/<pre> is skipped automatically by auto-render, so
+ * shell/JS variables like $HOME or $\{value} in code blocks are safe.
  */
 function renderMathContent(container) {
     if (!window.renderMathInElement || !container) return;
     renderMathInElement(container, {
         delimiters: [
             { left: '$$', right: '$$', display: true },
-            { left: '\\[', right: '\\]', display: true },
-            { left: '\\(', right: '\\)', display: false }
+            { left: '$', right: '$', display: false }
         ],
         throwOnError: false
     });
