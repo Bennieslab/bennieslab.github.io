@@ -360,6 +360,14 @@ html:not([data-theme="dark"]) {
     color-scheme: light;
 }
 
+::selection {
+    background-color: rgba(210, 10, 46, 0.25);
+}
+
+::-moz-selection {
+    background-color: rgba(210, 10, 46, 0.25);
+}
+
 @media (max-width: 900px) {
     .theme-toggle-wrapper {
         order: 2;
