@@ -132,6 +132,7 @@ async function displaySkill() {
         skillTitleElement.textContent = "Skill Not Found";
         skillContentElement.innerHTML = "<p>No skill ID provided in the URL.</p>";
         pageTitleElement.textContent = "Error";
+        document.body.classList.remove('is-loading');
         return;
     }
 
@@ -164,6 +165,8 @@ async function displaySkill() {
         skillContentElement.innerHTML = "<p>The requested skill could not be loaded.</p>";
         pageTitleElement.textContent = "Error";
     }
+
+    document.body.classList.remove('is-loading');
 }
 
 function buildAdminFab(type, id) {
