@@ -122,20 +122,6 @@ function initModelViewer(modelUrl) {
         (gltf) => {
             clearTimeout(slowLoadTimeout);
             const model = gltf.scene;
-
-            // Temporary diagnostics — remove once the blank-render issue is
-            // resolved. Tells us whether geometry actually exists and where
-            // the computed bounding box places it.
-            let meshCount = 0;
-            model.traverse((child) => { if (child.isMesh) meshCount++; });
-            const debugBox = new THREE.Box3().setFromObject(model);
-            const debugSize = debugBox.getSize(new THREE.Vector3());
-            const debugCenter = debugBox.getCenter(new THREE.Vector3());
-            console.log('[model-debug] mesh count:', meshCount);
-            console.log('[model-debug] bounding box size:', debugSize);
-            console.log('[model-debug] bounding box center:', debugCenter);
-            console.log('[model-debug] scene children:', model.children);
-
             scene.add(model);
             frameCameraToObject(model, camera, controls);
             if (loadingEl) loadingEl.style.display = 'none';
@@ -223,6 +209,12 @@ async function displayModel() {
         modelCategoryElement.textContent = model.category;
         datePostedElement.textContent = formatDateTimeArray(model.datePosted);
         lastUpdateElement.textContent = formatDateTimeArray(model.lastUpdated);
+
+        // Reveal the layout now, before initializing the 3D viewer — while
+        // body still carries .is-loading, main.model-detail-main is
+        // display:none, so the viewer container reports 0x0 dimensions and
+        // three.js sizes the renderer/camera to nothing.
+        document.body.classList.remove('is-loading');
 
         initModelViewer(model.modelUrl);
 
