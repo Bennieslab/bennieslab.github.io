@@ -176,6 +176,7 @@ html[data-theme="dark"] .category {
    own fixed dark theme regardless of site theme) */
 html[data-theme="dark"] .post-content-rendered code,
 html[data-theme="dark"] .project-content-rendered code,
+html[data-theme="dark"] .model-content-rendered code,
 html[data-theme="dark"] .skill-content-rendered code {
     background-color: #23272f;
     color: #aeb6c0;
@@ -183,6 +184,7 @@ html[data-theme="dark"] .skill-content-rendered code {
 
 html[data-theme="dark"] .post-content-rendered pre code,
 html[data-theme="dark"] .project-content-rendered pre code,
+html[data-theme="dark"] .model-content-rendered pre code,
 html[data-theme="dark"] .skill-content-rendered pre code {
     background-color: transparent;
     color: inherit;

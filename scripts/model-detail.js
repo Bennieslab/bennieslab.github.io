@@ -168,6 +168,7 @@ async function displayModel() {
     const modelCategoryElement = document.querySelector('.model-meta .category');
     const datePostedElement = document.querySelector('.model-meta .date-posted');
     const lastUpdateElement = document.querySelector('.model-meta .last-updated');
+    const modelContentElement = document.querySelector('.model-content-rendered');
 
     if (!modelId) {
         modelTitleElement.textContent = "Model Not Found";
@@ -192,6 +193,11 @@ async function displayModel() {
         initModelViewer(model.modelUrl);
 
         renderSkillsSidebar(model.skills);
+        if (model.description) {
+            modelContentElement.innerHTML = marked.parse(model.description);
+        } else {
+            modelContentElement.innerHTML = '';
+        }
     } else {
         modelTitleElement.textContent = "Model Not Found";
         pageTitleElement.textContent = "Error";
