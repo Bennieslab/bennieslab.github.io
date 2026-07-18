@@ -153,7 +153,8 @@ html[data-theme="dark"] .theme-toggle {
 /* Dark mode: content card backgrounds */
 html[data-theme="dark"] .project-container,
 html[data-theme="dark"] .post-container,
-html[data-theme="dark"] .skill-container {
+html[data-theme="dark"] .skill-container,
+html[data-theme="dark"] .model-container {
     background-color: transparent;
 }
 
@@ -194,14 +195,37 @@ html[data-theme="dark"] .project-properties {
     border-color: #2b3038;
 }
 
+html[data-theme="dark"] .model-properties {
+    border-color: #2b3038;
+}
+
 html[data-theme="dark"] .project-property-label,
+html[data-theme="dark"] .model-property-label,
 html[data-theme="dark"] .skill-stat-value {
     color: #7f8894;
 }
 
 html[data-theme="dark"] .project-property-value,
+html[data-theme="dark"] .model-property-value,
 html[data-theme="dark"] .skill-stat-row {
     color: #aeb6c0;
+}
+
+/* Dark mode: 3D model viewer surfaces (loading/error states share the
+   same flat background as the canvas container itself) */
+html[data-theme="dark"] .model-viewer-container,
+html[data-theme="dark"] .model-viewer-loading,
+html[data-theme="dark"] .model-viewer-error {
+    background: #1b1f26;
+}
+
+html[data-theme="dark"] .model-download-btn {
+    background: #23272f;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .model-download-btn:hover {
+    background: #2b303a;
 }
 
 html[data-theme="dark"] .filter-control-label {
@@ -347,10 +371,11 @@ html[data-theme="dark"] .carousel-dot.active {
     background: #d20a2e;
 }
 
-/* Dark mode: feed lists card hovers (projects, blogs, skills) */
+/* Dark mode: feed lists card hovers (projects, blogs, skills, models) */
 html[data-theme="dark"] .project:hover,
 html[data-theme="dark"] .blog-post:hover,
-html[data-theme="dark"] .skill:hover {
+html[data-theme="dark"] .skill:hover,
+html[data-theme="dark"] .model:hover {
     background-color: #1b1f26;
 }
 
