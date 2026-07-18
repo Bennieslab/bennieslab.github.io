@@ -72,6 +72,7 @@ async function fetchModel(id) {
 function initModelViewer(modelUrl) {
     const container = document.getElementById('modelViewer');
     const loadingEl = document.getElementById('modelViewerLoading');
+    const loadingTextEl = document.getElementById('modelViewerLoadingText');
     const errorEl = document.getElementById('modelViewerError');
     if (!container) return;
 
@@ -106,20 +107,39 @@ function initModelViewer(modelUrl) {
     dirLight.position.set(3, 10, 8);
     scene.add(dirLight);
 
+    // If the model takes a while to arrive, reassure the user instead of
+    // leaving a bare spinner up with no feedback. This is not an error —
+    // just cleared once the load settles (success or failure) below.
+    const slowLoadTimeout = setTimeout(() => {
+        if (loadingTextEl) {
+            loadingTextEl.textContent = "Still loading — large models can take a moment...";
+        }
+    }, 15000);
+
     const loader = new GLTFLoader();
     loader.load(
         modelUrl,
         (gltf) => {
+            clearTimeout(slowLoadTimeout);
             const model = gltf.scene;
             scene.add(model);
             frameCameraToObject(model, camera, controls);
             if (loadingEl) loadingEl.style.display = 'none';
         },
-        undefined,
+        (xhr) => {
+            if (loadingTextEl && xhr.lengthComputable) {
+                const percent = Math.round((xhr.loaded / xhr.total) * 100);
+                loadingTextEl.textContent = `Loading ${percent}%...`;
+            }
+        },
         (error) => {
+            clearTimeout(slowLoadTimeout);
             console.error('Error loading 3D model:', error);
             if (loadingEl) loadingEl.style.display = 'none';
-            if (errorEl) errorEl.classList.add('is-visible');
+            if (errorEl) {
+                errorEl.classList.add('is-visible');
+                errorEl.textContent = "Couldn't load the 3D model — it may still be processing, blocked by a network issue, or the file may be missing.";
+            }
         }
     );
 
@@ -193,10 +213,13 @@ async function displayModel() {
         initModelViewer(model.modelUrl);
 
         renderSkillsSidebar(model.skills);
-        if (model.description) {
-            modelContentElement.innerHTML = marked.parse(model.description);
-        } else {
-            modelContentElement.innerHTML = '';
+
+        if (modelContentElement) {
+            if (model.description) {
+                modelContentElement.innerHTML = marked.parse(model.description);
+            } else {
+                modelContentElement.innerHTML = '';
+            }
         }
     } else {
         modelTitleElement.textContent = "Model Not Found";
@@ -205,6 +228,7 @@ async function displayModel() {
         const loadingEl = document.getElementById('modelViewerLoading');
         if (loadingEl) loadingEl.style.display = 'none';
         if (errorEl) errorEl.classList.add('is-visible');
+        if (modelContentElement) modelContentElement.innerHTML = '';
     }
 
     document.body.classList.remove('is-loading');
