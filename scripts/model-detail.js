@@ -215,10 +215,31 @@ async function displayModel() {
         const downloadBtn = document.getElementById('modelDownloadBtn');
         if (downloadBtn) {
             if (model.modelUrl) {
-                downloadBtn.href = model.modelUrl;
-                const suggestedName = (model.name || 'model').replace(/[^a-z0-9\-_]+/gi, '_');
-                downloadBtn.download = `${suggestedName}.glb`;
+                const suggestedName = (model.name || 'model').replace(/[^a-z0-9\-_]+/gi, '_') + '.glb';
                 downloadBtn.style.display = 'inline-flex';
+                downloadBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try {
+                        // The download attribute is ignored cross-origin by most
+                        // browsers, and Backblaze doesn't send a Content-Disposition
+                        // filename — so the URL's raw storage key gets used instead,
+                        // stripping the .glb extension. Fetching as a blob and
+                        // downloading from a same-origin object URL sidesteps that.
+                        const response = await fetch(model.modelUrl);
+                        const blob = await response.blob();
+                        const objectUrl = URL.createObjectURL(blob);
+                        const tempLink = document.createElement('a');
+                        tempLink.href = objectUrl;
+                        tempLink.download = suggestedName;
+                        document.body.appendChild(tempLink);
+                        tempLink.click();
+                        tempLink.remove();
+                        URL.revokeObjectURL(objectUrl);
+                    } catch (err) {
+                        console.error('Download failed:', err);
+                        alert('Could not download the model file.');
+                    }
+                });
             } else {
                 downloadBtn.style.display = 'none';
             }
