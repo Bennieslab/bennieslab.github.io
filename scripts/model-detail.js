@@ -212,6 +212,18 @@ async function displayModel() {
 
         initModelViewer(model.modelUrl);
 
+        const downloadBtn = document.getElementById('modelDownloadBtn');
+        if (downloadBtn) {
+            if (model.modelUrl) {
+                downloadBtn.href = model.modelUrl;
+                const suggestedName = (model.name || 'model').replace(/[^a-z0-9\-_]+/gi, '_');
+                downloadBtn.download = `${suggestedName}.glb`;
+                downloadBtn.style.display = 'inline-flex';
+            } else {
+                downloadBtn.style.display = 'none';
+            }
+        }
+
         renderSkillsSidebar(model.skills);
 
         if (modelContentElement) {
