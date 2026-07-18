@@ -80,9 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTab.classList.add('active-tab');
     }
 
+    /**
+     * Maps a content type ('project', 'blog', 'skill', 'model') to its
+     * REST endpoint segment. Centralized so adding a new type only means
+     * adding one line here instead of updating five separate ternaries.
+     */
+    function getTypeEndpoint(type) {
+        switch (type) {
+            case 'blog': return 'blog';
+            case 'project': return 'projects';
+            case 'model': return 'models';
+            case 'skill': return 'skills';
+            default: return 'skills';
+        }
+    }
+
     async function loadItemForDeepEdit(type, id, token) {
         try {
-            const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}/${id}`;
+            const endpoint = `/${getTypeEndpoint(type)}/${id}`;
             const response = await fetch(`${SERVER_URL}${endpoint}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -119,6 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 titlePlaceholder = "Skill Name";
                 contentPlaceholder = "Skill Description (Markdown)";
                 break;
+            case 'model':
+                titlePlaceholder = "Model Name";
+                contentPlaceholder = "Model Description (Markdown)";
+                break;
         }
 
         const formHtml = `
@@ -136,6 +155,13 @@ document.addEventListener('DOMContentLoaded', () => {
             <dialog id="save-modal" class="modal">
                 <div class="modal-content">
                     <h2>${isEditMode ? 'Update Details' : 'Add Details'}</h2>
+                    ${type === 'model' ? `
+                    <label for="model-upload" class="file-label">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; margin-right: 8px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        <span id="model-file-name-display">${isEditMode && itemData.modelUrl ? 'Model file already exists' : 'Choose 3D Model File (.glb/.gltf)'}</span>
+                        <input type="file" id="model-upload" accept=".glb,.gltf" style="display:none;">
+                    </label>
+                    ` : ''}
                     <label for="thumbnail-upload" class="file-label">
                         <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; margin-right: 8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                         <span id="file-name-display">${isEditMode ? (itemData.thumbnailUrl ? 'Thumbnail already exists' : 'Choose New Thumbnail') : 'Choose Thumbnail Image'}</span>
@@ -230,6 +256,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         const thumbnailUrlInput = document.getElementById('thumbnail-url-input');
+        const modelUploadInput = document.getElementById('model-upload');
+        const modelFileNameDisplay = document.getElementById('model-file-name-display');
+
+        if (modelUploadInput && modelFileNameDisplay) {
+            modelUploadInput.addEventListener('change', (e) => {
+                modelFileNameDisplay.textContent = e.target.files[0]
+                    ? e.target.files[0].name
+                    : "Choose 3D Model File (.glb/.gltf)";
+            });
+        }
 
         thumbnailUploadInput.addEventListener('change', (e) => {
             fileNameDisplay.textContent = e.target.files[0] ? e.target.files[0].name : "Choose Thumbnail Image";
@@ -267,6 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const categoryInput = document.getElementById('category-input').value;
         const thumbnailUploadInput = document.getElementById('thumbnail-upload');
         const file = thumbnailUploadInput.files[0];
+        const modelUploadInput = document.getElementById('model-upload');
+        const modelFile = modelUploadInput ? modelUploadInput.files[0] : null;
         const token = localStorage.getItem('jwt_token');
 
         if (!token) {
@@ -277,6 +315,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (categoryInput.trim() === "") {
             alert("Category cannot be empty.");
+            return;
+        }
+
+        if (type === 'model' && !itemId && !modelFile) {
+            alert("Please choose a 3D model file (.glb or .gltf).");
             return;
         }
 
@@ -319,6 +362,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        let modelFileKey = null;
+        if (type === 'model' && modelFile) {
+            try {
+                const modelFormData = new FormData();
+                modelFormData.append('file', modelFile);
+                const modelResponse = await fetch(`${SERVER_URL}/upload/model`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: modelFormData,
+                });
+
+                if (modelResponse.status === 401 || modelResponse.status === 403) {
+                    alert("Your session has expired. Please log in again.");
+                    localStorage.removeItem('jwt_token');
+                    if (saveLoader) saveLoader.hide();
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (!modelResponse.ok) throw new Error(`Model upload failed: ${modelResponse.status}`);
+                const modelResult = await modelResponse.json();
+                modelFileKey = modelResult.fileUrl;
+            } catch (error) {
+                console.error('Model Upload Error:', error);
+                alert('Error uploading 3D model file. Please try again.');
+                if (saveLoader) saveLoader.hide();
+                return;
+            }
+        }
+
         const payload = {
             category: categoryInput,
             pinned: document.getElementById('pinned-input').checked,
@@ -329,7 +402,11 @@ document.addEventListener('DOMContentLoaded', () => {
             payload.thumbnailUrl = thumbnailUrl;
         }
 
-        if (type === 'project' || type === 'skill') {
+        if (modelFileKey) {
+            payload.modelFileKey = modelFileKey;
+        }
+
+        if (type === 'project' || type === 'skill' || type === 'model') {
             payload.name = titleInput;
             payload.description = contentBody;
         } else if (type === 'blog') {
@@ -347,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             payload.skillIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value, 10));
         }
 
-        const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}`;
+        const endpoint = `/${getTypeEndpoint(type)}`;
         const method = itemId ? 'PUT' : 'POST';
         const finalEndpoint = itemId ? `${SERVER_URL}${endpoint}/${itemId}` : `${SERVER_URL}${endpoint}`;
 
@@ -670,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}/${id}`;
+                const endpoint = `/${getTypeEndpoint(type)}/${id}`;
                 const response = await fetch(`${SERVER_URL}${endpoint}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -703,7 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}/${id}`;
+                const endpoint = `/${getTypeEndpoint(type)}/${id}`;
                 const response = await fetch(`${SERVER_URL}${endpoint}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -722,7 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const endpoint = `/${type === 'blog' ? 'blog' : (type === 'project' ? 'projects' : 'skills')}`;
+            const endpoint = `/${getTypeEndpoint(type)}`;
             const response = await fetch(`${SERVER_URL}${endpoint}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
