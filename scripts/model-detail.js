@@ -122,6 +122,20 @@ function initModelViewer(modelUrl) {
         (gltf) => {
             clearTimeout(slowLoadTimeout);
             const model = gltf.scene;
+
+            // Temporary diagnostics — remove once the blank-render issue is
+            // resolved. Tells us whether geometry actually exists and where
+            // the computed bounding box places it.
+            let meshCount = 0;
+            model.traverse((child) => { if (child.isMesh) meshCount++; });
+            const debugBox = new THREE.Box3().setFromObject(model);
+            const debugSize = debugBox.getSize(new THREE.Vector3());
+            const debugCenter = debugBox.getCenter(new THREE.Vector3());
+            console.log('[model-debug] mesh count:', meshCount);
+            console.log('[model-debug] bounding box size:', debugSize);
+            console.log('[model-debug] bounding box center:', debugCenter);
+            console.log('[model-debug] scene children:', model.children);
+
             scene.add(model);
             frameCameraToObject(model, camera, controls);
             if (loadingEl) loadingEl.style.display = 'none';
