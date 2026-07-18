@@ -1,182 +1,385 @@
-body {
-    padding: 20px;
-    height: 100%;
-    font-family: 'Inter';
-    color: #3d3d3d;
-}
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 40px;
-}
-
-.navbar a.active-link {
+.theme-toggle {
     position: relative;
-}
-
-.navbar a.active-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 3px;
-    background-color: #d20a2e;
-    border-radius: 5px;
-}
-
-.sitename {
-    margin: 0;
-    padding: 12px 0;
-    display: inline-block;
-    color: #3d3d3d;
-    font-size: 19px;
-    font-weight: 800;
-    font-family: sans-serif;
-    text-decoration: none;
-}
-
-.red-text {
-    color: #d20a2e;
-}
-
-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 68px;
+    height: 36px;
     padding: 4px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: #3d3d3d;
+    cursor: pointer;
+    line-height: 0;
+}
+
+.theme-toggle-wrapper {
     display: flex;
-    justify-content: space-around;
-    min-width: 400px;
-    background: #e8e8e8;
-    border-radius: 10px;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+}
+
+.theme-toggle__icon {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: #ffffff;
+}
+
+.theme-toggle__icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+}
+
+.theme-toggle::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #d20a2e;
+    transition: transform 0.2s ease;
+}
+
+html[data-theme="dark"] .theme-toggle::before {
+    transform: translateX(32px);
+}
+
+html[data-theme="dark"] body {
+    background: #121418;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .sitename,
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2 {
+    color: #d4d8dd;
+}
+
+html[data-theme="dark"] p {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] nav,
+html[data-theme="dark"] .thumbnail-container,
+html[data-theme="dark"] .timeline-cards>div,
+html[data-theme="dark"] .review,
+html[data-theme="dark"] .enter-review,
+html[data-theme="dark"] main.admin-main {
+    background: #23272f;
+}
+
+html[data-theme="dark"] nav img {
+    filter: invert(77%) sepia(7%) saturate(441%) hue-rotate(174deg) brightness(92%) contrast(87%);
+    opacity: 0.88;
+}
+
+html[data-theme="dark"] nav img:hover {
+    opacity: 1;
+    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
+}
+
+/* Nav link red hover: show a label and tint icon red */
+.navbar,
+nav {
+    align-items: center;
 }
 
 nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 6px;
+    position: relative;
+    text-decoration: none;
+    min-width: 38px;
+    min-height: 38px;
 }
 
-nav img:hover {
+nav a .nav-label {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    display: block;
+    transform: translate(-50%, 4px);
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: #3d3d3d;
+    font-size: 0.6em;
+    font-weight: 700;
+    color: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    line-height: 1;
+    user-select: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+nav a img {
+    display: block;
+}
+
+nav a:hover .nav-label {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+nav a:hover img {
+    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
     transform: scale(1.1);
 }
 
-.perspective-links {
-    padding: 0;
-    display: flex;
-    flex-wrap: nowrap;
-    height: fit-content;
-    width: fit-content;
-    background: #3d3d3d;
-    box-sizing: border-box;
-    border-radius: 7px;
-    line-height: 0; 
+html[data-theme="dark"] .contact,
+html[data-theme="dark"] side {
+    background: #1b1f26;
 }
 
-.perspective-links img {
-    margin: 0;
-    padding: 10px; 
-    border-radius: 7px;
+html[data-theme="dark"] .theme-toggle {
+    background: #1b1f26;
+    border-color: #343a44;
 }
 
-.perspective-links a {
-    margin: 0;
-    height: fit-content;
+/* Dark mode: content card backgrounds */
+html[data-theme="dark"] .project-container,
+html[data-theme="dark"] .post-container,
+html[data-theme="dark"] .skill-container,
+html[data-theme="dark"] .model-container {
+    background-color: transparent;
 }
 
-#sci-link {
+/* Dark mode: skill detail page card
+   (skill-detail-main IS the white card, unlike project/post pages where
+   main is transparent and a nested .project-container/.post-container
+   carries the background) */
+html[data-theme="dark"] main.skill-detail-main {
+    background-color: transparent;
+}
+
+/* Dark mode: category tags */
+html[data-theme="dark"] .category {
+    background-color: #23272f;
+    color: #aeb6c0;
+}
+
+/* Dark mode: inline code chips inside rendered markdown content
+   (code blocks inside <pre> are excluded — they already carry their
+   own fixed dark theme regardless of site theme) */
+html[data-theme="dark"] .post-content-rendered code,
+html[data-theme="dark"] .project-content-rendered code,
+html[data-theme="dark"] .skill-content-rendered code {
+    background-color: #23272f;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .post-content-rendered pre code,
+html[data-theme="dark"] .project-content-rendered pre code,
+html[data-theme="dark"] .skill-content-rendered pre code {
+    background-color: transparent;
+    color: inherit;
+}
+
+html[data-theme="dark"] .project-properties,
+html[data-theme="dark"] .model-properties {
+    border-color: #2b3038;
+}
+
+html[data-theme="dark"] .project-property-label,
+html[data-theme="dark"] .model-property-label,
+html[data-theme="dark"] .skill-stat-value {
+    color: #7f8894;
+}
+
+html[data-theme="dark"] .project-property-value,
+html[data-theme="dark"] .model-property-value,
+html[data-theme="dark"] .skill-stat-row {
+    color: #aeb6c0;
+}
+
+/* Dark mode: 3D model viewer surface (canvas itself renders transparent,
+   so this container color is what actually shows through) */
+html[data-theme="dark"] .model-viewer-container,
+html[data-theme="dark"] .model-viewer-loading,
+html[data-theme="dark"] .model-viewer-error {
+    background: #23272f;
+}
+
+html[data-theme="dark"] .model-viewer-hint,
+html[data-theme="dark"] .model-viewer-error,
+html[data-theme="dark"] .model-viewer-fallback {
+    color: #7f8894;
+}
+
+html[data-theme="dark"] .filter-control-label {
+    color: #7f8894;
+}
+
+html[data-theme="dark"] .filter-clear-btn,
+html[data-theme="dark"] .filter-chip {
+    background: #1b1f26;
+    border-color: #343a44;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .filter-clear-btn:hover,
+html[data-theme="dark"] .filter-chip.is-active {
+    border-color: #d20a2e;
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .custom-select-trigger {
+    background: #1b1f26;
+    border-color: #343a44;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .custom-select-chevron {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .custom-select-trigger:hover {
+    border-color: #45505e;
+}
+
+html[data-theme="dark"] .custom-select.is-open .custom-select-trigger,
+html[data-theme="dark"] .custom-select-trigger:focus {
+    border-color: #d20a2e;
+}
+
+html[data-theme="dark"] .custom-select-options {
+    background: #1b1f26;
+    border-color: #343a44;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="dark"] .custom-select-option {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .custom-select-option:hover {
+    background: #23272f;
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .custom-select-option.is-selected {
+    background: rgba(210, 10, 46, 0.14);
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .filter-status {
+    color: #7f8894;
+}
+
+html[data-theme="dark"] .skill-stat-row:hover,
+html[data-theme="dark"] .github-url {
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .pin-badge {
+    color: #d20a2e;
+}
+
+/* Dark mode: skill chips */
+html[data-theme="dark"] .skill-chip {
+    background: transparent;
+    border-color: transparent;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .skill-chip:hover {
+    background: transparent;
+    border-color: transparent;
+    color: #d20a2e;
+}
+
+/* Dark mode: home page thumbnail clears bg when it contains an image */
+html[data-theme="dark"] .thumbnail-container {
+    background: #23272f;
+}
+
+html[data-theme="dark"] .thumbnail-container:has(img) {
+    background: none;
+}
+
+/* Dark mode: nav label inherits tint on hover */
+html[data-theme="dark"] nav a .nav-label {
+    background: #1b1f26;
+    color: #d4d8dd;
+}
+
+html[data-theme="dark"] nav a:hover .nav-label {
+    color: #d4d8dd;
+}
+
+html[data-theme="dark"] nav a:hover img {
+    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
+    opacity: 1;
+}
+
+html[data-theme="dark"] .social_icons a {
+    color: #aeb6c0;
+    opacity: 0.72;
+}
+
+html[data-theme="dark"] .social_icons a:hover {
+    background: #1b1f26;
+    color: #d4d8dd;
+    opacity: 1;
+}
+
+html[data-theme="dark"] .social_icons img {
+    filter: invert(77%) sepia(7%) saturate(441%) hue-rotate(174deg) brightness(92%) contrast(87%);
+}
+
+html[data-theme="dark"] .highlights>div>div:nth-child(2)>div:hover {
+    background: #1b1f26;
+}
+
+html[data-theme="dark"] .contact {
+    background: #1b1f26;
+    color: #d4d8dd;
+}
+
+html[data-theme="dark"] .contact-details,
+html[data-theme="dark"] .socials {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .carousel-dot {
+    background: #3a414c;
+}
+
+html[data-theme="dark"] .carousel-dot.active {
     background: #d20a2e;
-    border-radius: 7px;
 }
 
-main {
-    margin: 0 auto;
-    padding: 0;
-    width: 720px;
-    display: block;
-    border-radius: 7px;
+/* Dark mode: feed lists card hovers (projects, blogs, skills) */
+html[data-theme="dark"] .project:hover,
+html[data-theme="dark"] .blog-post:hover,
+html[data-theme="dark"] .skill:hover {
+    background-color: #1b1f26;
 }
 
-.filters {
-    margin-bottom: 20px;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 5fr 2fr;
-    gap: 10px;
+html[data-theme="dark"] {
+    color-scheme: dark;
 }
 
-.tags {
-    width: 100%;
+html:not([data-theme="dark"]) {
+    color-scheme: light;
 }
 
-.tag {
-    margin-right: 10px;
-    min-width: 60px;
-    height: 30px;
-    display: inline-block;
-    border-radius: 20px;
-    background: #ffd6d6;
+@media (max-width: 900px) {
+    .theme-toggle-wrapper {
+        order: 2;
+    }
 }
-
-.filter-dropdowns {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.filter-dropdowns>div {
-    width: 100%;
-    height: 40px;
-    border-radius: 7px;
-    background: #e8e8e8;
-}
-
-.timeline {
-    position: relative;
-    width: 100%;
-}
-
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: #e8e8e8;
-}
-
-.timeline-entry {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-}
-
-.entry-title {
-    margin-left: 50px;
-    width: 150px;
-    height: 30px;
-    background: #e8e8e8;
-    border-radius: 15px;
-}
-
-.entry-title::before {
-    position: absolute;
-    left: 0;
-    content: '';
-    width: 40px;
-    height: 4px;
-    margin-top: 13px;
-    background: #e8e8e8;
-}
-
-.entry {
-    width: 80%;
-    align-self: center;
-    aspect-ratio: 4 / 1;
-    background: #e8e8e8;
-    border-radius: 7px;
-    margin-bottom: 20px;
-}
-
-footer { display: none; }

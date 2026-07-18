@@ -1,0 +1,411 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+/* ── Full-page loading state ───────────────────────────────────────────
+   Body carries .is-loading until the model finishes fetching. While
+   present, the loader is centered under the navbar and the main content
+   grid stays hidden — nothing partially-loaded flashes on screen.
+   ─────────────────────────────────────────────────────────────────────── */
+.detail-loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    width: 100%;
+}
+
+.detail-loading .action-loader {
+    width: 90px;
+    height: 10px;
+}
+
+.detail-loading .action-loader::before {
+    width: 36px;
+    height: 10px;
+}
+
+body.is-loading .detail-loading {
+    display: flex;
+}
+
+body.is-loading main.model-detail-main {
+    display: none;
+}
+
+/* ── Layout shell: 3-column grid ─────────────────────────────────────────
+   Columns: [skills-left] [content] [sidebar-right]
+   Content uses 1fr so it grows to fill the free space, keeping sidebar at 200px
+   Right column is 0px today — to add it later, change 0px → desired width.
+   ─────────────────────────────────────────────────────────────────────── */
+main.model-detail-main {
+    display: grid;
+    grid-template-columns: 1fr 200px minmax(0, 720px) 200px 1fr;
+    grid-template-areas: ". skills-left content sidebar-right .";
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+    max-width: 100%;
+    margin: 20px auto 40px;
+    padding: 0;
+    background-color: transparent;
+}
+
+/* Content column — inherits the white card look that was on <main> */
+.model-container {
+    grid-area: content;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+}
+
+.model-detail-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 2.2em;
+    color: #3d3d3d;
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+/* ── 3D viewer ──────────────────────────────────────────────────────────
+   The canvas renders with a transparent background (alpha:true, no
+   scene.background set in JS) so this container's own background is
+   what shows through — meaning dark mode only needs to override the
+   container color below, not touch the renderer at all.
+   ─────────────────────────────────────────────────────────────────────── */
+.model-viewer-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 520px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.model-viewer {
+    width: 100%;
+    height: 100%;
+}
+
+.model-viewer canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: grab;
+}
+
+.model-viewer canvas:active {
+    cursor: grabbing;
+}
+
+.model-viewer-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+}
+
+.model-viewer-error {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    color: #858585;
+    font-size: 0.9em;
+    background: #f0f0f0;
+}
+
+.model-viewer-error.is-visible {
+    display: flex;
+}
+
+.model-viewer-fallback {
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    color: #858585;
+    font-size: 0.9em;
+}
+
+.model-viewer-hint {
+    margin: 0 0 20px;
+    color: #858585;
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.model-meta {
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.model-properties {
+    display: grid;
+    gap: 2px;
+    padding: 8px 0;
+    border-top: 1px solid #e6e6e6;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.model-property-row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    min-height: 30px;
+    gap: 12px;
+}
+
+.model-property-label {
+    color: #858585;
+    font-size: 0.78rem;
+}
+
+.model-property-value {
+    min-width: 0;
+    color: #3d3d3d;
+}
+
+.category {
+    margin-bottom: 0;
+    width: fit-content;
+    padding: 5px 12px;
+    display: inline-block;
+    border-radius: 5px;
+    background: #e8e8e8;
+    font-weight: bold;
+}
+
+.date-posted,
+.last-updated {
+    font-size: 0.85em;
+    color: #666;
+}
+
+/* ── Skills sidebar — desktop (left column) ──────────────────────────── */
+.detail-skills-sidebar {
+    grid-area: skills-left;
+    display: none;
+    /* JS sets display:block when skills exist */
+    position: sticky;
+    top: 20px;
+    align-self: start;
+}
+
+.skills-sidebar-heading {
+    font-size: 0.75em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #999;
+    margin: 0 0 10px 0;
+}
+
+.skills-sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* Inline row: small icon + name. No card border or background. */
+.skill-chip {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 4px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #3d3d3d;
+    font-size: 0.82em;
+    font-weight: 500;
+    transition: color 0.15s ease;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.skill-chip:hover .skill-chip-name {
+    color: #d20a2e;
+}
+
+.skill-chip-thumb {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+}
+
+.skill-chip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.15s ease;
+}
+
+/* Right pane — reserved, invisible today */
+.detail-sidebar-right {
+    grid-area: sidebar-right;
+    display: none;
+    /* change to block when right pane content is added */
+}
+
+/* ── Responsive: collapse to single column at ≤ 900px ─────────────────── */
+@media (max-width: 900px) {
+
+    main.model-detail-main {
+        display: block;
+        /* drop grid, stack naturally */
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    /* Skills: horizontal scrollable chip strip above content */
+    .detail-skills-sidebar {
+        position: static;
+        margin-bottom: 12px;
+    }
+
+    .skills-sidebar-heading {
+        margin-bottom: 8px;
+    }
+
+    .skills-sidebar-list {
+        flex-direction: row;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 6px;
+        padding-bottom: 4px;
+    }
+
+    .skill-chip {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .skill-chip-thumb {
+        width: 18px;
+        height: 18px;
+    }
+
+    .model-container {
+        border-radius: 6px;
+    }
+
+    .model-viewer-container {
+        max-height: 380px;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav {
+        min-width: unset;
+        width: 100%;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .perspective-links {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .navbar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sitename {
+        flex-grow: 1;
+        order: 1;
+    }
+
+    .perspective-links {
+        order: 2;
+        margin-top: 0;
+    }
+
+    nav {
+        order: 3;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .model-detail-title {
+        font-size: 1.8em;
+    }
+
+    .model-viewer-container {
+        max-height: 300px;
+    }
+
+    /* Tighten chips on small screens */
+    .skill-chip {
+        font-size: 0.75em;
+    }
+
+    .skill-chip-thumb {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.admin-fab-controls {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.admin-fab-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #3d3d3d;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease-in-out;
+}
+
+.admin-fab-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.admin-fab-btn:hover {
+    transform: scale(1.08);
+}
+
+.admin-fab-delete {
+    background: #d20a2e;
+}

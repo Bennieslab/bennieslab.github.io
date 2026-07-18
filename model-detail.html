@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Model Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/models.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/model-detail.css">
+    <script src="scripts/theme-toggle.js"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheets/theme-toggle.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/action-loader.css">
+
+    <!-- three.js, loaded as ES modules via import map. Requires a fairly
+         modern browser (Chrome 89+, Firefox 108+, Safari 16.4+); the
+         classic-script fallback below catches anything older. -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script>
+        if (!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) {
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.remove('is-loading');
+                const viewer = document.getElementById('modelViewer');
+                const loading = document.getElementById('modelViewerLoading');
+                if (loading) loading.style.display = 'none';
+                if (viewer) {
+                    viewer.innerHTML = '<p class="model-viewer-fallback">3D preview needs a newer browser (recent Chrome, Firefox, or Safari). Please update to view this model.</p>';
+                }
+            });
+        }
+    </script>
+</head>
+
+<body class="is-loading">
+    <div class="navbar">
+        <a href="#" class="sitename"><span class="red-text">Bennies</span>lab</a>
+        <nav>
+            <a href="index.html"><img src="src/home.png" alt="Home"><span class="nav-label">Home</span></a>
+            <a href="projects.html"><img src="src/folder.png" alt="Projects"><span class="nav-label">Projects</span></a>
+            <a href="blogs.html"><img src="src/pen.png" alt="Blogs"><span class="nav-label">Blog</span></a>
+            <a href="profile.html"><img src="src/cv.png" alt="Profile"><span class="nav-label">Profile</span></a>
+        </nav>
+        <div class="theme-toggle-wrapper">
+            <button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+                <span class="theme-toggle__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2"></path>
+                        <path d="M12 20v2"></path>
+                        <path d="m4.93 4.93 1.41 1.41"></path>
+                        <path d="m17.66 17.66 1.41 1.41"></path>
+                        <path d="M2 12h2"></path>
+                        <path d="M20 12h2"></path>
+                        <path d="m6.34 17.66-1.41 1.41"></path>
+                        <path d="m19.07 4.93-1.41 1.41"></path>
+                    </svg>
+                </span>
+                <span class="theme-toggle__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3Z"></path>
+                    </svg>
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <div class="detail-loading" role="status" aria-label="Loading model">
+        <span class="action-loader action-loader--block"></span>
+    </div>
+
+    <main class="model-detail-main">
+
+        <aside class="detail-skills-sidebar" id="modelSkillsSidebar" aria-label="Skills used in this model">
+            <h2 class="skills-sidebar-heading">Skills</h2>
+            <div class="skills-sidebar-list" id="modelSkillsList">
+                <!-- skill chips injected by JS -->
+            </div>
+        </aside>
+
+        <!-- right-pane placeholder: invisible today (0px column), add content + bump width later -->
+        <aside class="detail-sidebar-right" aria-hidden="true"></aside>
+
+        <div class="model-container">
+            <h1 class="model-detail-title">Loading...</h1>
+
+            <div class="model-viewer-container">
+                <div id="modelViewer" class="model-viewer"></div>
+                <div class="model-viewer-loading" id="modelViewerLoading">
+                    <span class="action-loader action-loader--block"></span>
+                </div>
+                <div class="model-viewer-error" id="modelViewerError">
+                    Couldn't load the 3D model. It may still be processing, or the file may be missing.
+                </div>
+            </div>
+            <p class="model-viewer-hint">Drag to rotate · Scroll to zoom</p>
+
+            <div class="model-meta model-properties">
+                <div class="model-property-row">
+                    <span class="model-property-label">Category</span>
+                    <span class="category model-property-value">Category</span>
+                </div>
+                <div class="model-property-row">
+                    <span class="model-property-label">Posted</span>
+                    <span class="date-posted model-property-value">Loading...</span>
+                </div>
+                <div class="model-property-row">
+                    <span class="model-property-label">Updated</span>
+                    <span class="last-updated model-property-value">Loading...</span>
+                </div>
+            </div>
+
+            <!-- A markdown description section (like the project/skill/post
+                 detail pages) can go here later — the Model entity already
+                 stores `description`, it's just not rendered yet. -->
+        </div>
+
+    </main>
+
+    <footer>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </footer>
+
+    <script type="module" src="scripts/model-detail.js"></script>
+</body>
+
+</html>
