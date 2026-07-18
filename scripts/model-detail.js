@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const SERVER_URL = "https://bennieslab-backend.onrender.com";
 const isAdmin = !!localStorage.getItem('jwt_token');
@@ -96,7 +97,18 @@ function initModelViewer(modelUrl) {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
     container.appendChild(renderer.domElement);
+
+    // Metallic/PBR materials (common from Blender glTF exports) mostly
+    // reflect their surroundings rather than direct lights — with no
+    // environment map they render almost solid black. RoomEnvironment
+    // gives them something neutral to reflect without needing an actual
+    // HDRI asset.
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
