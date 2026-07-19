@@ -70,6 +70,54 @@ function highlightCodeBlocks(container) {
     });
 }
 
+/**
+ * Parses markdown while protecting $...$/$$...$$ math segments from
+ * marked's own backslash-escaping first.
+ *
+ * CommonMark treats backslash + ASCII punctuation as an escape sequence
+ * and strips the backslash — this isn't just the \( \( \[ \] delimiter
+ * problem from before, it hits ANY backslash-punctuation LaTeX command
+ * inside math too: \, (thin space), \%, \_, \&, etc. all get silently
+ * mangled by marked before KaTeX ever sees them (e.g. "2t\,\mathbf{D}"
+ * comes out as "2t,\mathbf{D}" — a stray literal comma in the equation).
+ *
+ * The fix: pull math segments out into plain alphanumeric placeholder
+ * tokens (which markdown can't misinterpret or alter) before handing the
+ * content to marked, then swap the original, untouched LaTeX back in
+ * after marked has produced its HTML. KaTeX's auto-render then sees the
+ * real source with every backslash intact.
+ *
+ * Known limitation (inherited from the $-delimiter choice, not new here):
+ * a literal "$" not meant as math can still be misread as an opening
+ * delimiter if a closing "$" appears later on the same line — same
+ * trade-off already accepted for auto-render itself.
+ */
+function renderMarkdownWithMath(markdownSource) {
+    if (!markdownSource) return '';
+
+    const mathSegments = [];
+    const protect = (match) => {
+        const token = `MATHSEGMENTPLACEHOLDER${mathSegments.length}ENDPLACEHOLDER`;
+        mathSegments.push(match);
+        return token;
+    };
+
+    // Order matters: pull out $$...$$ blocks first so the single-$ pass
+    // below can't split one in half.
+    const withPlaceholders = markdownSource
+        .replace(/\$\$[\s\S]+?\$\$/g, protect)
+        .replace(/\$[^$\n]+?\$/g, protect);
+
+    let html = marked.parse(withPlaceholders);
+
+    mathSegments.forEach((segment, index) => {
+        const token = `MATHSEGMENTPLACEHOLDER${index}ENDPLACEHOLDER`;
+        html = html.split(token).join(segment);
+    });
+
+    return html;
+}
+
 async function displayBlogPost() {
     const postId = getBlogPostIdFromUrl();
     const pageTitleElement = document.getElementById('pageTitle');
@@ -108,7 +156,7 @@ async function displayBlogPost() {
             postDetailThumbnail.style.display = 'none';
         }
 
-        postContentElement.innerHTML = marked.parse(post.content);
+        postContentElement.innerHTML = renderMarkdownWithMath(post.content);
         addCopyButtonsToCodeBlocks(postContentElement);
         highlightCodeBlocks(postContentElement);
         renderMathContent(postContentElement);
