@@ -144,8 +144,13 @@
             </div>
             <div id="media-library-content" style="display: none;">
                 <h1 class="tab-header">Media Library</h1>
-                <p class="coming-soon">Media Library is coming soon — browse and manage every uploaded thumbnail
-                    from here.</p>
+                <div class="media-library-toolbar">
+                    <span class="media-library-summary" id="mediaLibrarySummary"></span>
+                    <button type="button" class="manage-option media-refresh-btn" id="mediaRefreshBtn">Refresh</button>
+                </div>
+                <div id="mediaLibraryBody">
+                    <p class="coming-soon">Loading media library…</p>
+                </div>
             </div>
             <div id="drafts-content" style="display: none;">
                 <h1 class="tab-header">Drafts</h1>

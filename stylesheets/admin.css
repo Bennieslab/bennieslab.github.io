@@ -7,6 +7,7 @@ body {
     margin: 0;
     box-sizing: border-box;
     height: 100vh;
+    overflow: hidden;
     font-family: 'Inter';
     color: #3d3d3d;
     display: flex;
@@ -102,7 +103,7 @@ nav img:hover {
     padding: 0;
     display: flex;
     flex-grow: 1;
-    height: auto;
+    min-height: 0;
     gap: 20px;
 }
 
@@ -113,8 +114,10 @@ side {
     width: 250px;
     min-width: 250px;
     height: 100%;
+    min-height: 0;
     border-radius: 7px;
     background: #f4f4f4;
+    overflow-y: auto;
 }
 
 .logout {
@@ -139,6 +142,7 @@ main.admin-main {
     margin: 0;
     padding: 20px;
     flex-grow: 1;
+    min-height: 0;
     height: 100%;
     width: auto;
     display: flex;
@@ -247,6 +251,7 @@ main.admin-main {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    min-height: 0;
     height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -256,6 +261,7 @@ main.admin-main {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    min-height: 0;
 }
 
 .obsidian-style-input {
@@ -304,6 +310,7 @@ main.admin-main {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    min-height: 0;
     height: 100%;
 }
 
@@ -527,4 +534,129 @@ main.admin-main {
     text-transform: uppercase;
     letter-spacing: 1px;
     margin: 2px 0;
+}
+
+/* ── Media Library ─────────────────────────────────────────────────── */
+.media-library-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.media-library-summary {
+    color: #666;
+    font-size: 0.85em;
+}
+
+.media-refresh-btn {
+    flex-grow: 0;
+    min-width: 0;
+    width: auto;
+    padding: 8px 16px;
+    font-size: 0.85em;
+}
+
+.media-loading {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.media-section {
+    margin-bottom: 28px;
+}
+
+.media-section-heading {
+    margin: 0 0 12px;
+    font-size: 1em;
+    font-weight: 700;
+    color: #3d3d3d;
+}
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+}
+
+.media-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #ddd;
+    overflow: hidden;
+}
+
+.media-card-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 3;
+    background: #f4f4f4;
+    color: #999;
+}
+
+.media-card-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.media-card-preview svg {
+    width: 36px;
+    height: 36px;
+}
+
+.media-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+}
+
+.media-card-name {
+    font-size: 0.82em;
+    font-weight: 600;
+    color: #3d3d3d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.media-card-size {
+    font-size: 0.75em;
+    color: #999;
+}
+
+.media-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.media-card-btn {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: transparent;
+    color: #3d3d3d;
+    font-size: 0.75em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.media-card-btn:hover {
+    background: #f4f4f4;
+}
+
+.media-card-btn-delete:hover {
+    background: #d20a2e;
+    border-color: #d20a2e;
+    color: #fff;
 }

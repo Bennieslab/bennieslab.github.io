@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const tabId = tab.dataset.tab;
             showTabContent(tabId);
             updateActiveTab(tab);
+            if (tabId === 'media-library') {
+                loadMediaLibrary();
+            }
         });
     });
 
@@ -60,6 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('jwt_token');
         window.location.href = 'login.html';
     });
+
+    const mediaRefreshBtn = document.getElementById('mediaRefreshBtn');
+    if (mediaRefreshBtn) {
+        mediaRefreshBtn.addEventListener('click', () => loadMediaLibrary());
+    }
 
     function showTabContent(tabId) {
         const sections = {
@@ -92,6 +100,182 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'model': return 'models';
             case 'skill': return 'skills';
             default: return 'skills';
+        }
+    }
+
+    function formatFileSize(bytes) {
+        if (!bytes || bytes < 1024) return `${bytes || 0} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    async function loadMediaLibrary() {
+        const body = document.getElementById('mediaLibraryBody');
+        const summary = document.getElementById('mediaLibrarySummary');
+        if (!body) return;
+
+        body.innerHTML = `<div class="media-loading"><span class="action-loader action-loader--block"></span></div>`;
+        if (summary) summary.textContent = '';
+
+        const currentToken = localStorage.getItem('jwt_token');
+        try {
+            const response = await fetch(`${SERVER_URL}/media`, {
+                headers: { 'Authorization': `Bearer ${currentToken}` }
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                alert('Your session has expired. Please log in again.');
+                localStorage.removeItem('jwt_token');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (!response.ok) throw new Error(`Failed to load media: ${response.status}`);
+
+            const files = await response.json();
+            renderMediaLibrary(files);
+        } catch (error) {
+            console.error('Error loading media library:', error);
+            body.innerHTML = `<p class="skills-error">Could not load the media library. Please try again.</p>`;
+        }
+    }
+
+    function renderMediaLibrary(files) {
+        const body = document.getElementById('mediaLibraryBody');
+        const summary = document.getElementById('mediaLibrarySummary');
+        if (!body) return;
+
+        if (!files || files.length === 0) {
+            body.innerHTML = `<p class="coming-soon">No files uploaded yet.</p>`;
+            if (summary) summary.textContent = '';
+            return;
+        }
+
+        const totalBytes = files.reduce((sum, f) => sum + (f.sizeBytes || 0), 0);
+        if (summary) {
+            summary.textContent = `${files.length} file${files.length === 1 ? '' : 's'} · ${formatFileSize(totalBytes)} total`;
+        }
+
+        const thumbnails = files.filter(f => f.category === 'thumbnails');
+        const models = files.filter(f => f.category === 'models');
+        const other = files.filter(f => f.category === 'other');
+
+        body.innerHTML = '';
+
+        if (thumbnails.length) body.appendChild(buildMediaSection('Thumbnails', thumbnails, 'image'));
+        if (models.length) body.appendChild(buildMediaSection('3D Models', models, 'model'));
+        if (other.length) body.appendChild(buildMediaSection('Other Files', other, 'other'));
+    }
+
+    function buildMediaSection(title, files, kind) {
+        const section = document.createElement('div');
+        section.className = 'media-section';
+
+        const heading = document.createElement('h2');
+        heading.className = 'media-section-heading';
+        heading.textContent = `${title} (${files.length})`;
+        section.appendChild(heading);
+
+        const grid = document.createElement('div');
+        grid.className = 'media-grid';
+
+        [...files]
+            .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
+            .forEach(file => grid.appendChild(buildMediaCard(file, kind)));
+
+        section.appendChild(grid);
+        return section;
+    }
+
+    function buildMediaCard(file, kind) {
+        const card = document.createElement('div');
+        card.className = 'media-card';
+
+        const preview = document.createElement('div');
+        preview.className = 'media-card-preview';
+
+        if (kind === 'image') {
+            const img = document.createElement('img');
+            img.src = file.url;
+            img.alt = file.key;
+            img.loading = 'lazy';
+            preview.appendChild(img);
+        } else if (kind === 'model') {
+            preview.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`;
+        } else {
+            preview.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>`;
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'media-card-meta';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'media-card-name';
+        nameEl.title = file.key;
+        nameEl.textContent = file.key.split('/').pop();
+        meta.appendChild(nameEl);
+
+        const sizeEl = document.createElement('div');
+        sizeEl.className = 'media-card-size';
+        sizeEl.textContent = formatFileSize(file.sizeBytes || 0);
+        meta.appendChild(sizeEl);
+
+        const actions = document.createElement('div');
+        actions.className = 'media-card-actions';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'media-card-btn';
+        copyBtn.textContent = 'Copy link';
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(file.url);
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => { copyBtn.textContent = 'Copy link'; }, 1500);
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+        });
+        actions.appendChild(copyBtn);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'media-card-btn media-card-btn-delete';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', () => deleteMediaFile(file.key, card));
+        actions.appendChild(deleteBtn);
+
+        meta.appendChild(actions);
+
+        card.appendChild(preview);
+        card.appendChild(meta);
+        return card;
+    }
+
+    async function deleteMediaFile(key, cardElement) {
+        const confirmed = confirm(
+            `Delete this file permanently?\n\n${key}\n\nThis cannot be undone. If this file is still used as a thumbnail or 3D model on a live project, post, skill, or model, deleting it will break that item's image/model — this tool has no way to check that for you.`
+        );
+        if (!confirmed) return;
+
+        const currentToken = localStorage.getItem('jwt_token');
+        try {
+            const response = await fetch(`${SERVER_URL}/media?key=${encodeURIComponent(key)}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${currentToken}` }
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                alert('Your session has expired. Please log in again.');
+                return;
+            }
+
+            if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
+
+            cardElement.remove();
+        } catch (error) {
+            console.error('Error deleting file:', error);
+            alert('Could not delete this file.');
         }
     }
 
