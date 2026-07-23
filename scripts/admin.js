@@ -114,77 +114,112 @@ document.addEventListener('DOMContentLoaded', () => {
         const summary = document.getElementById('mediaLibrarySummary');
         if (!body) return;
 
-        body.innerHTML = `<div class="media-loading"><span class="action-loader action-loader--block"></span></div>`;
-        if (summary) summary.textContent = '';
-
-        const currentToken = localStorage.getItem('jwt_token');
-        try {
-            const response = await fetch(`${SERVER_URL}/media`, {
-                headers: { 'Authorization': `Bearer ${currentToken}` }
-            });
-
-            if (response.status === 401 || response.status === 403) {
-                alert('Your session has expired. Please log in again.');
-                localStorage.removeItem('jwt_token');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            if (!response.ok) throw new Error(`Failed to load media: ${response.status}`);
-
-            const files = await response.json();
-            renderMediaLibrary(files);
-        } catch (error) {
-            console.error('Error loading media library:', error);
-            body.innerHTML = `<p class="skills-error">Could not load the media library. Please try again.</p>`;
-        }
-    }
-
-    function renderMediaLibrary(files) {
-        const body = document.getElementById('mediaLibraryBody');
-        const summary = document.getElementById('mediaLibrarySummary');
-        if (!body) return;
-
-        if (!files || files.length === 0) {
-            body.innerHTML = `<p class="coming-soon">No files uploaded yet.</p>`;
-            if (summary) summary.textContent = '';
-            return;
-        }
-
-        const totalBytes = files.reduce((sum, f) => sum + (f.sizeBytes || 0), 0);
-        if (summary) {
-            summary.textContent = `${files.length} file${files.length === 1 ? '' : 's'} · ${formatFileSize(totalBytes)} total`;
-        }
-
-        const thumbnails = files.filter(f => f.category === 'thumbnails');
-        const models = files.filter(f => f.category === 'models');
-        const other = files.filter(f => f.category === 'other');
-
         body.innerHTML = '';
+        if (summary) summary.textContent = 'Loading…';
 
-        if (thumbnails.length) body.appendChild(buildMediaSection('Thumbnails', thumbnails, 'image'));
-        if (models.length) body.appendChild(buildMediaSection('3D Models', models, 'model'));
-        if (other.length) body.appendChild(buildMediaSection('Other Files', other, 'other'));
+        const thumbnailsSection = buildMediaSection('Thumbnails', 'thumbnails', 'image');
+        const modelsSection = buildMediaSection('3D Models', 'models', 'model');
+
+        body.appendChild(thumbnailsSection.element);
+        body.appendChild(modelsSection.element);
+
+        await Promise.all([thumbnailsSection.loadMore(), modelsSection.loadMore()]);
+
+        if (thumbnailsSection.isEmpty() && modelsSection.isEmpty()) {
+            const emptyMsg = document.createElement('p');
+            emptyMsg.className = 'coming-soon';
+            emptyMsg.textContent = 'No files uploaded yet.';
+            body.appendChild(emptyMsg);
+        }
+
+        if (summary) summary.textContent = '';
     }
 
-    function buildMediaSection(title, files, kind) {
+    /**
+     * Builds one category section (Thumbnails or 3D Models) that fetches
+     * its own pages from GET /media?category=... independently — each
+     * section tracks its own continuationToken, so "Show more" on one
+     * never affects the other's position.
+     */
+    function buildMediaSection(title, category, kind) {
+        const INITIAL_LIMIT = 24;
+        const NEXT_LIMIT = 8;
+
+        let continuationToken = null;
+        let hasMore = true;
+        let loadedCount = 0;
+        let firstLoad = true;
+
         const section = document.createElement('div');
         section.className = 'media-section';
+        section.style.display = 'none'; // revealed once we know it has at least one file
 
         const heading = document.createElement('h2');
         heading.className = 'media-section-heading';
-        heading.textContent = `${title} (${files.length})`;
+        heading.textContent = title;
         section.appendChild(heading);
 
         const grid = document.createElement('div');
         grid.className = 'media-grid';
-
-        [...files]
-            .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
-            .forEach(file => grid.appendChild(buildMediaCard(file, kind)));
-
         section.appendChild(grid);
-        return section;
+
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.type = 'button';
+        loadMoreBtn.className = 'media-load-more-btn';
+        loadMoreBtn.textContent = 'Show more';
+        section.appendChild(loadMoreBtn);
+
+        async function loadMore() {
+            const limit = firstLoad ? INITIAL_LIMIT : NEXT_LIMIT;
+            firstLoad = false;
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.textContent = 'Loading…';
+
+            const currentToken = localStorage.getItem('jwt_token');
+            const params = new URLSearchParams({ category, limit: String(limit) });
+            if (continuationToken) params.set('continuationToken', continuationToken);
+
+            try {
+                const response = await fetch(`${SERVER_URL}/media?${params.toString()}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    alert('Your session has expired. Please log in again.');
+                    localStorage.removeItem('jwt_token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (!response.ok) throw new Error(`Failed to load ${category}: ${response.status}`);
+
+                const page = await response.json();
+                page.files.forEach(file => grid.appendChild(buildMediaCard(file, kind)));
+
+                loadedCount += page.files.length;
+                continuationToken = page.nextContinuationToken;
+                hasMore = page.hasMore;
+
+                heading.textContent = `${title} (${loadedCount}${hasMore ? '+' : ''})`;
+                if (loadedCount > 0) section.style.display = '';
+
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.textContent = 'Show more';
+                loadMoreBtn.style.display = hasMore ? 'block' : 'none';
+            } catch (error) {
+                console.error(`Error loading ${category}:`, error);
+                loadMoreBtn.textContent = 'Failed to load — try again';
+                loadMoreBtn.disabled = false;
+            }
+        }
+
+        loadMoreBtn.addEventListener('click', () => loadMore());
+
+        return {
+            element: section,
+            loadMore,
+            isEmpty: () => loadedCount === 0
+        };
     }
 
     function buildMediaCard(file, kind) {
