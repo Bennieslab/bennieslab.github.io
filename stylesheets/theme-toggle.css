@@ -70,6 +70,7 @@ html[data-theme="dark"] p {
 
 html[data-theme="dark"] nav,
 html[data-theme="dark"] .thumbnail-container,
+html[data-theme="dark"] side,
 html[data-theme="dark"] .timeline-cards>div,
 html[data-theme="dark"] .review,
 html[data-theme="dark"] .enter-review,
