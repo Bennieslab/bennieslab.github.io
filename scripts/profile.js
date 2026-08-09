@@ -3,7 +3,7 @@ const MAX_LIST_ITEMS = 5;
 
 async function getUserData() {
     try {
-        let response = await fetch(`${SERVER_URL}/api/v1/users/email/bennieboyy101@gmail.com`);
+        let response = await fetch(`${SERVER_URL}/api/v1/users/email/Bensonmusonda12@gmail.com`);
 
         if(!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
@@ -45,7 +45,7 @@ async function fetchProjects() {
         let projectsData = await response.json();
 
         if(!response.ok) {
-            throw new Error("HTTP Error.Status: ", error);
+            throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return projectsData;
@@ -80,7 +80,7 @@ async function fetchExperience() {
         let experienceData = await response.json();
 
         if(!response.ok) {
-            throw new Error("HTTP Error.Status: ", error);
+            throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return experienceData;
@@ -115,7 +115,7 @@ async function fetchEducation() {
         let educationData = await response.json();
 
         if(!response.ok) {
-            throw new Error("HTTP error. Status: ", error);
+            throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return educationData;
@@ -202,7 +202,7 @@ async function fetchSkills() {
         let skillsData = await response.json();
 
         if(!response.ok) {
-            throw new error("HTTP error. Status: ", error);
+            throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return skillsData;
@@ -237,7 +237,7 @@ async function fetchCertification() {
         let certificationData = await response.json();
 
         if(!response.ok) {
-            throw new error("HTTP error. Status: ", error);
+            throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return certificationData;
