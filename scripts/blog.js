@@ -30,6 +30,15 @@ async function fetchPosts(page = 0, size = PAGE_SIZE, filters = {}) {
 }
 
 function formatDateTimeArray(dateTimeArray) {
+    // Handle ISO-8601 strings (e.g. "2026-07-27T10:24:27.174102") from the API.
+    // Normalize into [year, month, day, hour, minute, second] so the array
+    // logic below works identically for both formats.
+    if (typeof dateTimeArray === 'string') {
+        dateTimeArray = dateTimeArray
+            .replace('T', ' ')
+            .split(/[-:. ]/)
+            .map(Number);
+    }
     if (!dateTimeArray || dateTimeArray.length < 6) {
         return "Invalid Date";
     }

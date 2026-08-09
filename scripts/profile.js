@@ -153,20 +153,31 @@ async function displayEducation() {
             let formattedDateStarted = "";
             let formattedDateEnded = "";
 
-            if (education.dateStarted) {
-                let fDStart = new Date(education.dateStarted[0], education.dateStarted[1] - 1, education.dateStarted[2]);
-                let dayS = String(fDStart.getDate()).padStart(2, '0');
-                let monthS = String(fDStart.getMonth() + 1).padStart(2, '0');
-                let yearS = String(fDStart.getFullYear()).slice(-2);
-                formattedDateStarted = `${dayS} - ${monthS} - ${yearS}`;
+            // Normalize a date (ISO string "2022-01-15" or legacy array
+            // [2022, 1, 15]) into [year, month, day] so both formats work.
+            const toYmd = (value) => {
+                if (typeof value === 'string') {
+                    // "2022-01-15" or "2022-01-15T10:24:27"
+                    const parts = value
+                        .replace('T', ' ')
+                        .split(/[-:. ]/)
+                        .map(Number);
+                    return [parts[0], parts[1], parts[2]];
+                }
+                if (Array.isArray(value)) {
+                    return [value[0], value[1], value[2]];
+                }
+                return null;
+            };
+
+            const startYmd = toYmd(education.dateStarted);
+            if (startYmd) {
+                formattedDateStarted = `${String(startYmd[2]).padStart(2, '0')} - ${String(startYmd[1]).padStart(2, '0')} - ${String(startYmd[0]).slice(-2)}`;
             }
 
-            if (education.dateEnded) {
-                let fDEnd = new Date(education.dateEnded[0], education.dateEnded[1] - 1, education.dateEnded[2]);
-                let dayE = String(fDEnd.getDate()).padStart(2, '0');
-                let monthE = String(fDEnd.getMonth() + 1).padStart(2, '0');
-                let yearE = String(fDEnd.getFullYear()).slice(-2);
-                formattedDateEnded = `${dayE} - ${monthE} - ${yearE}`;
+            const endYmd = toYmd(education.dateEnded);
+            if (endYmd) {
+                formattedDateEnded = `${String(endYmd[2]).padStart(2, '0')} - ${String(endYmd[1]).padStart(2, '0')} - ${String(endYmd[0]).slice(-2)}`;
             } else if (education.currentlyHere) {
                 formattedDateEnded = "Present";
             }
