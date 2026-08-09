@@ -1,11 +1,12 @@
-const SERVER_URL = "https://bennieslab-backend.onrender.com";
+// SERVER_URL, formatFileSize and the dialog/toast helpers come from the
+// shared modules loaded before this script (config.js, utils/*).
 let easyMDE;
 
 document.addEventListener('DOMContentLoaded', () => {
 
     const token = localStorage.getItem('jwt_token');
-    if (!token) {
-        window.location.replace('login.html');
+    if (!token || !isSessionValid()) {
+        redirectToLogin();
         return;
     }
 
@@ -103,12 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function formatFileSize(bytes) {
-        if (!bytes || bytes < 1024) return `${bytes || 0} B`;
-        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    }
-
     async function loadMediaLibrary() {
         const body = document.getElementById('mediaLibraryBody');
         const summary = document.getElementById('mediaLibrarySummary');
@@ -185,9 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.status === 401 || response.status === 403) {
-                    alert('Your session has expired. Please log in again.');
-                    localStorage.removeItem('jwt_token');
-                    window.location.href = 'login.html';
+                    redirectToLogin();
                     return;
                 }
 
@@ -288,9 +281,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function deleteMediaFile(key, cardElement) {
-        const confirmed = confirm(
-            `Delete this file permanently?\n\n${key}\n\nThis cannot be undone. If this file is still used as a thumbnail or 3D model on a live project, post, skill, or model, deleting it will break that item's image/model — this tool has no way to check that for you.`
-        );
+        const confirmed = await showConfirmDialog({
+            title: 'Delete this file?',
+            message: `Delete this file permanently?\n\n${key}\n\nThis cannot be undone. If this file is still used as a thumbnail or 3D model on a live project, post, skill, or model, deleting it will break that item's image/model — this tool has no way to check that for you.`,
+            confirmLabel: 'Delete',
+            danger: true
+        });
         if (!confirmed) return;
 
         const currentToken = localStorage.getItem('jwt_token');
@@ -301,16 +297,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.status === 401 || response.status === 403) {
-                alert('Your session has expired. Please log in again.');
+                redirectToLogin();
                 return;
             }
 
             if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
 
             cardElement.remove();
+            showToast('File deleted.', 'success');
         } catch (error) {
             console.error('Error deleting file:', error);
-            alert('Could not delete this file.');
+            showToast('Could not delete this file.', 'error');
         }
     }
 
@@ -327,7 +324,10 @@ document.addEventListener('DOMContentLoaded', () => {
             loadMarkdownForm(type, item, id);
         } catch (error) {
             console.error('Error loading item from deep link:', error);
-            alert('Could not load the requested item for editing.');
+            showAlertDialog({
+                title: 'Could not load item',
+                message: 'Could not load the requested item for editing.'
+            });
         }
     }
 
@@ -504,7 +504,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const content = easyMDE.value();
             const title = document.getElementById('content-title').value;
             if (title.trim() === "" || content.trim() === "") {
-                alert("Title and content cannot be empty.");
+                showAlertDialog({
+                    title: 'Missing content',
+                    message: 'Title and content cannot be empty.'
+                });
                 return;
             }
             saveModal.showModal();
@@ -526,19 +529,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const modelFile = modelUploadInput ? modelUploadInput.files[0] : null;
         const token = localStorage.getItem('jwt_token');
 
-        if (!token) {
-            alert("You are not logged in. Redirecting to login page.");
-            window.location.href = 'login.html';
+        if (!token || !isSessionValid()) {
+            redirectToLogin('You are not logged in. Redirecting to login page.');
             return;
         }
 
         if (categoryInput.trim() === "") {
-            alert("Category cannot be empty.");
+            showAlertDialog({
+                title: 'Missing category',
+                message: 'Category cannot be empty.'
+            });
             return;
         }
 
         if (type === 'model' && !itemId && !modelFile) {
-            alert("Please choose a 3D model file (.glb or .gltf).");
+            showAlertDialog({
+                title: 'Missing model file',
+                message: 'Please choose a 3D model file (.glb or .gltf).'
+            });
             return;
         }
 
@@ -563,10 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.status === 401 || response.status === 403) {
-                    alert("Your session has expired. Please log in again.");
-                    localStorage.removeItem('jwt_token');
-                    if (saveLoader) saveLoader.hide();
-                    window.location.href = 'login.html';
+                    redirectToLogin();
                     return;
                 }
 
@@ -575,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 thumbnailUrl = result.fileUrl;
             } catch (error) {
                 console.error('Upload Error:', error);
-                alert('Error uploading thumbnail. Please try again.');
+                showToast('Error uploading thumbnail. Please try again.', 'error');
                 if (saveLoader) saveLoader.hide();
                 return;
             }
@@ -593,10 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (modelResponse.status === 401 || modelResponse.status === 403) {
-                    alert("Your session has expired. Please log in again.");
-                    localStorage.removeItem('jwt_token');
-                    if (saveLoader) saveLoader.hide();
-                    window.location.href = 'login.html';
+                    redirectToLogin();
                     return;
                 }
 
@@ -605,7 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 modelFileKey = modelResult.fileUrl;
             } catch (error) {
                 console.error('Model Upload Error:', error);
-                alert('Error uploading 3D model file. Please try again.');
+                showToast('Error uploading 3D model file. Please try again.', 'error');
                 if (saveLoader) saveLoader.hide();
                 return;
             }
@@ -655,14 +657,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.status === 401 || response.status === 403) {
-                alert("Your session has expired. Please log in again.");
-                localStorage.removeItem('jwt_token');
-                window.location.href = 'login.html';
+                redirectToLogin();
                 return;
             }
 
             if (response.ok) {
-                alert(`Content ${itemId ? 'updated' : 'saved'} successfully!`);
+                showToast(`Content ${itemId ? 'updated' : 'saved'} successfully!`, 'success');
                 location.reload();
             } else {
                 const error = await response.text();
@@ -670,7 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Content Save Error:', error);
-            alert('Error saving content. Please try again.');
+            showToast('Error saving content. Please try again.', 'error');
         } finally {
             if (saveLoader) saveLoader.hide();
         }
@@ -678,87 +678,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadSimpleForm(type) {
         const headerText = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
-        let formHtml = '';
 
-        switch (type) {
-            case 'education':
-                formHtml = `
-                    <div class="creation-center-container">
-                        <h1 class="tab-header">${headerText}</h1>
-                        <form id="education-form">
-                            <input type="text" id="education-institution" placeholder="Institution" class="modal-input" required>
-                            <input type="text" id="education-title" placeholder="Degree/Course Title" class="modal-input" required>
-                            <label for="education-level" class="form-label">Education Level:</label>
-                            <select id="education-level" class="modal-input" required>
-                                <option value="" disabled selected>Select Level</option>
-                                <option value="HIGH_SCHOOL">High School</option>
-                                <option value="ASSOCIATE">Associate's Degree</option>
-                                <option value="DIPLOMA">Diploma</option>
-                                <option value="BACHELOR">Bachelor's Degree</option>
-                                <option value="MASTER">Master's Degree</option>
-                                <option value="PHD">PhD</option>
-                                <option value="OTHER">Other</option>
-                            </select>
-                            <div class="date-inputs">
-                                <label for="education-date-started">Start Date:</label>
-                                <input type="date" id="education-date-started" class="modal-input" required>
-                                <label for="education-date-ended">End Date:</label>
-                                <input type="date" id="education-date-ended" class="modal-input">
-                                <div id="education-end-date-container">
-                                    <label><input type="checkbox" id="education-currently-here"> Currently Attending</label>
-                                </div>
+        if (type === 'education') {
+            mainContentArea.innerHTML = `
+                <div class="creation-center-container">
+                    <h1 class="tab-header">${headerText}</h1>
+                    <form id="education-form">
+                        <input type="text" id="education-institution" placeholder="Institution" class="modal-input" required>
+                        <input type="text" id="education-title" placeholder="Degree/Course Title" class="modal-input" required>
+                        <label for="education-level" class="form-label">Education Level:</label>
+                        <select id="education-level" class="modal-input" required>
+                            <option value="" disabled selected>Select Level</option>
+                            <option value="HIGH_SCHOOL">High School</option>
+                            <option value="ASSOCIATE">Associate's Degree</option>
+                            <option value="DIPLOMA">Diploma</option>
+                            <option value="BACHELOR">Bachelor's Degree</option>
+                            <option value="MASTER">Master's Degree</option>
+                            <option value="PHD">PhD</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                        <div class="date-inputs">
+                            <label for="education-date-started">Start Date:</label>
+                            <input type="date" id="education-date-started" class="modal-input" required>
+                            <label for="education-date-ended">End Date:</label>
+                            <input type="date" id="education-date-ended" class="modal-input">
+                            <div id="education-end-date-container">
+                                <label><input type="checkbox" id="education-currently-here"> Currently Attending</label>
                             </div>
-                            <div class="form-actions">
-                                <button type="submit" class="submit-button">Save</button>
-                                <button type="button" class="cancel-button">Cancel</button>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-button">Save</button>
+                            <button type="button" class="cancel-button">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        } else if (type === 'certificate') {
+            mainContentArea.innerHTML = `
+                <div class="creation-center-container">
+                    <h1 class="tab-header">${headerText}</h1>
+                    <form id="certificate-form">
+                        <input type="text" id="cert-name" placeholder="Certificate Name" class="modal-input" required>
+                        <input type="text" id="cert-source" placeholder="Issuing Organization" class="modal-input" required>
+                        <input type="text" id="cert-category" placeholder="Category (e.g., Cloud, AI, Security)" class="modal-input" required>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-button">Save</button>
+                            <button type="button" class="cancel-button">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        } else if (type === 'experience') {
+            mainContentArea.innerHTML = `
+                <div class="creation-center-container">
+                    <h1 class="tab-header">${headerText}</h1>
+                    <form id="experience-form">
+                        <input type="text" id="exp-position" placeholder="Position Title" class="modal-input" required>
+                        <input type="text" id="exp-organization" placeholder="Organization/Company" class="modal-input" required>
+                        <div class="date-inputs">
+                            <label for="exp-date-started">Start Date:</label>
+                            <input type="date" id="exp-date-started" class="modal-input" required>
+                            <label for="exp-date-ended">End Date:</label>
+                            <input type="date" id="exp-date-ended" class="modal-input">
+                            <div id="experience-end-date-container">
+                                <label><input type="checkbox" id="exp-currently-here"> Currently here</label>
                             </div>
-                        </form>
-                    </div>
-                `;
-                break;
-            case 'certificate':
-                formHtml = `
-                    <div class="creation-center-container">
-                        <h1 class="tab-header">${headerText}</h1>
-                        <form id="certificate-form">
-                            <input type="text" id="cert-name" placeholder="Certificate Name" class="modal-input" required>
-                            <input type="text" id="cert-source" placeholder="Issuing Organization" class="modal-input" required>
-                            <input type="text" id="cert-category" placeholder="Category (e.g., Cloud, AI, Security)" class="modal-input" required>
-                            <div class="form-actions">
-                                <button type="submit" class="submit-button">Save</button>
-                                <button type="button" class="cancel-button">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                `;
-                break;
-            case 'experience':
-                formHtml = `
-                    <div class="creation-center-container">
-                        <h1 class="tab-header">${headerText}</h1>
-                        <form id="experience-form">
-                            <input type="text" id="exp-position" placeholder="Position Title" class="modal-input" required>
-                            <input type="text" id="exp-organization" placeholder="Organization/Company" class="modal-input" required>
-                            <div class="date-inputs">
-                                <label for="exp-date-started">Start Date:</label>
-                                <input type="date" id="exp-date-started" class="modal-input" required>
-                                <label for="exp-date-ended">End Date:</label>
-                                <input type="date" id="exp-date-ended" class="modal-input">
-                                <div id="experience-end-date-container">
-                                    <label><input type="checkbox" id="exp-currently-here"> Currently here</label>
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="submit-button">Save</button>
-                                <button type="button" class="cancel-button">Cancel</button>
-                            </div>
-                        </form>
-                    </div>
-                `;
-                break;
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-button">Save</button>
+                            <button type="button" class="cancel-button">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        } else {
+            return;
         }
 
-        mainContentArea.innerHTML = formHtml;
         const cancelButton = mainContentArea.querySelector('.cancel-button');
         cancelButton.addEventListener('click', () => location.reload());
 
@@ -812,9 +808,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleEducationSave() {
         const token = localStorage.getItem('jwt_token');
-        if (!token) {
-            alert("You are not logged in. Redirecting to login page.");
-            window.location.href = 'login.html';
+        if (!token || !isSessionValid()) {
+            redirectToLogin('You are not logged in. Redirecting to login page.');
             return;
         }
 
@@ -825,7 +820,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
         if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-            alert("The end date cannot be before the start date.");
+            showAlertDialog({
+                title: 'Invalid date range',
+                message: 'The end date cannot be before the start date.'
+            });
             return;
         }
 
@@ -842,15 +840,14 @@ document.addEventListener('DOMContentLoaded', () => {
             await postData('education', payload, token);
         } catch (error) {
             console.error('Education Save Error:', error);
-            alert('Error saving education. Please try again.');
+            showToast('Error saving education. Please try again.', 'error');
         }
     }
 
     async function handleCertificateSave() {
         const token = localStorage.getItem('jwt_token');
-        if (!token) {
-            alert("You are not logged in. Redirecting to login page.");
-            window.location.href = 'login.html';
+        if (!token || !isSessionValid()) {
+            redirectToLogin('You are not logged in. Redirecting to login page.');
             return;
         }
         const payload = {
@@ -862,15 +859,14 @@ document.addEventListener('DOMContentLoaded', () => {
             await postData('certificate', payload, token);
         } catch (error) {
             console.error('Certificate Save Error:', error);
-            alert('Error saving certificate. Please try again.');
+            showToast('Error saving certificate. Please try again.', 'error');
         }
     }
 
     async function handleExperienceSave() {
         const token = localStorage.getItem('jwt_token');
-        if (!token) {
-            alert("You are not logged in. Redirecting to login page.");
-            window.location.href = 'login.html';
+        if (!token || !isSessionValid()) {
+            redirectToLogin('You are not logged in. Redirecting to login page.');
             return;
         }
 
@@ -881,7 +877,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
         if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-            alert("The end date cannot be before the start date.");
+            showAlertDialog({
+                title: 'Invalid date range',
+                message: 'The end date cannot be before the start date.'
+            });
             return;
         }
 
@@ -896,7 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await postData('experience', payload, token);
         } catch (error) {
             console.error('Experience Save Error:', error);
-            alert('Error saving experience. Please try again.');
+            showToast('Error saving experience. Please try again.', 'error');
         }
     }
 
@@ -925,14 +924,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.status === 401 || response.status === 403) {
-                alert("Your session has expired. Please log in again.");
-                localStorage.removeItem('jwt_token');
-                window.location.href = 'login.html';
+                redirectToLogin();
                 return;
             }
 
             if (response.ok) {
-                alert(`${type.charAt(0).toUpperCase() + type.slice(1)} saved successfully!`);
+                showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} saved successfully!`, 'success');
                 location.reload();
             } else {
                 const error = await response.text();
@@ -948,9 +945,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const mainContentArea = document.querySelector('.admin-main');
         const token = localStorage.getItem('jwt_token');
 
-        if (!token) {
-            alert("You are not logged in. Redirecting to login page.");
-            window.location.href = 'login.html';
+        if (!token || !isSessionValid()) {
+            redirectToLogin('You are not logged in. Redirecting to login page.');
             return;
         }
 
@@ -959,9 +955,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = button.dataset.id;
             const type = button.dataset.type;
 
-            if (!token) {
-                alert("You are not logged in.");
-                window.location.href = 'login.html';
+            if (!token || !isSessionValid()) {
+                redirectToLogin('You are not logged in.');
                 return;
             }
 
@@ -978,7 +973,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadMarkdownForm(type, item, id);
             } catch (error) {
                 console.error('Error fetching item for edit:', error);
-                alert('Could not load item details for editing.');
+                showAlertDialog({
+                    title: 'Could not load item',
+                    message: 'Could not load item details for editing.'
+                });
             }
         };
 
@@ -987,14 +985,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = button.dataset.id;
             const type = button.dataset.type;
 
-            if (!confirm('Are you sure you want to delete this item?')) {
-                return;
-            }
+            const confirmed = await showConfirmDialog({
+                title: 'Delete this item?',
+                message: 'Are you sure you want to delete this item?',
+                confirmLabel: 'Delete',
+                danger: true
+            });
+            if (!confirmed) return;
 
             const token = localStorage.getItem('jwt_token');
-            if (!token) {
-                alert("You are not logged in.");
-                window.location.href = 'login.html';
+            if (!token || !isSessionValid()) {
+                redirectToLogin('You are not logged in.');
                 return;
             }
 
@@ -1006,14 +1007,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    alert('Item deleted successfully!');
+                    showToast('Item deleted successfully!', 'success');
                     loadManageContent(type);
                 } else {
                     throw new Error(`Failed to delete item: ${response.status}`);
                 }
             } catch (error) {
                 console.error('Error deleting item:', error);
-                alert('Could not delete the item.');
+                showToast('Could not delete the item.', 'error');
             }
         };
 
@@ -1025,9 +1026,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 if (response.status === 401 || response.status === 403) {
-                    alert("Your session has expired. Please log in again.");
-                    localStorage.removeItem('jwt_token');
-                    window.location.href = 'login.html';
+                    redirectToLogin();
                     return;
                 }
                 throw new Error('Failed to fetch content');
@@ -1063,8 +1062,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('Error fetching items:', error);
-            alert('Error loading content for management.');
+            showAlertDialog({
+                title: 'Load failed',
+                message: 'Error loading content for management.'
+            });
         }
+    }
+
+    function getPinBadgeHtml() {
+        const span = createPinBadge();
+        return span.innerHTML;
     }
 
 });

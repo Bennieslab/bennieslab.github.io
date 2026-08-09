@@ -1,69 +1,4 @@
-const SERVER_URL = "https://bennieslab-backend.onrender.com";
-
-function formatDateTimeArray(dateTimeArray) {
-    // Handle ISO-8601 strings (e.g. "2026-07-27T10:24:27.174102") from the API.
-    // Normalize into [year, month, day, hour, minute, second] so the array
-    // logic below works identically for both formats.
-    if (typeof dateTimeArray === 'string') {
-        dateTimeArray = dateTimeArray
-            .replace('T', ' ')
-            .split(/[-:. ]/)
-            .map(Number);
-    }
-    if (!dateTimeArray || dateTimeArray.length < 6) {
-        return "Invalid Date";
-    }
-
-    const year = dateTimeArray[0];
-    const month = dateTimeArray[1] - 1;
-    const day = dateTimeArray[2];
-    const hours = dateTimeArray[3];
-    const minutes = dateTimeArray[4];
-    const seconds = dateTimeArray[5];
-
-    const date = new Date(year, month, day, hours, minutes, seconds);
-    const now = new Date();
-
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = diffMs / (1000 * 60 * 60);
-
-    if (diffHours < 24 && diffHours >= 0) {
-        return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    }
-
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    if (date >= startOfWeek && date <= now) {
-        return date.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-            date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    }
-
-    if (date.getFullYear() === now.getFullYear()) {
-        return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
-    }
-
-    return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function getPlainTextSnippet(markdownContent, maxLength = 80) {
-    if (typeof marked === 'undefined') {
-        return markdownContent.substring(0, maxLength) + (markdownContent.length > maxLength ? '...' : '');
-    }
-    const htmlContent = marked.parse(markdownContent);
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
-    let plainText = tempDiv.textContent || tempDiv.innerText || '';
-    plainText = plainText.replace(/\s+/g, ' ').trim();
-
-    if (plainText.length > maxLength) {
-        return plainText.substring(0, maxLength) + '...';
-    }
-    return plainText;
-}
-
-async function displayHighlights(containerSelector, apiPath, linkPrefix, cardClass, nameKey, contentKey) {
+async function displayHighlights(containerSelector, apiPath, linkPrefix, cardClass, nameKey) {
     try {
         const response = await fetch(`${SERVER_URL}/${apiPath}?page=0&size=3`);
         if (!response.ok) {
@@ -157,7 +92,7 @@ function initCarouselDots(container) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    displayHighlights(".projects .cards", "projects", "project-detail.html", "project", "name", "description");
-    displayHighlights(".posts .cards", "blog", "blog-post-detail.html", "post", "title", "content");
-    displayHighlights(".skills .cards", "skills", "skill-detail.html", "skill", "name", "description");
+    displayHighlights(".projects .cards", "projects", "project-detail.html", "project", "name");
+    displayHighlights(".posts .cards", "blog", "blog-post-detail.html", "post", "title");
+    displayHighlights(".skills .cards", "skills", "skill-detail.html", "skill", "name");
 });

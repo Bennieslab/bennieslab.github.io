@@ -1,4 +1,4 @@
-const SERVER_URL = "https://bennieslab-backend.onrender.com";
+// SERVER_URL comes from scripts/config.js loaded before this script.
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');

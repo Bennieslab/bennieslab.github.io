@@ -6,11 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script>
-        if (localStorage.getItem('jwt_token')) {
+        (() => {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                window.location.replace('login.html');
+                return;
+            }
+            // JWT payload is base64url JSON at index 1, unverified (client-side only).
+            // Just enough to catch an expired token before it fails every API call.
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const binary = atob(base64);
+                const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+                const payload = JSON.parse(new TextDecoder().decode(bytes));
+                if (typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now()) {
+                    localStorage.removeItem('jwt_token');
+                    window.location.replace('login.html?expired=1');
+                    return;
+                }
+            } catch (e) {
+                // Malformed token — clear it and require re-login rather than
+                // letting a broken token sit in storage and fail every request.
+                localStorage.removeItem('jwt_token');
+                window.location.replace('login.html');
+                return;
+            }
             document.documentElement.classList.replace('admin-auth-pending', 'admin-authenticated');
-        } else {
-            window.location.replace('login.html');
-        }
+        })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,6 +42,7 @@
     <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/admin.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/action-loader.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/dialogs.css">
     <script src="scripts/theme-toggle.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheets/theme-toggle.css">
 </head>
@@ -167,6 +191,10 @@
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src="scripts/pin-icon.js"></script>
     <script src="scripts/action-loader.js"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/utils/api.js"></script>
+    <script src="scripts/utils/dialogs.js"></script>
+    <script src="scripts/utils/format.js"></script>
     <script src="scripts/admin.js"></script>
 </body>
 

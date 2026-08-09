@@ -1,17 +1,16 @@
-const SERVER_URL = "https://bennieslab-backend.onrender.com";
 const MAX_LIST_ITEMS = 5;
 
 async function getUserData() {
     try {
         let response = await fetch(`${SERVER_URL}/api/v1/users/email/Bensonmusonda12@gmail.com`);
 
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
         }
 
         let userData = await response.json();
         return userData;
-    } catch(error) {
+    } catch (error) {
         console.error("Error fetching data: ", error);
         throw error;
     }
@@ -28,13 +27,13 @@ async function displayUserData() {
 
         username.classList.add("username");
         career.classList.add("career");
-        
+
         username.textContent = user.firstName + " " + user.lastName;
         career.textContent = user.career;
 
         identity.appendChild(username);
         identity.appendChild(career);
-    } catch(error) {
+    } catch (error) {
         console.error("Failed to fetch user data: ", error)
     }
 }
@@ -44,13 +43,13 @@ async function fetchProjects() {
         let response = await fetch(`${SERVER_URL}/projects/names`);
         let projectsData = await response.json();
 
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return projectsData;
     }
-    catch(error) {
+    catch (error) {
         console.error("Error fetching projects.", error);
     }
 }
@@ -69,7 +68,7 @@ async function displayProjects() {
             projectsDiv.appendChild(projectName);
         });
     }
-    catch(error) {
+    catch (error) {
         console.error("Error displaying projects.", error);
     }
 }
@@ -79,13 +78,13 @@ async function fetchExperience() {
         let response = await fetch(`${SERVER_URL}/experience`);
         let experienceData = await response.json();
 
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return experienceData;
     }
-    catch(error) {
+    catch (error) {
         console.error("Error fetching experience.", error);
     }
 }
@@ -104,7 +103,7 @@ async function displayExperience() {
             experienceDiv.appendChild(exp_entry);
         });
     }
-    catch(error) {
+    catch (error) {
         console.error("Error displaying experience.", error);
     }
 }
@@ -114,13 +113,13 @@ async function fetchEducation() {
         let response = await fetch(`${SERVER_URL}/education`);
         let educationData = await response.json();
 
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return educationData;
     }
-    catch(error) {
+    catch (error) {
         console.error("Error fetching education details. error:", error);
     }
 }
@@ -152,23 +151,6 @@ async function displayEducation() {
 
             let formattedDateStarted = "";
             let formattedDateEnded = "";
-
-            // Normalize a date (ISO string "2022-01-15" or legacy array
-            // [2022, 1, 15]) into [year, month, day] so both formats work.
-            const toYmd = (value) => {
-                if (typeof value === 'string') {
-                    // "2022-01-15" or "2022-01-15T10:24:27"
-                    const parts = value
-                        .replace('T', ' ')
-                        .split(/[-:. ]/)
-                        .map(Number);
-                    return [parts[0], parts[1], parts[2]];
-                }
-                if (Array.isArray(value)) {
-                    return [value[0], value[1], value[2]];
-                }
-                return null;
-            };
 
             const startYmd = toYmd(education.dateStarted);
             if (startYmd) {
@@ -202,7 +184,7 @@ async function displayEducation() {
             educationDiv.appendChild(educationEntry);
         });
     }
-    catch(error) {
+    catch (error) {
         console.error("error displaying education details. error:", error)
     }
 }
@@ -212,13 +194,13 @@ async function fetchSkills() {
         let response = await fetch(`${SERVER_URL}/skills`)
         let skillsData = await response.json();
 
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return skillsData;
     }
-    catch(error) {
+    catch (error) {
         console.error("Error fetching skills details. error:", error);
     }
 }
@@ -237,7 +219,7 @@ async function displaySkills() {
             skillsDiv.appendChild(skillElement);
         });
     }
-    catch(error) {
+    catch (error) {
         console.error("error displaying skills");
     }
 }
@@ -247,13 +229,13 @@ async function fetchCertification() {
         let response = await fetch(`${SERVER_URL}/certificate`)
         let certificationData = await response.json();
 
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(`HTTP error. Status: ${response.status}`);
         }
 
         return certificationData;
     }
-    catch(error) {
+    catch (error) {
         console.error("Error fetching skills details. error:", error);
     }
 }
@@ -272,7 +254,7 @@ async function displayCertification() {
             certificationDiv.appendChild(certificateElement);
         });
     }
-    catch(error) {
+    catch (error) {
         console.error("error displaying skills");
     }
 }

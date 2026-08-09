@@ -1,10 +1,6 @@
-const SERVER_URL = "https://bennieslab-backend.onrender.com";
-const isAdmin = !!localStorage.getItem('jwt_token');
+const isAdmin = isLoggedIn();
 
 const PAGE_SIZE = 6;
-let currentPage = 0;
-let totalPages = 1;
-let pageLoading = false;
 let activeFilters = { category: 'all', skillId: 'all' };
 let filterCategories = [];
 let filterSkills = [];
@@ -29,196 +25,60 @@ async function fetchPosts(page = 0, size = PAGE_SIZE, filters = {}) {
     }
 }
 
-function formatDateTimeArray(dateTimeArray) {
-    // Handle ISO-8601 strings (e.g. "2026-07-27T10:24:27.174102") from the API.
-    // Normalize into [year, month, day, hour, minute, second] so the array
-    // logic below works identically for both formats.
-    if (typeof dateTimeArray === 'string') {
-        dateTimeArray = dateTimeArray
-            .replace('T', ' ')
-            .split(/[-:. ]/)
-            .map(Number);
-    }
-    if (!dateTimeArray || dateTimeArray.length < 6) {
-        return "Invalid Date";
-    }
+/**
+ * Fetches the latest stickies (short notes pinned to the top of the blog)
+ * and renders them into the page's .stickies grid. Hides the stickies
+ * section when the API returns none (or fails).
+ */
+async function renderStickies() {
+    const section = document.querySelector('.stickies-section');
+    const container = document.querySelector('.stickies');
+    if (!section || !container) return;
 
-    const year = dateTimeArray[0];
-    const month = dateTimeArray[1] - 1;
-    const day = dateTimeArray[2];
-    const hours = dateTimeArray[3];
-    const minutes = dateTimeArray[4];
-    const seconds = dateTimeArray[5];
-
-    const postDate = new Date(year, month, day, hours, minutes, seconds);
-    const now = new Date();
-
-    const diffMs = now.getTime() - postDate.getTime();
-    const diffHours = diffMs / (1000 * 60 * 60);
-
-    if (diffHours < 24 && diffHours >= 0) {
-        return postDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    }
-
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    if (postDate >= startOfWeek && postDate <= now) {
-        return postDate.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' +
-            postDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    }
-
-    if (postDate.getFullYear() === now.getFullYear()) {
-        return postDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
-    }
-
-    return postDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function getPlainTextSnippet(markdownContent, maxLength = 120) {
-    if (typeof marked === 'undefined') {
-        console.warn("marked.js is not loaded. Cannot process Markdown for snippet.");
-        return markdownContent.substring(0, maxLength) + (markdownContent.length > maxLength ? '...' : '');
-    }
-    const htmlContent = marked.parse(markdownContent);
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
-    let plainText = tempDiv.textContent || tempDiv.innerText || '';
-    plainText = plainText.replace(/\s+/g, ' ').trim();
-
-    if (plainText.length > maxLength) {
-        return plainText.substring(0, maxLength) + '...';
-    }
-    return plainText;
-}
-
-function getSkillIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('skill') || params.get('skillId');
-}
-
-async function fetchPostCategories() {
+    let stickies = [];
     try {
-        const response = await fetch(`${SERVER_URL}/blog/categories`);
+        const response = await fetch(`${SERVER_URL}/stickie`);
         if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
-        return await response.json();
+        stickies = await response.json();
     } catch (error) {
-        console.error('Error fetching post categories:', error);
-        return [];
-    }
-}
-
-async function fetchSkillOptions() {
-    try {
-        const response = await fetch(`${SERVER_URL}/skills`);
-        if (!response.ok) throw new Error(`HTTP error. Status: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching skill options:', error);
-        return [];
-    }
-}
-
-function syncFilterUrl() {
-    const url = new URL(window.location.href);
-    if (activeFilters.category && activeFilters.category !== 'all') {
-        url.searchParams.set('category', activeFilters.category);
-    } else {
-        url.searchParams.delete('category');
-    }
-    if (activeFilters.skillId && activeFilters.skillId !== 'all') {
-        url.searchParams.set('skillId', activeFilters.skillId);
-    } else {
-        url.searchParams.delete('skillId');
-        url.searchParams.delete('skill');
-    }
-    history.replaceState({}, '', url);
-}
-
-function updateFilterSummary() {
-    const summary = document.getElementById('filterSummary');
-    if (!summary) return;
-
-    const parts = [];
-    if (activeFilters.category !== 'all') parts.push(`Category: ${activeFilters.category}`);
-    if (activeFilters.skillId !== 'all') {
-        const skill = filterSkills.find(item => String(item.id) === String(activeFilters.skillId));
-        parts.push(`Skill: ${skill ? skill.name : activeFilters.skillId}`);
+        console.error("Error fetching stickies:", error);
     }
 
-    summary.textContent = parts.length ? parts.join(' · ') : 'All posts';
-}
+    // Show the section only when there's something to display.
+    if (!Array.isArray(stickies) || stickies.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
 
-let postCategorySelect = null;
-let postSkillSelect = null;
+    container.innerHTML = '';
+    stickies.slice(0, 3).forEach(stickie => {
+        const stickieDiv = document.createElement('div');
+        stickieDiv.classList.add('stickie');
+        stickieDiv.setAttribute('role', 'note');
 
-function renderFilterControls() {
-    const filters = document.querySelector('.filters');
-    const tags = document.querySelector('.tags');
-    const dropdowns = document.querySelector('.filter-dropdowns');
-    if (!filters || !tags || !dropdowns) return;
+        const content = document.createElement('p');
+        content.classList.add('stickie-content');
+        content.textContent = stickie.content;
 
-    filters.style.display = 'flex';
-    tags.innerHTML = `
-        <button type="button" class="filter-clear-btn" id="clearFilters">Clear filters</button>
-        <span class="filter-status" id="filterSummary">All posts</span>
-    `;
-    dropdowns.innerHTML = `
-        <div class="filter-control">
-            <span class="filter-control-label" id="postCategoryFilterLabel">Category</span>
-        </div>
-        <div class="filter-control">
-            <span class="filter-control-label" id="postSkillFilterLabel">Skill</span>
-        </div>
-    `;
+        const meta = document.createElement('div');
+        meta.classList.add('stickie-meta');
 
-    const [categoryControl, skillControl] = dropdowns.querySelectorAll('.filter-control');
+        const source = document.createElement('span');
+        source.classList.add('stickie-source');
+        source.textContent = stickie.source === 'USER' ? 'Bennie' : 'AI';
+        meta.appendChild(source);
 
-    postCategorySelect = createCustomSelect({
-        id: 'postCategoryFilter',
-        options: [
-            { value: 'all', label: 'All categories' },
-            ...filterCategories.map(category => ({ value: category, label: category }))
-        ],
-        value: activeFilters.category,
-        onChange: (value) => {
-            activeFilters.category = value;
-            syncFilterUrl();
-            currentPage = 0;
-            loadPage(0);
-        }
-    });
-    categoryControl.appendChild(postCategorySelect.element);
-    categoryControl.querySelector('.custom-select-trigger').setAttribute('aria-labelledby', 'postCategoryFilterLabel');
+        const date = document.createElement('span');
+        date.classList.add('stickie-date');
+        date.textContent = formatDateTimeArray(stickie.dateStuck);
+        meta.appendChild(date);
 
-    postSkillSelect = createCustomSelect({
-        id: 'postSkillFilter',
-        options: [
-            { value: 'all', label: 'All skills' },
-            ...filterSkills.map(skill => ({ value: skill.id, label: skill.name }))
-        ],
-        value: activeFilters.skillId,
-        onChange: (value) => {
-            activeFilters.skillId = value;
-            syncFilterUrl();
-            currentPage = 0;
-            loadPage(0);
-        }
-    });
-    skillControl.appendChild(postSkillSelect.element);
-    skillControl.querySelector('.custom-select-trigger').setAttribute('aria-labelledby', 'postSkillFilterLabel');
-
-    document.getElementById('clearFilters').addEventListener('click', () => {
-        activeFilters = { category: 'all', skillId: 'all' };
-        postCategorySelect.setValue('all');
-        postSkillSelect.setValue('all');
-        syncFilterUrl();
-        currentPage = 0;
-        loadPage(0);
+        stickieDiv.appendChild(content);
+        stickieDiv.appendChild(meta);
+        container.appendChild(stickieDiv);
     });
 
-    updateFilterSummary();
+    section.style.display = 'flex';
 }
 
 function renderPosts(posts) {
@@ -284,89 +144,27 @@ function renderPosts(posts) {
         postDiv.appendChild(postMetadata);
 
         if (isAdmin) {
-            postDiv.appendChild(buildAdminControls('blog', post.id));
+            postDiv.appendChild(buildAdminControls('blog', post.id, () => pager.loadPage(pager.currentPage)));
         }
 
         postsContainer.appendChild(postDiv);
     });
 }
 
-function renderPagination(currentPg, totalPgs) {
-    const container = document.getElementById("pagination-blog");
-    if (!container) return;
-    container.innerHTML = "";
+const pager = createPaginationState({
+    container: document.getElementById("pagination-blog"),
+    fetcher: (page, size) => fetchPosts(page, size, activeFilters),
+    render: (items) => renderPosts(items),
+    onLoaded: () => updateFilterSummary(activeFilters, 'All posts', filterSkills),
+    onError: () => {
+        document.querySelector(".blog-posts").innerHTML = "<p>Error loading posts.</p>";
+    },
+    pageSize: PAGE_SIZE
+});
 
-    if (totalPgs <= 1) return;
-
-    const prevBtn = document.createElement("button");
-    prevBtn.textContent = "← Previous";
-    prevBtn.disabled = currentPg === 0;
-    prevBtn.id = "page-prev";
-    prevBtn.addEventListener("click", () => loadPage(currentPg - 1));
-    container.appendChild(prevBtn);
-
-    const maxButtons = 5;
-    let startPage = Math.max(0, currentPg - Math.floor(maxButtons / 2));
-    let endPage = Math.min(totalPgs - 1, startPage + maxButtons - 1);
-    if (endPage - startPage < maxButtons - 1) {
-        startPage = Math.max(0, endPage - maxButtons + 1);
-    }
-
-    if (startPage > 0) {
-        const ellipsis = document.createElement("span");
-        ellipsis.textContent = "…";
-        ellipsis.classList.add("pagination-ellipsis");
-        container.appendChild(ellipsis);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement("button");
-        pageBtn.textContent = i + 1;
-        pageBtn.id = `page-btn-${i}`;
-        if (i === currentPg) pageBtn.classList.add("active");
-        const pageIndex = i;
-        pageBtn.addEventListener("click", () => loadPage(pageIndex));
-        container.appendChild(pageBtn);
-    }
-
-    if (endPage < totalPgs - 1) {
-        const ellipsis = document.createElement("span");
-        ellipsis.textContent = "…";
-        ellipsis.classList.add("pagination-ellipsis");
-        container.appendChild(ellipsis);
-    }
-
-    const nextBtn = document.createElement("button");
-    nextBtn.textContent = "Next →";
-    nextBtn.disabled = currentPg >= totalPgs - 1;
-    nextBtn.id = "page-next";
-    nextBtn.addEventListener("click", () => loadPage(currentPg + 1));
-    container.appendChild(nextBtn);
-}
-
-async function loadPage(page) {
-    if (pageLoading) return;
-    pageLoading = true;
-    const paginationContainer = document.getElementById("pagination-blog");
-    const loader = window.showActionLoader
-        ? showActionLoader(paginationContainer, { variant: 'block', disable: false })
-        : null;
-    currentPage = page;
-    try {
-        const data = await fetchPosts(page, PAGE_SIZE, activeFilters);
-        if (!data) {
-            document.querySelector(".blog-posts").innerHTML = "<p>Error loading posts.</p>";
-            return;
-        }
-        totalPages = data.totalPages || 1;
-        renderPosts(data.content);
-        renderPagination(currentPage, totalPages);
-        updateFilterSummary();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    } finally {
-        if (loader) loader.hide();
-        pageLoading = false;
-    }
+function onFilterChange() {
+    syncFilterUrl(activeFilters);
+    pager.loadPage(0);
 }
 
 async function initializePosts() {
@@ -376,66 +174,30 @@ async function initializePosts() {
         activeFilters.skillId = url.searchParams.get('skillId') || url.searchParams.get('skill') || 'all';
 
         const [categories, skills] = await Promise.all([
-            fetchPostCategories(),
+            fetchCategories('/blog/categories'),
             fetchSkillOptions()
         ]);
 
         filterCategories = categories;
         filterSkills = skills;
-        renderFilterControls();
-        await loadPage(0);
+        renderFilterControls({
+            activeFilters,
+            filterCategories,
+            filterSkills,
+            categoryLabelId: 'postCategoryFilterLabel',
+            skillLabelId: 'postSkillFilterLabel',
+            categorySelectId: 'postCategoryFilter',
+            skillSelectId: 'postSkillFilter',
+            allLabel: 'All posts',
+            onChange: onFilterChange
+        });
+
+        // Stickies don't block the post list — fire and forget.
+        renderStickies();
+        await pager.loadPage(0);
     } catch (error) {
         console.error('Error initializing posts:', error);
     }
-}
-
-function buildAdminControls(type, id) {
-    const controls = document.createElement('div');
-    controls.classList.add('admin-item-controls');
-
-    const editBtn = document.createElement('button');
-    editBtn.type = 'button';
-    editBtn.classList.add('admin-control-btn', 'admin-edit-btn');
-    editBtn.setAttribute('aria-label', 'Edit');
-    editBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>`;
-    editBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        window.location.href = `admin.html?edit=${type}&id=${id}`;
-    });
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.type = 'button';
-    deleteBtn.classList.add('admin-control-btn', 'admin-delete-btn');
-    deleteBtn.setAttribute('aria-label', 'Delete');
-    deleteBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>`;
-    deleteBtn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (!confirm(`Delete this post? This cannot be undone.`)) return;
-
-        const token = localStorage.getItem('jwt_token');
-        try {
-            const response = await fetch(`${SERVER_URL}/blog/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.status === 401 || response.status === 403) {
-                alert('Your session has expired. Please log in again through the admin panel.');
-                return;
-            }
-
-            if (!response.ok) throw new Error(`Delete failed: ${response.status}`);
-
-            initializePosts();
-        } catch (error) {
-            console.error('Error deleting item:', error);
-            alert('Could not delete this item.');
-        }
-    });
-
-    controls.appendChild(editBtn);
-    controls.appendChild(deleteBtn);
-    return controls;
 }
 
 document.addEventListener('DOMContentLoaded', initializePosts);
