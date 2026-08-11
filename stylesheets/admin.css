@@ -2,6 +2,11 @@ html.admin-auth-pending body {
     visibility: hidden;
 }
 
+/* Safety net: never allow horizontal scroll/overflow on the admin page */
+html {
+    overflow-x: hidden;
+}
+
 body {
     padding: 20px;
     margin: 0;
@@ -540,6 +545,33 @@ main.admin-main {
     margin: 2px 0;
 }
 
+/* ── Hamburger button (mobile-only) ──────────────────────────────────── */
+.nav-hamburger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: #3d3d3d;
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.nav-hamburger svg {
+    width: 22px;
+    height: 22px;
+}
+
+html[data-theme="dark"] .nav-hamburger {
+    background: #1b1f26;
+    border: 1px solid #343a44;
+    color: #aeb6c0;
+}
+
 /* ── Media Library ─────────────────────────────────────────────────── */
 .media-library-toolbar {
     display: flex;
@@ -684,12 +716,22 @@ main.admin-main {
     background: #f4f4f4;
 }
 
-/* ── Responsive: stack sidebar over main at ≤ 900px ──────────────────── */
+/* ── Responsive: hamburger dropdown at ≤ 900px ──────────────────────── */
 @media (max-width: 900px) {
 
     body {
         height: auto;
+        overflow-x: hidden;
         overflow-y: auto;
+    }
+
+    .nav-hamburger {
+        display: inline-flex;
+    }
+
+    /* The theme toggle is relocated into the dropdown by JS on mobile */
+    .navbar .theme-toggle-wrapper {
+        display: none;
     }
 
     .navbar {
@@ -709,29 +751,45 @@ main.admin-main {
     }
 
     side {
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        width: 100%;
+        position: fixed;
+        top: 64px;
+        right: 10px;
+        z-index: 100;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        width: min(320px, calc(100vw - 20px));
         min-width: 0;
-        padding: 6px;
-        gap: 6px;
+        height: auto;
+        max-height: calc(100vh - 84px);
+        padding: 10px;
+        border-radius: 10px;
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+        overflow-y: auto;
     }
 
-    .admin-tab {
-        margin-bottom: 0;
-        padding: 8px 10px;
+    html[data-theme="dark"] side {
+        background: #1b1f26;
+    }
+
+    body.admin-menu-open side {
+        display: flex;
+    }
+
+    side .theme-toggle-wrapper {
+        align-self: flex-start;
+        margin: 4px 0 12px;
     }
 
     .logout {
-        margin-top: 0;
-        margin-left: auto;
-        width: auto;
+        margin-top: auto;
+        width: 100%;
     }
 
     .logout #logout-button {
-        width: auto;
-        padding: 8px 16px;
+        width: 100%;
+        padding: 10px 20px;
     }
 
     main.admin-main {
@@ -745,11 +803,33 @@ main.admin-main {
     }
 }
 
-/* ── Responsive: phone tweaks at ≤ 600px ─────────────────────────────── */
+/* ── Responsive: phone layout matches other pages at ≤ 600px ─────────── */
 @media (max-width: 600px) {
 
     body {
         padding: 10px;
+    }
+
+    .navbar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sitename {
+        flex-grow: 1;
+        order: 1;
+    }
+
+    .nav-hamburger {
+        order: 2;
+    }
+
+    nav {
+        order: 3;
+        width: 100%;
+        margin-top: 10px;
     }
 
     main.admin-main {

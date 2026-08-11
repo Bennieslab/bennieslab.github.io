@@ -81,6 +81,14 @@
                 </span>
             </button>
         </div>
+        <button class="nav-hamburger" id="adminMenuToggle" type="button" aria-label="Open menu" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
     </div>
     <div class="content-wrapper">
         <side>
@@ -197,6 +205,65 @@
     <script src="scripts/utils/dialogs.js"></script>
     <script src="scripts/utils/format.js"></script>
     <script src="scripts/admin.js"></script>
+    <script>
+        // Mobile hamburger menu: toggles the fixed dropdown panel, relocates
+        // the theme toggle into/out of the panel with the breakpoint, and
+        // closes on tab click / outside click / Escape.
+        (() => {
+            const body = document.body;
+            const toggleBtn = document.getElementById('adminMenuToggle');
+            const sidebar = document.querySelector('side');
+            const themeWrapper = document.querySelector('.theme-toggle-wrapper');
+            if (!toggleBtn || !sidebar || !themeWrapper) return;
+
+            const mobileMedia = window.matchMedia('(max-width: 900px)');
+
+            function setMenu(open) {
+                body.classList.toggle('admin-menu-open', open);
+                toggleBtn.setAttribute('aria-expanded', String(open));
+                toggleBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+            }
+
+            function relocateThemeToggle() {
+                if (mobileMedia.matches) {
+                    if (themeWrapper.parentElement !== sidebar) {
+                        sidebar.appendChild(themeWrapper);
+                    }
+                } else if (themeWrapper.parentElement !== toggleBtn.parentElement) {
+                    toggleBtn.parentElement.insertBefore(themeWrapper, toggleBtn);
+                }
+            }
+
+            toggleBtn.addEventListener('click', () => {
+                setMenu(!body.classList.contains('admin-menu-open'));
+            });
+
+            sidebar.addEventListener('click', (e) => {
+                if (e.target.closest('.admin-tab')) setMenu(false);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (body.classList.contains('admin-menu-open') &&
+                    !e.target.closest('side') &&
+                    !e.target.closest('#adminMenuToggle')) {
+                    setMenu(false);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && body.classList.contains('admin-menu-open')) {
+                    setMenu(false);
+                }
+            });
+
+            mobileMedia.addEventListener('change', () => {
+                setMenu(false);
+                relocateThemeToggle();
+            });
+
+            relocateThemeToggle();
+        })();
+    </script>
 </body>
 
 </html>
