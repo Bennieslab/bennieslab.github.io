@@ -49,7 +49,8 @@ nav {
 
 nav a {
     padding: 6px;
-}
+}
+
 
 .navbar a.active-link {
     position: relative;
@@ -113,7 +114,6 @@ side {
     height: 100%;
     min-height: 0;
     border-radius: 7px;
-    background: #f4f4f4;
     overflow-y: auto;
 }
 
@@ -180,6 +180,13 @@ main.admin-main {
     width: 24px;
     height: 24px;
     margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.create-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
 }
 
 .tab-header {

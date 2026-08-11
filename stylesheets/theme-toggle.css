@@ -390,6 +390,92 @@ html[data-theme="dark"] .pin-badge {
     color: #d20a2e;
 }
 
+/* ── Dark mode: admin dashboard ──────────────────────────────────────── */
+html[data-theme="dark"] .admin-tab:hover,
+html[data-theme="dark"] .admin-tab.active-tab {
+    background: #1b1f26;
+}
+
+html[data-theme="dark"] .create,
+html[data-theme="dark"] .profile-editor-grid,
+html[data-theme="dark"] .manage,
+html[data-theme="dark"] .media-card {
+    background: #1b1f26;
+}
+
+html[data-theme="dark"] .create-option,
+html[data-theme="dark"] .add-option,
+html[data-theme="dark"] .manage-option,
+html[data-theme="dark"] .media-card,
+html[data-theme="dark"] .media-card-btn,
+html[data-theme="dark"] .media-load-more-btn {
+    border-color: #2b3038;
+}
+
+html[data-theme="dark"] .create-option:hover,
+html[data-theme="dark"] .add-option:hover,
+html[data-theme="dark"] .media-card-btn:hover {
+    background: #23272f;
+}
+
+html[data-theme="dark"] .create-option,
+html[data-theme="dark"] .add-option,
+html[data-theme="dark"] .manage-option,
+html[data-theme="dark"] .obsidian-style-input,
+html[data-theme="dark"] .media-card-name,
+html[data-theme="dark"] .media-section-heading,
+html[data-theme="dark"] .cancel-button,
+html[data-theme="dark"] .modal-button.secondary,
+html[data-theme="dark"] .media-card-btn,
+html[data-theme="dark"] .media-load-more-btn {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .media-card-preview,
+html[data-theme="dark"] .file-label {
+    background: #23272f;
+}
+
+html[data-theme="dark"] .file-label:hover {
+    background: #1b1f26;
+}
+
+html[data-theme="dark"] .skills-checkbox-list {
+    background: #1b1f26;
+    border-color: #2b3038;
+}
+
+html[data-theme="dark"] .skill-checkbox-label:hover {
+    background: #23272f;
+}
+
+html[data-theme="dark"] .modal {
+    background: #1b1f26;
+}
+
+html[data-theme="dark"] .modal-input {
+    background: #1b1f26;
+    border-color: #2b3038;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .modal-label {
+    color: #d4d8dd;
+}
+
+html[data-theme="dark"] .media-library-summary {
+    color: #7f8894;
+}
+
+html[data-theme="dark"] .editor-toolbar button,
+html[data-theme="dark"] .editor-toolbar button:hover {
+    color: #aeb6c0 !important;
+}
+
+html[data-theme="dark"] .editor-toolbar button.active {
+    background: #23272f !important;
+}
+
 /* Dark mode: skill chips */
 html[data-theme="dark"] .skill-chip {
     background: transparent;
