@@ -51,7 +51,7 @@ nav {
     width: 200px;
     padding: 0;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     background: #e8e8e8;
     border-radius: 10px;
     height: 40px;
