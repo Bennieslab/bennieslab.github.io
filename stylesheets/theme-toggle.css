@@ -78,17 +78,17 @@ html[data-theme="dark"] main.admin-main {
     background: #23272f;
 }
 
-html[data-theme="dark"] nav img {
-    filter: invert(77%) sepia(7%) saturate(441%) hue-rotate(174deg) brightness(92%) contrast(87%);
+html[data-theme="dark"] nav .nav-icon {
+    fill: #aeb6c0;
     opacity: 0.88;
 }
 
-html[data-theme="dark"] nav img:hover {
+html[data-theme="dark"] nav a:hover .nav-icon {
     opacity: 1;
-    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
+    fill: #d20a2e;
 }
 
-/* Nav link red hover: show a label and tint icon red */
+/* Nav link: icon on top, label below, red hover tint */
 .navbar,
 nav {
     align-items: center;
@@ -96,8 +96,10 @@ nav {
 
 nav a {
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 3px;
     padding: 6px;
     position: relative;
     text-decoration: none;
@@ -106,20 +108,10 @@ nav a {
 }
 
 nav a .nav-label {
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
     display: block;
-    transform: translate(-50%, 4px);
-    padding: 4px 7px;
-    border-radius: 999px;
-    background: #3d3d3d;
     font-size: 0.6em;
     font-weight: 700;
-    color: #ffffff;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    color: #3d3d3d;
     line-height: 1;
     user-select: none;
     letter-spacing: 0.04em;
@@ -127,17 +119,18 @@ nav a .nav-label {
     white-space: nowrap;
 }
 
-nav a img {
+nav a .nav-icon {
     display: block;
+    width: 20px;
+    height: 20px;
+    fill: #3d3d3d;
+    opacity: 0.78;
+    transition: opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease;
 }
 
-nav a:hover .nav-label {
+nav a:hover .nav-icon {
+    fill: #d20a2e;
     opacity: 1;
-    transform: translate(-50%, 0);
-}
-
-nav a:hover img {
-    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
     transform: scale(1.1);
 }
 
@@ -320,19 +313,13 @@ html[data-theme="dark"] .thumbnail-container:has(img) {
     background: none;
 }
 
-/* Dark mode: nav label inherits tint on hover */
+/* Dark mode: nav label */
 html[data-theme="dark"] nav a .nav-label {
-    background: #1b1f26;
     color: #d4d8dd;
 }
 
 html[data-theme="dark"] nav a:hover .nav-label {
     color: #d4d8dd;
-}
-
-html[data-theme="dark"] nav a:hover img {
-    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
-    opacity: 1;
 }
 
 html[data-theme="dark"] .social_icons a {

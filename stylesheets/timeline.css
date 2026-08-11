@@ -75,17 +75,7 @@ html[data-theme="dark"] .review,
 html[data-theme="dark"] .enter-review,
 html[data-theme="dark"] main.admin-main {
     background: #23272f;
-}
-
-html[data-theme="dark"] nav img {
-    filter: invert(77%) sepia(7%) saturate(441%) hue-rotate(174deg) brightness(92%) contrast(87%);
-    opacity: 0.88;
-}
-
-html[data-theme="dark"] nav img:hover {
-    opacity: 1;
-    filter: invert(22%) sepia(97%) saturate(2472%) hue-rotate(337deg) brightness(86%) contrast(96%);
-}
+}
 
 /* Nav link red hover: show a label and tint icon red */
 .navbar,
