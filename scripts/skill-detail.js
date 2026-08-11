@@ -103,6 +103,7 @@ async function displaySkill() {
 
         skillContentElement.innerHTML = renderMarkdownWithMath(skill.description);
         addCopyButtonsToCodeBlocks(skillContentElement);
+        wrapTablesForScroll(skillContentElement);
         highlightCodeBlocks(skillContentElement);
         renderMathContent(skillContentElement);
         displaySkillCounts(skill.id);

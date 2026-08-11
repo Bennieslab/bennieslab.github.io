@@ -203,6 +203,81 @@ html[data-theme="dark"] .skill-content-rendered pre code {
     color: inherit;
 }
 
+/* ── Rendered markdown: full container text color ────────────────────────
+   The detail-page stylesheets hard-code #3d3d3d on these containers and on
+   their h1-h6, so in dark mode paragraph text gets overridden by the p rule
+   below but lists, table cells, blockquotes, etc. would stay dark-on-dark.
+   Override the container color so everything inherits a readable tone, and
+   shade the headings that the global h1/h2 rule doesn't reach. */
+html[data-theme="dark"] .post-content-rendered,
+html[data-theme="dark"] .project-content-rendered,
+html[data-theme="dark"] .model-content-rendered,
+html[data-theme="dark"] .skill-content-rendered {
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .post-content-rendered h3,
+html[data-theme="dark"] .post-content-rendered h4,
+html[data-theme="dark"] .post-content-rendered h5,
+html[data-theme="dark"] .post-content-rendered h6,
+html[data-theme="dark"] .project-content-rendered h3,
+html[data-theme="dark"] .project-content-rendered h4,
+html[data-theme="dark"] .project-content-rendered h5,
+html[data-theme="dark"] .project-content-rendered h6,
+html[data-theme="dark"] .model-content-rendered h3,
+html[data-theme="dark"] .model-content-rendered h4,
+html[data-theme="dark"] .model-content-rendered h5,
+html[data-theme="dark"] .model-content-rendered h6,
+html[data-theme="dark"] .skill-content-rendered h3,
+html[data-theme="dark"] .skill-content-rendered h4,
+html[data-theme="dark"] .skill-content-rendered h5,
+html[data-theme="dark"] .skill-content-rendered h6 {
+    color: #d4d8dd;
+}
+
+/* ── Rendered markdown: tables ──────────────────────────────────────────
+   Wrapped in .content-table-wrapper (created by wrapTablesForScroll in
+   markdown.js) so wide tables scroll horizontally instead of cramming.
+   Left-aligned headers override the browser's centered default. Auto layout
+   lets columns size to content and wrap naturally — the wrapper only
+   scrolls when content genuinely can't fit. */
+.content-table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1em;
+}
+
+.content-table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+
+.content-table-wrapper th,
+.content-table-wrapper td {
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.content-table-wrapper th {
+    background-color: #f0f0f0;
+    font-weight: 700;
+}
+
+html[data-theme="dark"] .content-table-wrapper th,
+html[data-theme="dark"] .content-table-wrapper td {
+    border-color: #2b3038;
+}
+
+html[data-theme="dark"] .content-table-wrapper th {
+    background-color: #23272f;
+    color: #d4d8dd;
+}
+
 html[data-theme="dark"] .project-properties {
     border-color: #2b3038;
 }

@@ -59,6 +59,7 @@ async function displayProject() {
 
         projectContentElement.innerHTML = renderMarkdownWithMath(project.description);
         addCopyButtonsToCodeBlocks(projectContentElement);
+        wrapTablesForScroll(projectContentElement);
         highlightCodeBlocks(projectContentElement);
         renderMathContent(projectContentElement);
 

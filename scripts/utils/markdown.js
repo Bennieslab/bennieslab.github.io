@@ -120,8 +120,26 @@ function addCopyButtonsToCodeBlocks(container) {
     });
 }
 
+/**
+ * Wraps every top-level <table> inside the container in a horizontally
+ * scrollable wrapper div so wide tables can scroll instead of cramming.
+ * Safe to call repeatedly (already-wrapped tables are skipped).
+ */
+function wrapTablesForScroll(container) {
+    if (!container) return;
+    container.querySelectorAll('table').forEach((table) => {
+        if (table.parentElement && table.parentElement.classList.contains('content-table-wrapper')) return; // avoid duplicates
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'content-table-wrapper';
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+    });
+}
+
 // Expose as globals for plain <script> pages.
 window.highlightCodeBlocks = highlightCodeBlocks;
 window.renderMathContent = renderMathContent;
 window.renderMarkdownWithMath = renderMarkdownWithMath;
 window.addCopyButtonsToCodeBlocks = addCopyButtonsToCodeBlocks;
+window.wrapTablesForScroll = wrapTablesForScroll;

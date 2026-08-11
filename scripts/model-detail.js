@@ -227,6 +227,7 @@ async function displayModel() {
             if (model.description) {
                 modelContentElement.innerHTML = renderMarkdownWithMath(model.description);
                 addCopyButtonsToCodeBlocks(modelContentElement);
+                wrapTablesForScroll(modelContentElement);
                 highlightCodeBlocks(modelContentElement);
                 renderMathContent(modelContentElement);
             } else {

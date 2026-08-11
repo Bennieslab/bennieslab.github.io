@@ -55,6 +55,7 @@ async function displayBlogPost() {
 
         postContentElement.innerHTML = renderMarkdownWithMath(post.content);
         addCopyButtonsToCodeBlocks(postContentElement);
+        wrapTablesForScroll(postContentElement);
         highlightCodeBlocks(postContentElement);
         renderMathContent(postContentElement);
 
