@@ -280,13 +280,13 @@ main.skill-detail-main {
 .navbar a.active-link::after {
     content: '';
     position: absolute;
-    top: 0;
+    bottom: 3px;
     left: 50%;
     transform: translateX(-50%);
-    width: 6px;
-    height: 6px;
+    width: 20px;
+    height: 3px;
     background-color: #d20a2e;
-    border-radius: 50%;
+    border-radius: 5px;
 }
 
 .sitename {
@@ -305,12 +305,13 @@ main.skill-detail-main {
 }
 
 nav {
-    padding: 4px;
+    padding: 0;
     display: flex;
     justify-content: space-around;
-    width: 400px;
+    width: 200px;
     background: #e8e8e8;
     border-radius: 10px;
+    height: 40px;
 }
 
 nav a {

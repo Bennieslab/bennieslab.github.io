@@ -23,13 +23,13 @@ body {
 .navbar a.active-link::after {
     content: '';
     position: absolute;
-    top: 0;
+    bottom: 3px;
     left: 50%;
     transform: translateX(-50%);
-    width: 6px;
-    height: 6px;
+    width: 20px;
+    height: 3px;
     background-color: #d20a2e;
-    border-radius: 50%;
+    border-radius: 5px;
 }
 
 .sitename {
@@ -48,17 +48,20 @@ body {
 }
 
 nav {
-    width: 400px;
-    padding: 4px;
+    width: 200px;
+    padding: 0;
     display: flex;
     justify-content: space-around;
     background: #e8e8e8;
     border-radius: 10px;
+    height: 40px;
 }
 
 nav a {
     padding: 6px; /* theme-toggle.css owns nav a display/flex direction */
-}
+}
+
+
 
 .perspective-links {
     padding: 0;

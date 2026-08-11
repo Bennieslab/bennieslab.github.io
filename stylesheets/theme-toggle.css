@@ -83,7 +83,12 @@ html[data-theme="dark"] nav .nav-icon {
     opacity: 0.88;
 }
 
-html[data-theme="dark"] nav a:hover .nav-icon {
+html[data-theme="dark"] nav a:hover .nav-label {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+nav a:hover .nav-icon {
     opacity: 1;
     fill: #d20a2e;
 }
@@ -96,22 +101,30 @@ nav {
 
 nav a {
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    padding: 6px;
+    padding: 0;
     position: relative;
     text-decoration: none;
     min-width: 38px;
-    min-height: 38px;
+    min-height: 40px;
 }
 
 nav a .nav-label {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
     display: block;
+    transform: translate(-50%, 4px);
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: #3d3d3d;
     font-size: 0.6em;
     font-weight: 700;
-    color: #3d3d3d;
+    color: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     line-height: 1;
     user-select: none;
     letter-spacing: 0.04em;
@@ -126,6 +139,11 @@ nav a .nav-icon {
     fill: #3d3d3d;
     opacity: 0.78;
     transition: opacity 0.2s ease, transform 0.2s ease, fill 0.2s ease;
+}
+
+nav a:hover .nav-label {
+    opacity: 1;
+    transform: translate(-50%, 0);
 }
 
 nav a:hover .nav-icon {
@@ -315,6 +333,7 @@ html[data-theme="dark"] .thumbnail-container:has(img) {
 
 /* Dark mode: nav label */
 html[data-theme="dark"] nav a .nav-label {
+    background: #1b1f26;
     color: #d4d8dd;
 }
 
