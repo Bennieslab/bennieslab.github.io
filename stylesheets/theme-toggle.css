@@ -249,7 +249,8 @@ html[data-theme="dark"] .skill-content-rendered h6 {
 }
 
 .content-table-wrapper table {
-    width: 100%;
+    width: auto;
+    min-width: 100%;
     border-collapse: collapse;
     font-size: 0.95em;
 }
@@ -259,13 +260,18 @@ html[data-theme="dark"] .skill-content-rendered h6 {
     padding: 8px 12px;
     text-align: left;
     border: 1px solid #ddd;
-    overflow-wrap: break-word;
-    word-break: break-word;
+    /* Reset the container's inherited overflow-wrap: break-word so cells
+       wrap at natural word boundaries instead of force-splitting words;
+       genuinely unbreakable content (URLs, code, numbers) then widens the
+       column and the wrapper scrolls instead of cramming. */
+    overflow-wrap: normal;
+    word-break: normal;
 }
 
 .content-table-wrapper th {
     background-color: #f0f0f0;
     font-weight: 700;
+    white-space: nowrap;
 }
 
 html[data-theme="dark"] .content-table-wrapper th,
