@@ -391,9 +391,13 @@ html[data-theme="dark"] .pin-badge {
 }
 
 /* ── Dark mode: admin dashboard ──────────────────────────────────────── */
-html[data-theme="dark"] .admin-tab:hover,
+html[data-theme="dark"] .admin-tab:hover {
+    background: #23272f;
+}
+
 html[data-theme="dark"] .admin-tab.active-tab {
-    background: #1b1f26;
+    background: rgba(210, 10, 46, 0.14);
+    color: #d20a2e;
 }
 
 html[data-theme="dark"] .create,

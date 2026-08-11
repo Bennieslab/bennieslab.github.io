@@ -683,3 +683,91 @@ main.admin-main {
 .media-load-more-btn:hover {
     background: #f4f4f4;
 }
+
+/* ── Responsive: stack sidebar over main at ≤ 900px ──────────────────── */
+@media (max-width: 900px) {
+
+    body {
+        height: auto;
+        overflow-y: auto;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav {
+        min-width: unset;
+        width: 100%;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    side {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        padding: 6px;
+        gap: 6px;
+    }
+
+    .admin-tab {
+        margin-bottom: 0;
+        padding: 8px 10px;
+    }
+
+    .logout {
+        margin-top: 0;
+        margin-left: auto;
+        width: auto;
+    }
+
+    .logout #logout-button {
+        width: auto;
+        padding: 8px 16px;
+    }
+
+    main.admin-main {
+        height: auto;
+    }
+
+    .create,
+    .profile-editor-grid,
+    .manage {
+        max-width: 100%;
+    }
+}
+
+/* ── Responsive: phone tweaks at ≤ 600px ─────────────────────────────── */
+@media (max-width: 600px) {
+
+    body {
+        padding: 10px;
+    }
+
+    main.admin-main {
+        padding: 12px;
+    }
+
+    .modal {
+        width: calc(100vw - 20px);
+    }
+
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+
+    .create,
+    .profile-editor-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        padding: 12px;
+    }
+}
