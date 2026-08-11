@@ -107,7 +107,7 @@ nav a {
     position: relative;
     text-decoration: none;
     min-width: 38px;
-    min-height: 40px;
+    min-height: 50px;
 }
 
 nav a .nav-label {
