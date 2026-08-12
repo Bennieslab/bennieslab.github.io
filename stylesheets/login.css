@@ -85,3 +85,66 @@ body {
 .btn-primary:hover {
     background-color: #e21a3e;
 }
+
+/* ── Accent highlights ─────────────────────────────────────────────────
+   The login page doesn't load theme-toggle.css, so mirror the site's
+   red accent interaction highlights here. */
+* {
+    -webkit-tap-highlight-color: rgba(210, 10, 46, 0.25);
+}
+
+:focus-visible {
+    outline: 2px solid #d20a2e;
+    outline-offset: 2px;
+}
+
+input,
+textarea,
+select {
+    caret-color: #d20a2e;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+progress {
+    accent-color: #d20a2e;
+}
+
+/* ── Password visibility toggle ─────────────────────────────────────── */
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 44px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    color: #777;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: #d20a2e;
+}
+
+.password-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}

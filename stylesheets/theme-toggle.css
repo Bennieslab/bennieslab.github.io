@@ -573,6 +573,31 @@ html:not([data-theme="dark"]) {
     background-color: rgba(210, 10, 46, 0.25);
 }
 
+/* ── Accent highlights ─────────────────────────────────────────────────
+   Replace the browser's default blue interaction highlights with the
+   site's red accent, matching the ::selection treatment above. */
+* {
+    -webkit-tap-highlight-color: rgba(210, 10, 46, 0.25);
+}
+
+:focus-visible {
+    outline: 2px solid #d20a2e;
+    outline-offset: 2px;
+}
+
+input,
+textarea,
+select {
+    caret-color: #d20a2e;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+progress {
+    accent-color: #d20a2e;
+}
+
 @media (max-width: 900px) {
     .theme-toggle-wrapper {
         order: 2;

@@ -3,6 +3,65 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const loginError = document.getElementById('login-error');
+    const passwordInput = document.getElementById('password');
+    const passwordToggle = document.getElementById('password-toggle');
+
+    // ── Password visibility toggle (hold to view + click to toggle) ──
+    if (passwordInput && passwordToggle) {
+        const eyeIcon = passwordToggle.querySelector('.icon-eye');
+        const eyeSlashIcon = passwordToggle.querySelector('.icon-eye-slash');
+        let visible = false;
+        let holding = false;
+        let holdTimer = null;
+
+        function setVisible(isVisible) {
+            visible = isVisible;
+            passwordInput.type = isVisible ? 'text' : 'password';
+            passwordToggle.setAttribute('aria-pressed', String(isVisible));
+            passwordToggle.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+            if (eyeIcon) eyeIcon.style.display = isVisible ? 'none' : '';
+            if (eyeSlashIcon) eyeSlashIcon.style.display = isVisible ? '' : 'none';
+        }
+
+        // Hold to view: show while pressed, hide on release.
+        passwordToggle.addEventListener('pointerdown', (e) => {
+            e.preventDefault(); // keep focus in the input
+            holding = true;
+            clearTimeout(holdTimer);
+            holdTimer = setTimeout(() => {
+                if (holding) setVisible(true);
+            }, 200);
+        });
+
+        function endHold() {
+            if (!holding) return;
+            holding = false;
+            clearTimeout(holdTimer);
+            setVisible(false);
+        }
+
+        passwordToggle.addEventListener('pointerup', endHold);
+        passwordToggle.addEventListener('pointerleave', endHold);
+        passwordToggle.addEventListener('pointercancel', endHold);
+
+        // Click to toggle (fallback for quick taps / desktop).
+        passwordToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (holding) {
+                // This click is the tail end of a hold; already handled.
+                holding = false;
+                clearTimeout(holdTimer);
+                setVisible(false);
+                return;
+            }
+            clearTimeout(holdTimer);
+            setVisible(!visible);
+        });
+
+        // Prevent the long-press context menu from interrupting the hold.
+        passwordToggle.addEventListener('contextmenu', (e) => e.preventDefault());
+    }
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
