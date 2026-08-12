@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 html.admin-auth-pending body {
     visibility: hidden;
 }
@@ -838,6 +842,7 @@ html[data-theme="dark"] .nav-hamburger {
     main.admin-main {
         padding: 12px;
         min-width: 0;
+        background: transparent;
     }
 
     .modal {
