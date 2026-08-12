@@ -108,6 +108,7 @@ nav a {
     flex-grow: 1;
     min-height: 0;
     gap: 20px;
+    overflow-x: hidden;
 }
 
 side {
@@ -145,6 +146,7 @@ main.admin-main {
     padding: 20px;
     flex-grow: 1;
     min-height: 0;
+    min-width: 0;
     height: 100%;
     width: auto;
     display: flex;
@@ -152,6 +154,7 @@ main.admin-main {
     border-radius: 7px;
     background: #e8e8e8;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .admin-tab {
@@ -834,20 +837,37 @@ html[data-theme="dark"] .nav-hamburger {
 
     main.admin-main {
         padding: 12px;
+        min-width: 0;
     }
 
     .modal {
         width: calc(100vw - 20px);
     }
 
+    .manage-option {
+        min-width: 0;
+        flex: 1 1 44%;
+    }
+
+    .create-option,
+    .add-option {
+        gap: 8px;
+        padding: 14px;
+    }
+
     .media-grid {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 10px;
+    }
+
+    .media-library-toolbar {
+        flex-wrap: wrap;
     }
 
     .create,
     .profile-editor-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 12px;
-        padding: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+        padding: 10px;
     }
 }
