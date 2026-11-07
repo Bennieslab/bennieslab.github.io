@@ -331,48 +331,68 @@ html[data-theme="dark"] .mobile-side-nav-close:hover {
     flex-direction: column;
     padding: 0;
     margin: 0;
+    background: transparent !important;
+    border-radius: 0 !important;
+    height: auto !important;
+    min-width: 0 !important;
 }
 
 .mobile-side-nav-link {
     position: relative;
-    display: flex;
-    align-items: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
     gap: 14px;
-    padding: 15px 20px;
+    padding: 15px 20px !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
     text-decoration: none;
-    color: #4b5563;
+    color: #4b5563 !important;
     background: transparent !important;
     border: none !important;
     border-radius: 0 !important;
     outline: none !important;
     box-shadow: none !important;
+    fill: none !important;
     -webkit-tap-highlight-color: transparent !important;
     transition: color 0.15s ease;
     cursor: pointer;
+    font-size: unset !important;
+    font-weight: unset !important;
+    letter-spacing: unset !important;
+    text-transform: unset !important;
+    opacity: 1 !important;
+    transform: none !important;
 }
 
 html[data-theme="dark"] .mobile-side-nav-link {
-    color: #9ca3af;
+    color: #9ca3af !important;
     background: transparent !important;
     border: none !important;
+    fill: none !important;
+    opacity: 1 !important;
 }
 
 .mobile-side-nav-link:hover,
 .mobile-side-nav-link:focus,
 .mobile-side-nav-link:active {
     background: transparent !important;
-    color: #111827;
+    color: #111827 !important;
     outline: none !important;
     box-shadow: none !important;
+    transform: none !important;
 }
 
 html[data-theme="dark"] .mobile-side-nav-link:hover,
 html[data-theme="dark"] .mobile-side-nav-link:focus,
 html[data-theme="dark"] .mobile-side-nav-link:active {
     background: transparent !important;
-    color: #ffffff;
+    color: #ffffff !important;
     outline: none !important;
     box-shadow: none !important;
+    transform: none !important;
 }
 
 .mobile-side-nav-link.active-link {
@@ -402,20 +422,14 @@ html[data-theme="dark"] .mobile-side-nav-link.active-link {
     display: block;
 }
 
-.drawer-icon-wrap {
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
 .drawer-icon {
     width: 20px;
     height: 20px;
+    min-width: 20px;
     stroke: currentColor;
+    fill: none !important;
     flex-shrink: 0;
+    display: block;
 }
 
 .drawer-link-title {
