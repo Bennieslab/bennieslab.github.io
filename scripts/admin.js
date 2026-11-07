@@ -415,10 +415,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="modal-field-group" style="flex: 1;">
                             <label class="modal-field-label">Status</label>
                             <select id="release-status-input" class="modal-input">
-                                <option value="Stable" ${isEditMode && itemData.status === 'Stable' ? 'selected' : ''}>🟢 Stable</option>
-                                <option value="Beta" ${isEditMode && itemData.status === 'Beta' ? 'selected' : ''}>🟡 Beta</option>
-                                <option value="Preview" ${isEditMode && itemData.status === 'Preview' ? 'selected' : ''}>🟣 Alpha / Preview</option>
-                                <option value="Archived" ${isEditMode && itemData.status === 'Archived' ? 'selected' : ''}>⚪ Archived</option>
+                                <option value="Stable" ${isEditMode && itemData.status === 'Stable' ? 'selected' : ''}>Stable</option>
+                                <option value="Beta" ${isEditMode && itemData.status === 'Beta' ? 'selected' : ''}>Beta</option>
+                                <option value="Preview" ${isEditMode && itemData.status === 'Preview' ? 'selected' : ''}>Preview / Alpha</option>
+                                <option value="Archived" ${isEditMode && itemData.status === 'Archived' ? 'selected' : ''}>Archived</option>
                             </select>
                         </div>
                     </div>
@@ -426,11 +426,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="modal-field-group">
                         <label class="modal-field-label">Supported Platforms (Click to select)</label>
                         <div class="platform-chips-picker" id="platform-chips-picker">
-                            <button type="button" class="platform-chip-toggle" data-platform="Windows">🪟 Windows</button>
-                            <button type="button" class="platform-chip-toggle" data-platform="Linux">🐧 Linux</button>
-                            <button type="button" class="platform-chip-toggle" data-platform="Android">🤖 Android</button>
-                            <button type="button" class="platform-chip-toggle" data-platform="Web">🌐 Web</button>
-                            <button type="button" class="platform-chip-toggle" data-platform="macOS">🍎 macOS</button>
+                            <button type="button" class="platform-chip-toggle" data-platform="Windows">
+                                <svg class="platform-btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.949-1.801"/></svg>
+                                <span>Windows</span>
+                            </button>
+                            <button type="button" class="platform-chip-toggle" data-platform="Linux">
+                                <svg class="platform-btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.012 0c-3.107 0-5.32 2.505-5.32 5.867 0 1.25.32 2.628.84 3.734-.33.374-.75.787-1.25 1.254-1.373 1.28-2.586 3.12-2.586 5.599 0 1.627.534 3.014 1.48 3.974.96.96 2.307 1.467 3.867 1.467.547 0 1.134-.067 1.76-.2.894.854 2.16 1.307 3.667 1.307 1.493 0 2.747-.44 3.64-1.28.653.133 1.253.2 1.826.2 1.56 0 2.907-.507 3.867-1.467.947-.96 1.48-2.347 1.48-3.974 0-2.48-1.213-4.32-2.586-5.599-.5-.467-.92-.88-1.254-1.254.52-1.106.84-2.484.84-3.734C17.332 2.505 15.12 0 12.012 0z"/></svg>
+                                <span>Linux</span>
+                            </button>
+                            <button type="button" class="platform-chip-toggle" data-platform="Android">
+                                <svg class="platform-btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.412 13.8533 8.077 12 8.077s-3.5902.335-5.1368.8727L4.8409 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"/></svg>
+                                <span>Android</span>
+                            </button>
+                            <button type="button" class="platform-chip-toggle" data-platform="Web">
+                                <svg class="platform-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                <span>Web</span>
+                            </button>
+                            <button type="button" class="platform-chip-toggle" data-platform="macOS">
+                                <svg class="platform-btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 3.93c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.99.6-2.63 1.35-.57.65-1.07 1.72-.94 2.74 1.01.08 2.03-.49 2.65-1.24z"/></svg>
+                                <span>macOS</span>
+                            </button>
                         </div>
                         <input type="hidden" id="release-platforms-input" value="${isEditMode ? (itemData.platforms || 'Windows') : 'Windows'}">
                     </div>
@@ -450,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <label class="modal-checkbox-card">
                             <input type="checkbox" id="pinned-input" ${isEditMode && itemData.pinned ? 'checked' : ''}>
                             <div class="checkbox-card-info">
-                                <span class="checkbox-card-title">${type === 'release' ? '⭐ Feature in Spotlight Showcase' : 'Pin item to top of list'}</span>
+                                <span class="checkbox-card-title">${type === 'release' ? 'Feature in Spotlight Showcase' : 'Pin item to top of list'}</span>
                                 <span class="checkbox-card-desc">${type === 'release' ? 'Showcase this app in the prominent top banner on releases.html' : 'Display this item first on list pages'}</span>
                             </div>
                         </label>

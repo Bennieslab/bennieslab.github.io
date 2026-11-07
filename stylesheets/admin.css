@@ -493,6 +493,13 @@ main.admin-main {
     user-select: none;
 }
 
+.platform-chip-toggle .platform-btn-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: inherit;
+}
+
 .platform-chip-toggle:hover {
     border-color: #d20a2e;
     color: #d20a2e;
