@@ -239,6 +239,16 @@ main {
     transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
+.release-card .admin-item-controls,
+.featured-release-banner .admin-item-controls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+}
+
 .release-card:hover {
     transform: translateY(-2px);
     border-color: rgba(210, 10, 46, 0.35);

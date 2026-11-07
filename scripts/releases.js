@@ -125,6 +125,10 @@
             </div>
         `;
         container.style.display = 'flex';
+
+        if (typeof isLoggedIn === 'function' && isLoggedIn() && typeof buildAdminControls === 'function') {
+            container.appendChild(buildAdminControls('release', featured.id, () => loadReleases()));
+        }
     }
 
     function renderGrid() {
@@ -226,6 +230,13 @@
                 </div>
             `;
         }).join('');
+
+        if (typeof isLoggedIn === 'function' && isLoggedIn() && typeof buildAdminControls === 'function') {
+            document.querySelectorAll('.release-card[data-id]').forEach(card => {
+                const id = card.dataset.id;
+                card.appendChild(buildAdminControls('release', id, () => loadReleases()));
+            });
+        }
     }
 
     function initListeners() {

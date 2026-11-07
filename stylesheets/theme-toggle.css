@@ -464,8 +464,44 @@ html[data-theme="dark"] .modal-input {
     color: #aeb6c0;
 }
 
-html[data-theme="dark"] .modal-label {
+html[data-theme="dark"] .modal-label,
+html[data-theme="dark"] .modal-field-label {
     color: #d4d8dd;
+}
+
+html[data-theme="dark"] .platform-chip-toggle {
+    background: #1b1f26;
+    border-color: #2b3038;
+    color: #aeb6c0;
+}
+
+html[data-theme="dark"] .platform-chip-toggle:hover {
+    border-color: #d20a2e;
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .platform-chip-toggle.is-selected {
+    background: rgba(210, 10, 46, 0.16);
+    border-color: #d20a2e;
+    color: #d20a2e;
+}
+
+html[data-theme="dark"] .modal-checkbox-card {
+    background: #1b1f26;
+    border-color: #2b3038;
+}
+
+html[data-theme="dark"] .modal-checkbox-card:hover {
+    border-color: #d20a2e;
+    background: #23272f;
+}
+
+html[data-theme="dark"] .checkbox-card-title {
+    color: #d4d8dd;
+}
+
+html[data-theme="dark"] .checkbox-card-desc {
+    color: #7f8894;
 }
 
 html[data-theme="dark"] .media-library-summary {

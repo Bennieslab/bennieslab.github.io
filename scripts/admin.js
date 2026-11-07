@@ -393,23 +393,71 @@ document.addEventListener('DOMContentLoaded', () => {
                     </label>
                     <div class="thumbnail-divider">or</div>
                     <input type="url" id="thumbnail-url-input" placeholder="Paste an image URL instead" class="modal-input">
+                    ${type === 'release' ? `
+                    <div class="modal-field-group">
+                        <label class="modal-field-label">Category</label>
+                        <select id="release-category-select" class="modal-input">
+                            <option value="Desktop Tools" ${isEditMode && itemData.category === 'Desktop Tools' ? 'selected' : ''}>Desktop Tools</option>
+                            <option value="Web Apps" ${isEditMode && itemData.category === 'Web Apps' ? 'selected' : ''}>Web Apps</option>
+                            <option value="Mobile" ${isEditMode && (itemData.category === 'Mobile' || itemData.category === 'Mobile Apps') ? 'selected' : ''}>Mobile Apps</option>
+                            <option value="Developer Utilities" ${isEditMode && itemData.category === 'Developer Utilities' ? 'selected' : ''}>Developer Utilities</option>
+                            <option value="CLI Tools" ${isEditMode && itemData.category === 'CLI Tools' ? 'selected' : ''}>CLI Tools</option>
+                            <option value="custom" ${isEditMode && itemData.category && !['Desktop Tools', 'Web Apps', 'Mobile', 'Mobile Apps', 'Developer Utilities', 'CLI Tools'].includes(itemData.category) ? 'selected' : ''}>Custom...</option>
+                        </select>
+                        <input type="text" id="category-input" placeholder="Custom category name" class="modal-input" style="${isEditMode && itemData.category && !['Desktop Tools', 'Web Apps', 'Mobile', 'Mobile Apps', 'Developer Utilities', 'CLI Tools'].includes(itemData.category) ? 'display:block; margin-top:6px;' : 'display:none; margin-top:6px;'}" value="${isEditMode ? (itemData.category || 'Desktop Tools') : 'Desktop Tools'}">
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <div class="modal-field-group" style="flex: 1;">
+                            <label class="modal-field-label">Version</label>
+                            <input type="text" id="release-version-input" placeholder="e.g. v2.0.1" class="modal-input" required value="${isEditMode ? (itemData.version || 'v1.0.0') : 'v1.0.0'}">
+                        </div>
+                        <div class="modal-field-group" style="flex: 1;">
+                            <label class="modal-field-label">Status</label>
+                            <select id="release-status-input" class="modal-input">
+                                <option value="Stable" ${isEditMode && itemData.status === 'Stable' ? 'selected' : ''}>🟢 Stable</option>
+                                <option value="Beta" ${isEditMode && itemData.status === 'Beta' ? 'selected' : ''}>🟡 Beta</option>
+                                <option value="Preview" ${isEditMode && itemData.status === 'Preview' ? 'selected' : ''}>🟣 Alpha / Preview</option>
+                                <option value="Archived" ${isEditMode && itemData.status === 'Archived' ? 'selected' : ''}>⚪ Archived</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-field-group">
+                        <label class="modal-field-label">Supported Platforms (Click to select)</label>
+                        <div class="platform-chips-picker" id="platform-chips-picker">
+                            <button type="button" class="platform-chip-toggle" data-platform="Windows">🪟 Windows</button>
+                            <button type="button" class="platform-chip-toggle" data-platform="Linux">🐧 Linux</button>
+                            <button type="button" class="platform-chip-toggle" data-platform="Android">🤖 Android</button>
+                            <button type="button" class="platform-chip-toggle" data-platform="Web">🌐 Web</button>
+                            <button type="button" class="platform-chip-toggle" data-platform="macOS">🍎 macOS</button>
+                        </div>
+                        <input type="hidden" id="release-platforms-input" value="${isEditMode ? (itemData.platforms || 'Windows') : 'Windows'}">
+                    </div>
+
+                    <div class="modal-field-group">
+                        <label class="modal-field-label">Distribution Links</label>
+                        <input type="url" id="release-download-url-input" placeholder="Download link (GitHub Release .exe/.apk/.zip or web app)" class="modal-input" value="${isEditMode ? (itemData.downloadUrl || '') : ''}">
+                        <input type="url" id="release-github-url-input" placeholder="GitHub repository URL (optional)" class="modal-input" style="margin-top: 6px;" value="${isEditMode ? (itemData.githubUrl || '') : ''}">
+                    </div>
+                    ` : `
                     <input type="text" id="category-input" placeholder="Category" class="modal-input" required value="${isEditMode ? itemData.category : ''}">
                     ${type === 'project' ? `
                     <input type="url" id="github-url-input" placeholder="GitHub URL" class="modal-input" value="${isEditMode ? (itemData.githubUrl || '') : ''}">
                     <input type="url" id="live-url-input" placeholder="Live Demo / Release URL (optional)" class="modal-input" value="${isEditMode ? (itemData.liveUrl || '') : ''}">` : ''}
-                    ${type === 'release' ? `
-                    <input type="text" id="release-version-input" placeholder="Version (e.g. v1.0.0)" class="modal-input" required value="${isEditMode ? (itemData.version || 'v1.0.0') : 'v1.0.0'}">
-                    <input type="text" id="release-status-input" placeholder="Status (e.g. Stable, Beta, Preview)" class="modal-input" value="${isEditMode ? (itemData.status || 'Stable') : 'Stable'}">
-                    <input type="url" id="release-download-url-input" placeholder="Download Link (GitHub Release .exe/.apk/.tar.gz or web app)" class="modal-input" value="${isEditMode ? (itemData.downloadUrl || '') : ''}">
-                    <input type="url" id="release-github-url-input" placeholder="GitHub Repository URL (optional)" class="modal-input" value="${isEditMode ? (itemData.githubUrl || '') : ''}">
-                    <input type="text" id="release-platforms-input" placeholder="Supported Platforms (e.g. Windows, Linux, Android, Web)" class="modal-input" value="${isEditMode ? (itemData.platforms || 'Windows, Linux, Web') : 'Windows, Linux, Web'}">` : ''}
-                    <div class="modal-sorting-controls" style="margin: 12px 0; text-align: left; display: flex; flex-direction: column; gap: 8px;">
-                        <label class="modal-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; user-select: none;">
+                    `}
+                    <div class="modal-sorting-controls" style="margin: 8px 0; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+                        <label class="modal-checkbox-card">
                             <input type="checkbox" id="pinned-input" ${isEditMode && itemData.pinned ? 'checked' : ''}>
-                            Pin item to top of list
+                            <div class="checkbox-card-info">
+                                <span class="checkbox-card-title">${type === 'release' ? '⭐ Feature in Spotlight Showcase' : 'Pin item to top of list'}</span>
+                                <span class="checkbox-card-desc">${type === 'release' ? 'Showcase this app in the prominent top banner on releases.html' : 'Display this item first on list pages'}</span>
+                            </div>
                         </label>
-                        <label for="sort-order-input" class="modal-label" style="font-size: 0.85rem; margin-top: 4px;">Sort Order / Weight (lower is first):</label>
-                        <input type="number" id="sort-order-input" placeholder="0" class="modal-input" style="width: 100%; box-sizing: border-box;" value="${isEditMode ? (itemData.sortOrder !== undefined ? itemData.sortOrder : 0) : 0}">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px;">
+                            <label for="sort-order-input" class="modal-field-label" style="margin: 0;">Sort Order (lower is first):</label>
+                            <input type="number" id="sort-order-input" placeholder="0" class="modal-input" style="width: 80px; text-align: center;" value="${isEditMode ? (itemData.sortOrder !== undefined ? itemData.sortOrder : 0) : 0}">
+                        </div>
                     </div>
                     ${type !== 'skill' && type !== 'release' ? `
                     <div class="skills-picker-container">
@@ -428,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         mainContentArea.innerHTML = formHtml;
 
-        initMarkdownEditorAndModal(type, itemId);
+        initMarkdownEditorAndModal(type, itemId, itemData);
 
         if (type !== 'skill' && type !== 'release') {
             populateSkillsPicker(itemData);
@@ -470,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function initMarkdownEditorAndModal(type, itemId) {
+    function initMarkdownEditorAndModal(type, itemId, itemData = null) {
         if (easyMDE) easyMDE.toTextArea();
         easyMDE = new EasyMDE({
             element: document.getElementById('content-body'),
@@ -485,6 +533,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const cancelModalButton = document.getElementById('cancel-modal');
         const thumbnailUploadInput = document.getElementById('thumbnail-upload');
         const fileNameDisplay = document.getElementById('file-name-display');
+
+        // Release Category Selector Wiring
+        const catSelect = document.getElementById('release-category-select');
+        const catInput = document.getElementById('category-input');
+        if (catSelect && catInput) {
+            catSelect.addEventListener('change', () => {
+                if (catSelect.value === 'custom') {
+                    catInput.style.display = 'block';
+                    catInput.value = '';
+                    catInput.focus();
+                } else {
+                    catInput.style.display = 'none';
+                    catInput.value = catSelect.value;
+                }
+            });
+        }
+
+        // Release Platform Chips Wiring
+        const platformPicker = document.getElementById('platform-chips-picker');
+        const platformsInput = document.getElementById('release-platforms-input');
+        if (platformPicker && platformsInput) {
+            const currentSelected = (platformsInput.value || '')
+                .split(/[,/ ]+/)
+                .map(s => s.trim().toLowerCase())
+                .filter(Boolean);
+
+            const toggles = platformPicker.querySelectorAll('.platform-chip-toggle');
+            toggles.forEach(btn => {
+                const platName = btn.dataset.platform.toLowerCase();
+                if (currentSelected.includes(platName)) {
+                    btn.classList.add('is-selected');
+                }
+
+                btn.addEventListener('click', () => {
+                    btn.classList.toggle('is-selected');
+                    const selected = Array.from(toggles)
+                        .filter(b => b.classList.contains('is-selected'))
+                        .map(b => b.dataset.platform);
+                    platformsInput.value = selected.join(', ');
+                });
+            });
+        }
 
 
         const thumbnailUrlInput = document.getElementById('thumbnail-url-input');
