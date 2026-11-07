@@ -388,10 +388,6 @@ main {
     color: #ffffff;
 }
 
-.contact a:hover span {
-    text-decoration: underline;
-}
-
 .contact-details,
 .socials {
     display: flex;
