@@ -107,8 +107,8 @@ main {
     min-height: 30px;
     padding: 0 12px;
     border-radius: 999px;
-    border: 1px solid #d8d8d8;
-    background: #ffffff;
+    border: 1.5px solid #d4d4d4;
+    background: transparent;
     color: #3d3d3d;
     font-family: inherit;
     font-size: 0.78rem;
@@ -125,7 +125,7 @@ main {
 
 .filter-chip.is-active {
     border-color: #d20a2e;
-    background: rgba(210, 10, 46, 0.08);
+    background: transparent;
     color: #d20a2e;
 }
 
@@ -137,9 +137,10 @@ main {
     padding: 24px;
     margin-bottom: 24px;
     border-radius: 10px;
-    background: #fbfbfb;
-    border: 1px solid #e8e8e8;
+    background: transparent;
+    border: 1.5px solid #dcdcdc;
     box-shadow: none;
+    transition: border-color 0.15s ease;
 }
 
 .featured-header-row {
@@ -147,6 +148,13 @@ main {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 16px;
+}
+
+.featured-badge-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .featured-badge {
@@ -165,45 +173,58 @@ main {
 
 .featured-body {
     display: flex;
-    gap: 20px;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.featured-top-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .featured-icon-box {
-    width: 64px;
-    height: 64px;
+    width: 58px;
+    height: 58px;
     border-radius: 10px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: transparent;
+    border: 1.5px solid #dcdcdc;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+.featured-icon-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .featured-icon-box svg {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     color: #d20a2e;
 }
 
-.featured-info {
-    flex: 1;
-    min-width: 0;
+.featured-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.featured-info h2 {
+.featured-title-wrap h2 {
     font-size: 1.35rem;
     font-weight: 700;
-    margin: 0 0 6px 0;
+    margin: 0;
     color: #111827;
 }
 
-.featured-info p {
-    font-size: 0.92rem;
-    line-height: 1.5;
-    color: #4b5563;
-    margin: 0 0 12px 0;
+.featured-info {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 .featured-actions {
@@ -211,6 +232,40 @@ main {
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
+}
+
+@media (max-width: 680px) {
+    .featured-release-banner {
+        padding: 16px;
+    }
+
+    .featured-header-row {
+        margin-bottom: 12px;
+        padding-right: 76px;
+    }
+
+    .featured-icon-box {
+        width: 48px;
+        height: 48px;
+    }
+
+    .featured-title-wrap h2 {
+        font-size: 1.18rem;
+    }
+
+    .featured-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .featured-actions .btn-release-primary,
+    .featured-actions .btn-release-secondary {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+        justify-content: center;
+    }
 }
 
 /* ── Releases Grid ─────────────────────────────────────────────────────────── */
@@ -235,12 +290,12 @@ main {
     box-sizing: border-box;
     padding: 18px;
     border-radius: 10px;
-    background: #ffffff;
-    border: 1px solid #e8e8e8;
+    background: transparent;
+    border: 1.5px solid #dcdcdc;
     box-shadow: none;
     overflow: hidden;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: border-color 0.15s ease;
 }
 
 .release-card-body {
@@ -266,8 +321,40 @@ main {
     z-index: 10;
 }
 
+.release-card .admin-control-btn,
+.featured-release-banner .admin-control-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 6px;
+    background: transparent;
+    border: 1.5px solid #d4d4d4;
+    color: #4b5563;
+    cursor: pointer;
+    box-shadow: none;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.release-card .admin-control-btn:hover,
+.featured-release-banner .admin-control-btn:hover {
+    background: transparent;
+    border-color: #111827;
+    color: #111827;
+}
+
+.release-card .admin-delete-btn:hover,
+.featured-release-banner .admin-delete-btn:hover {
+    background: transparent;
+    border-color: #d20a2e;
+    color: #d20a2e;
+}
+
 .release-card:hover {
-    background: #f4f4f4;
+    background: transparent;
+    border-color: #a8a8a8;
 }
 
 .release-card-top {
@@ -280,12 +367,20 @@ main {
     width: 44px;
     height: 44px;
     border-radius: 8px;
-    background: rgba(210, 10, 46, 0.08);
+    background: transparent;
+    border: 1.5px solid #dcdcdc;
     color: #d20a2e;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+.release-card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .release-card-icon svg {
@@ -323,9 +418,10 @@ main {
 
 .release-version-pill {
     display: inline-block;
-    padding: 1px 6px;
+    padding: 1px 7px;
     border-radius: 999px;
-    background: #f1f2f4;
+    background: transparent;
+    border: 1.5px solid #d4d4d4;
     color: #4b5563;
     font-size: 0.7rem;
     font-weight: 700;
@@ -339,27 +435,32 @@ main {
 
 .release-status-pill {
     display: inline-block;
-    padding: 1px 6px;
+    padding: 1px 7px;
     border-radius: 999px;
     font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
     flex-shrink: 0;
+    background: transparent;
+    border: 1.5px solid currentColor;
 }
 
 .status-stable {
-    background: rgba(16, 185, 129, 0.12);
+    background: transparent;
     color: #059669;
+    border-color: #059669;
 }
 
 .status-beta {
-    background: rgba(245, 158, 11, 0.12);
+    background: transparent;
     color: #d97706;
+    border-color: #d97706;
 }
 
 .status-archived {
-    background: rgba(107, 114, 128, 0.12);
-    color: #4b5563;
+    background: transparent;
+    color: #6b7280;
+    border-color: #6b7280;
 }
 
 .release-card-desc {
@@ -455,9 +556,10 @@ main {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 2px 7px;
+    padding: 3px 8px;
     border-radius: 6px;
-    background: #f3f4f6;
+    background: transparent;
+    border: 1.5px solid #d4d4d4;
     color: #4b5563;
     font-size: 0.72rem;
     font-weight: 600;
@@ -518,14 +620,15 @@ main {
     font-size: 0.82rem;
     font-weight: 700;
     text-decoration: none;
-    border: 1px solid #d8d8d8;
+    border: 1.5px solid #d4d4d4;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-release-secondary:hover {
-    background: #e8e8e8;
-    color: #3d3d3d !important;
+    background: transparent;
+    border-color: #3d3d3d;
+    color: #111827 !important;
 }
 
 /* ── Empty State ───────────────────────────────────────────────────────────── */
@@ -588,8 +691,8 @@ html[data-theme="dark"] .releases-search-icon {
 }
 
 html[data-theme="dark"] .filter-chip {
-    background: #1b1f26;
-    border-color: rgba(255, 255, 255, 0.1);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
     color: #aeb6c0;
 }
 
@@ -599,22 +702,23 @@ html[data-theme="dark"] .filter-chip:hover {
 }
 
 html[data-theme="dark"] .filter-chip.is-active {
-    background: rgba(210, 10, 46, 0.15);
+    background: transparent;
     border-color: #d20a2e;
     color: #d20a2e;
 }
 
 html[data-theme="dark"] .featured-release-banner {
-    background: #1b1f26;
-    border-color: rgba(255, 255, 255, 0.08);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.16);
     box-shadow: none;
 }
 
 html[data-theme="dark"] .featured-icon-box {
-    background: #23272f;
-    border-color: rgba(255, 255, 255, 0.1);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.16);
 }
 
+html[data-theme="dark"] .featured-title-wrap h2,
 html[data-theme="dark"] .featured-info h2 {
     color: #d4d8dd;
 }
@@ -624,15 +728,42 @@ html[data-theme="dark"] .featured-info p {
 }
 
 html[data-theme="dark"] .release-card {
-    background: #1b1f26;
-    border-color: rgba(255, 255, 255, 0.08);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.16);
     box-shadow: none;
 }
 
 html[data-theme="dark"] .release-card:hover {
-    background: #23272f;
-    border-color: rgba(255, 255, 255, 0.08);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.28);
     box-shadow: none;
+}
+
+html[data-theme="dark"] .release-card-icon {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+html[data-theme="dark"] .release-card .admin-control-btn,
+html[data-theme="dark"] .featured-release-banner .admin-control-btn {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #9ca3af;
+    box-shadow: none;
+}
+
+html[data-theme="dark"] .release-card .admin-control-btn:hover,
+html[data-theme="dark"] .featured-release-banner .admin-control-btn:hover {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+}
+
+html[data-theme="dark"] .release-card .admin-delete-btn:hover,
+html[data-theme="dark"] .featured-release-banner .admin-delete-btn:hover {
+    background: transparent;
+    border-color: #d20a2e;
+    color: #d20a2e;
 }
 
 html[data-theme="dark"] .release-card-title {
@@ -640,7 +771,8 @@ html[data-theme="dark"] .release-card-title {
 }
 
 html[data-theme="dark"] .release-version-pill {
-    background: #282f3a;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
     color: #d1d5db;
 }
 
@@ -677,7 +809,8 @@ html[data-theme="dark"] .featured-desc code {
 }
 
 html[data-theme="dark"] .platform-tag {
-    background: #252b35;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
     color: #d1d5db;
 }
 
@@ -686,13 +819,13 @@ html[data-theme="dark"] .release-card-actions {
 }
 
 html[data-theme="dark"] .btn-release-secondary {
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.18);
     color: #d1d5db !important;
 }
 
 html[data-theme="dark"] .btn-release-secondary:hover {
-    background: #23272f;
-    border-color: rgba(255, 255, 255, 0.18);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.35);
     color: #ffffff !important;
 }
 

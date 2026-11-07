@@ -298,20 +298,23 @@ html[data-theme="dark"] .mobile-side-nav-close:hover {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 16px 14px;
+    gap: 14px;
+    padding: 16px 14px 16px 18px;
     text-decoration: none;
     color: #374151;
-    background: transparent;
-    border: none;
-    border-radius: 0;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
     transition: color 0.15s ease;
 }
 
 html[data-theme="dark"] .mobile-side-nav-link {
     color: #d1d5db;
-    background: transparent;
-    border: none;
+    background: transparent !important;
+    border: none !important;
 }
 
 /* Subtle separator line between entries that does NOT span the entire width */
@@ -337,29 +340,37 @@ html[data-theme="dark"] .mobile-side-nav-link:not(:last-child)::after {
     top: 50%;
     transform: translateY(-50%);
     width: 3px;
-    height: 26px;
+    height: 22px;
     border-radius: 2px;
     background: #d20a2e;
 }
 
-.mobile-side-nav-link:hover {
-    background: transparent;
+.mobile-side-nav-link:hover,
+.mobile-side-nav-link:focus,
+.mobile-side-nav-link:active {
+    background: transparent !important;
     color: #111827;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
-html[data-theme="dark"] .mobile-side-nav-link:hover {
-    background: transparent;
+html[data-theme="dark"] .mobile-side-nav-link:hover,
+html[data-theme="dark"] .mobile-side-nav-link:focus,
+html[data-theme="dark"] .mobile-side-nav-link:active {
+    background: transparent !important;
     color: #ffffff;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .mobile-side-nav-link.active-link {
-    background: transparent;
-    color: #d20a2e;
+    background: transparent !important;
+    color: #d20a2e !important;
 }
 
 html[data-theme="dark"] .mobile-side-nav-link.active-link {
-    background: transparent;
-    color: #d20a2e;
+    background: transparent !important;
+    color: #d20a2e !important;
 }
 
 .mobile-side-nav-link .drawer-icon {
@@ -369,40 +380,9 @@ html[data-theme="dark"] .mobile-side-nav-link.active-link {
     flex-shrink: 0;
 }
 
-.drawer-link-content {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
 .drawer-link-title {
-    font-size: 0.95rem;
+    font-size: 0.96rem;
     font-weight: 600;
-    line-height: 1.25;
-}
-
-.drawer-link-desc {
-    font-size: 0.76rem;
-    color: #6b7280;
-    line-height: 1.35;
-}
-
-html[data-theme="dark"] .drawer-link-desc {
-    color: #9ca3af;
-}
-
-.mobile-side-nav-link:hover .drawer-link-desc {
-    color: #4b5563;
-}
-
-html[data-theme="dark"] .mobile-side-nav-link:hover .drawer-link-desc {
-    color: #cbd5e1;
-}
-
-.mobile-side-nav-link.active-link .drawer-link-desc {
-    color: #6b7280;
-}
-
-html[data-theme="dark"] .mobile-side-nav-link.active-link .drawer-link-desc {
-    color: #9ca3af;
+    color: inherit;
+    line-height: 1;
 }

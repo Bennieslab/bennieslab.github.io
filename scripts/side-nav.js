@@ -71,10 +71,7 @@
                             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                             <line x1="12" y1="22.08" x2="12" y2="12"></line>
                         </svg>
-                        <div class="drawer-link-content">
-                            <span class="drawer-link-title">3D Models</span>
-                            <span class="drawer-link-desc">Interactive Three.js renders & meshes</span>
-                        </div>
+                        <span class="drawer-link-title">3D Models</span>
                     </a>
                     <a href="releases.html" class="mobile-side-nav-link ${isReleases ? 'active-link' : ''}">
                         <svg class="drawer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -83,10 +80,7 @@
                             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                             <line x1="12" y1="22.08" x2="12" y2="12"></line>
                         </svg>
-                        <div class="drawer-link-content">
-                            <span class="drawer-link-title">App Releases</span>
-                            <span class="drawer-link-desc">Desktop tools, mobile & web utilities</span>
-                        </div>
+                        <span class="drawer-link-title">App Releases</span>
                     </a>
                 </nav>
             </div>

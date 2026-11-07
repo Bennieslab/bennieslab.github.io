@@ -112,18 +112,26 @@
         container.style.cursor = 'pointer';
         container.innerHTML = `
             <div class="featured-header-row">
-                <span class="featured-badge">
-                    <svg viewBox="0 0 24 24" fill="currentColor" style="width:13px;height:13px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    ${featured.pinned ? 'Pinned Showcase' : 'Latest Release'}
-                </span>
-                <span class="release-version-pill">${featured.version || 'v1.0'}</span>
+                <div class="featured-badge-group">
+                    <span class="featured-badge">
+                        <svg viewBox="0 0 24 24" fill="currentColor" style="width:13px;height:13px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        ${featured.pinned ? 'Pinned Showcase' : 'Latest Release'}
+                    </span>
+                    <span class="release-version-pill">${featured.version || 'v1.0'}</span>
+                    ${featured.status ? `<span class="release-status-pill status-${featured.status.toLowerCase()}">${featured.status}</span>` : ''}
+                </div>
             </div>
             <div class="featured-body">
-                <div class="featured-icon-box">
-                    ${iconHtml}
+                <div class="featured-top-row">
+                    <div class="featured-icon-box">
+                        ${iconHtml}
+                    </div>
+                    <div class="featured-title-wrap">
+                        <h2>${featured.name}</h2>
+                        <span class="release-category-tag">${featured.category || 'Application'}</span>
+                    </div>
                 </div>
                 <div class="featured-info">
-                    <h2>${featured.name}</h2>
                     <div class="featured-desc">${renderMarkdownSnippet(featured.description)}</div>
                     <div class="release-card-platforms" style="margin-bottom: 14px;">
                         ${platformTags}
