@@ -50,6 +50,22 @@
         return platformsStr.split(/[,/ ]+/).map(p => p.trim().toLowerCase()).filter(Boolean);
     }
 
+    function renderMarkdownSnippet(text) {
+        if (!text) return 'Application release by Benson Musonda.';
+        if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+            try {
+                // If it starts with a title/heading like "# Title", strip it so it doesn't duplicate the card title
+                let clean = text.replace(/^#+\s+[^\n]*\n+/m, '').trim();
+                if (!clean) clean = text;
+                return marked.parse(clean);
+            } catch (e) {
+                console.warn('Error parsing markdown snippet:', e);
+                return text;
+            }
+        }
+        return text;
+    }
+
     function updateCategoryCounts() {
         const countMap = { all: allReleases.length };
         allReleases.forEach(r => {
@@ -108,7 +124,7 @@
                 </div>
                 <div class="featured-info">
                     <h2>${featured.name}</h2>
-                    <p>${featured.description || 'Application release by Benson Musonda.'}</p>
+                    <div class="featured-desc">${renderMarkdownSnippet(featured.description)}</div>
                     <div class="release-card-platforms" style="margin-bottom: 14px;">
                         ${platformTags}
                     </div>
@@ -205,7 +221,7 @@
                             </div>
                         </div>
 
-                        <p class="release-card-desc">${app.description || 'Application release by Benson Musonda.'}</p>
+                        <div class="release-card-desc">${renderMarkdownSnippet(app.description)}</div>
                     </div>
 
                     <div class="release-card-footer">
