@@ -2,7 +2,7 @@ const MAX_LIST_ITEMS = 5;
 
 async function getUserData() {
     try {
-        let response = await fetch(`${SERVER_URL}/api/v1/users/email/Bensonmusonda12@gmail.com`);
+        let response = await fetch(`${SERVER_URL}/api/v1/users/profile`);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
