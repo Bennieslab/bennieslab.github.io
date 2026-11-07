@@ -92,6 +92,8 @@
 
         const downloadLink = featured.downloadUrl || featured.githubUrl || '#';
 
+        container.dataset.id = featured.id;
+        container.style.cursor = 'pointer';
         container.innerHTML = `
             <div class="featured-header-row">
                 <span class="featured-badge">
@@ -187,8 +189,8 @@
                 : PACKAGE_BOX_ICON;
 
             return `
-                <div class="release-card" data-id="${app.id}">
-                    <div>
+                <div class="release-card" data-id="${app.id}" role="button" tabindex="0" aria-label="View details for ${app.name}">
+                    <div class="release-card-body">
                         <div class="release-card-top">
                             <div class="release-card-icon">
                                 ${iconHtml}
@@ -206,7 +208,7 @@
                         <p class="release-card-desc">${app.description || 'Application release by Benson Musonda.'}</p>
                     </div>
 
-                    <div>
+                    <div class="release-card-footer">
                         <div class="release-card-platforms">
                             ${platformTags}
                         </div>
@@ -239,6 +241,103 @@
         }
     }
 
+    function openReleaseModal(app) {
+        const modal = document.getElementById('releaseDetailModal');
+        if (!modal) return;
+
+        const iconContainer = document.getElementById('modalAppIcon');
+        const nameEl = document.getElementById('modalAppName');
+        const versionEl = document.getElementById('modalAppVersion');
+        const statusEl = document.getElementById('modalAppStatus');
+        const categoryEl = document.getElementById('modalAppCategory');
+        const platformsEl = document.getElementById('modalAppPlatforms');
+        const bodyEl = document.getElementById('modalAppBody');
+        const actionsEl = document.getElementById('modalAppActions');
+
+        // Icon
+        if (iconContainer) {
+            iconContainer.innerHTML = app.thumbnailUrl
+                ? `<img src="${app.thumbnailUrl}" alt="${app.name}">`
+                : PACKAGE_BOX_ICON;
+        }
+
+        // Titles
+        if (nameEl) nameEl.textContent = app.name || 'Untitled Application';
+        if (versionEl) versionEl.textContent = app.version || 'v1.0.0';
+
+        if (statusEl) {
+            if (app.status) {
+                statusEl.textContent = app.status;
+                statusEl.className = `release-status-pill status-${app.status.toLowerCase()}`;
+                statusEl.style.display = 'inline-block';
+            } else {
+                statusEl.style.display = 'none';
+            }
+        }
+
+        if (categoryEl) categoryEl.textContent = app.category || 'Application';
+
+        // Platforms
+        if (platformsEl) {
+            const platforms = parsePlatforms(app.platforms);
+            platformsEl.innerHTML = platforms.map(p => `
+                <span class="platform-tag" title="${p.toUpperCase()}">
+                    ${PLATFORM_ICONS[p] || ''}
+                    ${p.charAt(0).toUpperCase() + p.slice(1)}
+                </span>
+            `).join('');
+        }
+
+        // Body Content (Render with marked.js if present)
+        if (bodyEl) {
+            const desc = app.description || 'No detailed release notes or description provided.';
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                bodyEl.innerHTML = marked.parse(desc);
+            } else {
+                bodyEl.innerHTML = `<p>${desc.replace(/\n/g, '<br>')}</p>`;
+            }
+        }
+
+        // Action Buttons
+        if (actionsEl) {
+            let actionHtml = '';
+            if (app.downloadUrl) {
+                actionHtml += `
+                    <a href="${app.downloadUrl}" class="btn-release-primary" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Get App / Download
+                    </a>
+                `;
+            }
+            if (app.githubUrl) {
+                actionHtml += `
+                    <a href="${app.githubUrl}" class="btn-release-secondary" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;margin-right:4px;">
+                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                        </svg>
+                        GitHub Repository
+                    </a>
+                `;
+            }
+            actionsEl.innerHTML = actionHtml;
+        }
+
+        modal.showModal();
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeReleaseModal() {
+        const modal = document.getElementById('releaseDetailModal');
+        if (modal && modal.open) {
+            modal.close();
+        }
+        document.body.style.overflow = '';
+    }
+
     function initListeners() {
         const searchInput = document.getElementById('releaseSearchInput');
         if (searchInput) {
@@ -269,6 +368,67 @@
                 renderGrid();
             });
         });
+
+        // Card clicks open the detail modal (ignoring clicks on buttons, links, or admin controls)
+        const grid = document.getElementById('releasesGrid');
+        if (grid) {
+            grid.addEventListener('click', (e) => {
+                if (e.target.closest('a') || e.target.closest('.admin-item-controls') || e.target.closest('button')) {
+                    return;
+                }
+                const card = e.target.closest('.release-card');
+                if (!card) return;
+                const id = card.dataset.id;
+                const app = allReleases.find(r => String(r.id) === String(id));
+                if (app) openReleaseModal(app);
+            });
+
+            grid.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    const card = e.target.closest('.release-card');
+                    if (card && e.target === card) {
+                        e.preventDefault();
+                        const id = card.dataset.id;
+                        const app = allReleases.find(r => String(r.id) === String(id));
+                        if (app) openReleaseModal(app);
+                    }
+                }
+            });
+        }
+
+        // Spotlight banner click also opens the detail modal
+        const banner = document.getElementById('featuredReleaseSpotlight');
+        if (banner) {
+            banner.addEventListener('click', (e) => {
+                if (e.target.closest('a') || e.target.closest('.admin-item-controls') || e.target.closest('button')) {
+                    return;
+                }
+                const id = banner.dataset.id;
+                const app = allReleases.find(r => String(r.id) === String(id));
+                if (app) openReleaseModal(app);
+            });
+        }
+
+        // Modal close controls
+        const modal = document.getElementById('releaseDetailModal');
+        const closeBtn = document.getElementById('modalCloseBtn');
+        const dismissBtn = document.getElementById('modalDismissBtn');
+
+        if (closeBtn) closeBtn.addEventListener('click', closeReleaseModal);
+        if (dismissBtn) dismissBtn.addEventListener('click', closeReleaseModal);
+
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                const rect = modal.getBoundingClientRect();
+                const inDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+                                  rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
+                if (!inDialog) closeReleaseModal();
+            });
+
+            modal.addEventListener('cancel', () => {
+                document.body.style.overflow = '';
+            });
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {

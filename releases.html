@@ -99,6 +99,40 @@
         </section>
     </main>
 
+    <!-- Detailed Release Modal -->
+    <dialog id="releaseDetailModal" class="release-modal-dialog" aria-labelledby="modalAppName" aria-modal="true">
+        <div class="release-modal-container">
+            <div class="release-modal-header">
+                <div class="release-modal-header-info">
+                    <div class="release-modal-icon" id="modalAppIcon"></div>
+                    <div class="release-modal-titles">
+                        <div class="release-modal-title-row">
+                            <h2 id="modalAppName"></h2>
+                            <span class="release-version-pill" id="modalAppVersion"></span>
+                            <span class="release-status-pill" id="modalAppStatus"></span>
+                        </div>
+                        <span class="release-category-tag" id="modalAppCategory"></span>
+                    </div>
+                </div>
+                <button type="button" class="release-modal-close" id="modalCloseBtn" aria-label="Close dialog">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="release-modal-platforms-row" id="modalAppPlatforms"></div>
+
+            <div class="release-modal-body release-content-rendered" id="modalAppBody"></div>
+
+            <div class="release-modal-footer">
+                <div class="release-modal-actions" id="modalAppActions"></div>
+                <button type="button" class="btn-release-secondary" id="modalDismissBtn">Close</button>
+            </div>
+        </div>
+    </dialog>
+
     <footer>
         <div class="socials">
             <a href="https://www.youtube.com/@bennieslab10" target="_blank" rel="noopener noreferrer">YouTube</a>
@@ -117,6 +151,7 @@
     </footer>
 
     <script src="scripts/config.js"></script>
+    <script src="scripts/marked.min.js"></script>
     <script src="scripts/utils/api.js"></script>
     <script src="scripts/utils/dialogs.js"></script>
     <script src="scripts/utils/admin-controls.js"></script>
