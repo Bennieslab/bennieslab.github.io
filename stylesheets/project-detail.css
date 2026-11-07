@@ -131,7 +131,8 @@ main.project-detail-main {
     font-weight: bold;
 }
 
-.github-url {
+.github-url,
+.live-url {
     color: #d20a2e;
     overflow: hidden;
     text-overflow: ellipsis;

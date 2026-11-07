@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'project': return 'projects';
             case 'model': return 'models';
             case 'skill': return 'skills';
+            case 'release': return 'releases';
             default: return 'skills';
         }
     }
@@ -357,6 +358,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 titlePlaceholder = "Model Name";
                 contentPlaceholder = "Model Description (Markdown)";
                 break;
+            case 'release':
+                titlePlaceholder = "App Name";
+                contentPlaceholder = "App Description / Release Notes (Markdown)";
+                break;
         }
 
         const formHtml = `
@@ -389,7 +394,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="thumbnail-divider">or</div>
                     <input type="url" id="thumbnail-url-input" placeholder="Paste an image URL instead" class="modal-input">
                     <input type="text" id="category-input" placeholder="Category" class="modal-input" required value="${isEditMode ? itemData.category : ''}">
-                    ${type === 'project' ? `<input type="url" id="github-url-input" placeholder="GitHub URL" class="modal-input" value="${isEditMode ? (itemData.githubUrl || '') : ''}">` : ''}
+                    ${type === 'project' ? `
+                    <input type="url" id="github-url-input" placeholder="GitHub URL" class="modal-input" value="${isEditMode ? (itemData.githubUrl || '') : ''}">
+                    <input type="url" id="live-url-input" placeholder="Live Demo / Release URL (optional)" class="modal-input" value="${isEditMode ? (itemData.liveUrl || '') : ''}">` : ''}
+                    ${type === 'release' ? `
+                    <input type="text" id="release-version-input" placeholder="Version (e.g. v1.0.0)" class="modal-input" required value="${isEditMode ? (itemData.version || 'v1.0.0') : 'v1.0.0'}">
+                    <input type="text" id="release-status-input" placeholder="Status (e.g. Stable, Beta, Preview)" class="modal-input" value="${isEditMode ? (itemData.status || 'Stable') : 'Stable'}">
+                    <input type="url" id="release-download-url-input" placeholder="Download Link (GitHub Release .exe/.apk/.tar.gz or web app)" class="modal-input" value="${isEditMode ? (itemData.downloadUrl || '') : ''}">
+                    <input type="url" id="release-github-url-input" placeholder="GitHub Repository URL (optional)" class="modal-input" value="${isEditMode ? (itemData.githubUrl || '') : ''}">
+                    <input type="text" id="release-platforms-input" placeholder="Supported Platforms (e.g. Windows, Linux, Android, Web)" class="modal-input" value="${isEditMode ? (itemData.platforms || 'Windows, Linux, Web') : 'Windows, Linux, Web'}">` : ''}
                     <div class="modal-sorting-controls" style="margin: 12px 0; text-align: left; display: flex; flex-direction: column; gap: 8px;">
                         <label class="modal-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; user-select: none;">
                             <input type="checkbox" id="pinned-input" ${isEditMode && itemData.pinned ? 'checked' : ''}>
@@ -398,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <label for="sort-order-input" class="modal-label" style="font-size: 0.85rem; margin-top: 4px;">Sort Order / Weight (lower is first):</label>
                         <input type="number" id="sort-order-input" placeholder="0" class="modal-input" style="width: 100%; box-sizing: border-box;" value="${isEditMode ? (itemData.sortOrder !== undefined ? itemData.sortOrder : 0) : 0}">
                     </div>
-                    ${type !== 'skill' ? `
+                    ${type !== 'skill' && type !== 'release' ? `
                     <div class="skills-picker-container">
                         <label class="modal-label">Attach Skills</label>
                         <div class="skills-checkbox-list" id="skills-checkbox-list">
@@ -417,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         initMarkdownEditorAndModal(type, itemId);
 
-        if (type !== 'skill') {
+        if (type !== 'skill' && type !== 'release') {
             populateSkillsPicker(itemData);
         }
     }
@@ -627,7 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
             payload.modelFileKey = modelFileKey;
         }
 
-        if (type === 'project' || type === 'skill' || type === 'model') {
+        if (type === 'project' || type === 'skill' || type === 'model' || type === 'release') {
             payload.name = titleInput;
             payload.description = contentBody;
         } else if (type === 'blog') {
@@ -638,9 +651,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'project') {
             const githubUrlInput = document.getElementById('github-url-input');
             payload.githubUrl = githubUrlInput ? githubUrlInput.value.trim() : '';
+            const liveUrlInput = document.getElementById('live-url-input');
+            payload.liveUrl = liveUrlInput ? liveUrlInput.value.trim() : '';
+        } else if (type === 'release') {
+            const versionInput = document.getElementById('release-version-input');
+            payload.version = versionInput ? versionInput.value.trim() : 'v1.0.0';
+            const statusInput = document.getElementById('release-status-input');
+            payload.status = statusInput ? statusInput.value.trim() : 'Stable';
+            const downloadUrlInput = document.getElementById('release-download-url-input');
+            payload.downloadUrl = downloadUrlInput ? downloadUrlInput.value.trim() : '';
+            const githubUrlInput = document.getElementById('release-github-url-input');
+            payload.githubUrl = githubUrlInput ? githubUrlInput.value.trim() : '';
+            const platformsInput = document.getElementById('release-platforms-input');
+            payload.platforms = platformsInput ? platformsInput.value.trim() : '';
         }
 
-        if (type !== 'skill') {
+        if (type !== 'skill' && type !== 'release') {
             const checkedBoxes = document.querySelectorAll('input[name="skill-id"]:checked');
             payload.skillIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value, 10));
         }
@@ -1032,11 +1058,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Failed to fetch content');
             }
 
-            const items = await response.json();
+            const rawData = await response.json();
+            const items = Array.isArray(rawData) ? rawData : (rawData.content || []);
 
             let listHtml = items.map(item => `
                 <li class="content-item">
-                    <span>${item.pinned ? getPinBadgeHtml() + ' ' : ''}${item.title || item.name}</span>
+                    <span>${item.pinned ? getPinBadgeHtml() + ' ' : ''}${item.title || item.name}${item.version ? ' (' + item.version + ')' : ''}</span>
                     <div>
                         <button class="edit-button" data-id="${item.id}" data-type="${type}">Edit</button>
                         <button class="delete-button" data-id="${item.id}" data-type="${type}">Delete</button>

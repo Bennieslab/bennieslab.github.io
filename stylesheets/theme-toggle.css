@@ -382,7 +382,8 @@ html[data-theme="dark"] .filter-status {
 }
 
 html[data-theme="dark"] .skill-stat-row:hover,
-html[data-theme="dark"] .github-url {
+html[data-theme="dark"] .github-url,
+html[data-theme="dark"] .live-url {
     color: #d20a2e;
 }
 

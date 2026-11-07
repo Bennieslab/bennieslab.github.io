@@ -23,6 +23,8 @@ async function displayProject() {
     const projectCategoryElement = document.querySelector('.project-meta .category');
     const projectGithubRow = document.querySelector('.project-github-row');
     const projectGithubElement = document.querySelector('.github-url');
+    const projectLiveRow = document.querySelector('.project-live-row');
+    const projectLiveElement = document.querySelector('.live-url');
     const datePostedElement = document.querySelector('.project-meta .date-posted');
     const lastUpdateElement = document.querySelector('.project-meta .last-updated');
     const projectContentElement = document.querySelector('.project-content-rendered');
@@ -48,6 +50,7 @@ async function displayProject() {
         datePostedElement.textContent = formatDateTimeArray(project.datePosted);
         lastUpdateElement.textContent = formatDateTimeArray(project.lastUpdated);
         renderGithubUrl(project, projectGithubRow, projectGithubElement);
+        renderLiveUrl(project, projectLiveRow, projectLiveElement);
 
         // Display thumbnail if available
         if (project.thumbnailUrl) {
@@ -85,6 +88,20 @@ function renderGithubUrl(project, row, link) {
 
     link.href = githubUrl;
     link.textContent = githubUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    row.hidden = false;
+}
+
+function renderLiveUrl(project, row, link) {
+    if (!row || !link) return;
+
+    const liveUrl = project.liveUrl;
+    if (!liveUrl) {
+        row.hidden = true;
+        return;
+    }
+
+    link.href = liveUrl;
+    link.textContent = liveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
     row.hidden = false;
 }
 

@@ -73,6 +73,13 @@ function renderProjects(projects) {
         if (project.pinned) {
             projectNameElement.prepend(createPinBadge());
         }
+        if (project.liveUrl) {
+            const liveBadge = document.createElement("span");
+            liveBadge.className = "live-badge";
+            liveBadge.title = "Live app / demo available";
+            liveBadge.innerHTML = '<span class="live-dot" aria-hidden="true"></span>Live';
+            projectNameElement.appendChild(liveBadge);
+        }
         descriptionElement.textContent = getPlainTextSnippet(project.description, 120);
         categoryElement.textContent = project.category;
         datePostedElement.textContent = "Posted: " + formatDateTimeArray(project.datePosted);
